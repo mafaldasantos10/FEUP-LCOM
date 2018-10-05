@@ -30,11 +30,12 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-int(timer_test_read_config)(uint8_t UNUSED(timer), enum timer_status_field (field)) {
-  /* To be completed by the students */
-  uint8_t st;
+int(timer_test_read_config)(uint8_t (timer), enum timer_status_field (field)) 
+{
+
+ uint8_t st;
  timer_get_conf(timer, &st);
- timer_display_conf(timer, st, field);
+ timer_display_conf(timer, conf, field)
 
   return 0;
 }
@@ -46,23 +47,26 @@ int(timer_test_time_base)(uint8_t UNUSED(timer), uint32_t UNUSED(freq)) {
   return 1;
 }
 
-int(timer_test_int)(uint8_t UNUSED(time)) {
-  /* To be completed by the students */
-  printf("%s is not yet implemented!\n", __func__);
+int(timer_test_int)(uint8_t (time)) {
 
-  return 1;
+  timer_set_frequency(timer, freq);
+
+  return 0;
 }
 
-int(util_get_LSB)(uint16_t UNUSED(val), uint8_t *UNUSED(lsb)) {
-  /* To be completed by the students */
-  printf("%s is not yet implemented!\n", __func__);
+int(util_get_LSB)(uint16_t (val), uint8_t *(lsb)) {
 
-  return 1;
+ uint8_t address = (uint8_t) *lsb;
+
+ address = val % 100000000;
+  return 0;
 }
 
-int(util_get_MSB)(uint16_t UNUSED(val), uint8_t *UNUSED(msb)) {
-  /* To be completed by the students */
-  printf("%s is not yet implemented!\n", __func__);
+int(util_get_MSB)(uint16_t (val), uint8_t *(msb)) {
+ 
+ uint8_t address = (uint8_t) *msb;
 
-  return 1;
+ address = val / 100000000;
+
+  return 0;
 }

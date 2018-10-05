@@ -30,13 +30,16 @@ void (timer_int_handler)() {
   /* To be completed by the students */
   printf("%s is not yet implemented!\n", __func__);
 }
- //if
-int (timer_get_conf)(uint8_t (timer), uint8_t *(st)) {
- 
+
+
+int (timer_get_conf)(uint8_t (timer), uint8_t *(st)) 
+{
+ //
  uint8_t rb_command = TIMER_RB_CMD | TIMER_RB_SEL(timer);
 
  sys_outb(TIMER_CTRL, rb_command);
 
+ uint32_t status = (uint32_t) *st;
  //checks if the sys call was valid
  int res = sys_outb(TIMER_CTRL, rb_command);
 
@@ -46,10 +49,10 @@ int (timer_get_conf)(uint8_t (timer), uint8_t *(st)) {
   return 1;
  }
 
- sys_inb(TIMER_0 + timer, st);
+ sys_inb(TIMER_0 + timer, &status);
 
  //checks if the sys call was valid
- int res2 = sys_inb(TIMER_0 + timer, st);
+ int res2 = sys_inb(TIMER_0 + timer, &status);
 
   if (res2 != OK)
  {
@@ -60,12 +63,18 @@ int (timer_get_conf)(uint8_t (timer), uint8_t *(st)) {
   return 0;
 }
 
-int (timer_display_conf)(uint8_t (timer), uint8_t (st),
-                        enum timer_status_field (field)) {
 
-conf.bcd = 
-timer_print_config(timer, field, conf)
+int (timer_display_conf)(uint8_t timer, uint8_t st, enum timer_status_field field)
+{
 
+union timer_status_field_val conf;
+
+conf.bcd = (st << 7) >> 7; 
+conf.count_mode = (st << 4) >> 5;
+conf.in_mode = (st << 2) >> 6;
+conf.byte = st >> 6;
+
+timer_print_config(timer, field, conf);
 
   return 1;
 }
