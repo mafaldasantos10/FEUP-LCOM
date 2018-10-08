@@ -7,6 +7,10 @@
 
 int (timer_set_frequency)(uint8_t (timer), uint32_t (freq)) 
 {
+  uint8_t = st;
+timer_get_conf(timer,&st);
+
+uint32_t f_freq = TIMER_FREQ/freq;
 
  if (freq < 0)
   return 1;
@@ -105,39 +109,34 @@ union timer_status_field_val conf;
 
 if(field == base)
 {
-  // *******0
+// *******0
 conf.bcd = (st << 7) >> 7; 
-
 }
 
 if(field == initial)
 {
-  // ****3,2,1*
+// ****3,2,1*
 conf.count_mode = (st << 4) >> 5;
-
 }
 
 if(field == mode)
-  // **5,4****
+// **5,4****
 {
 conf.in_mode = (st << 2) >> 6;
-
 }
 
 if(field == all)
 {
-  // 7,6,5,4,3,2,1,0
+// 7,6,5,4,3,2,1,0
 conf.byte = st;
-
 }
+
 else
 {
-return 1;
-
+  return 1;
 }
-
 
 timer_print_config(timer, field, conf);
 
-  return 1;
+  return 0;
 }
