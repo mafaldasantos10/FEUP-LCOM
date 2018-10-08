@@ -35,7 +35,7 @@ int(timer_test_read_config)(uint8_t (timer), enum timer_status_field (field))
 
  uint8_t st;
  timer_get_conf(timer, &st);
- timer_display_conf(timer, conf, field)
+ timer_display_conf(timer, conf, field);
 
   return 0;
 }
