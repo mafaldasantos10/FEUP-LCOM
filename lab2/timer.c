@@ -2,18 +2,23 @@
 #include <lcom/timer.h>
 
 #include <stdint.h>
-
+ 
 #include "i8254.h"
 
 int (timer_set_frequency)(uint8_t (timer), uint32_t (freq)) 
 {
-  uint8_t = st;
-timer_get_conf(timer,&st);
+
+ //if (freq < 0)
+ // return 1;
+
+uint8_t st;
+timer_get_conf(timer, &st);
+
+uint8_t control = timer | TIMER_LSB_MSB | st;
+
+sys_outb(TIMER_CTRL, control);
 
 uint32_t f_freq = TIMER_FREQ/freq;
-
- if (freq < 0)
-  return 1;
 
   return 0;
 }
