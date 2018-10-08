@@ -56,7 +56,7 @@ int(util_get_LSB)(uint16_t (val), uint8_t *(lsb)) {
 
  uint8_t address = (uint8_t) *lsb;
 
- address = val % 10000;
+ address = val & 0x00FF;
   return 0;
 }
 
@@ -64,7 +64,7 @@ int(util_get_MSB)(uint16_t (val), uint8_t *(msb)) {
  
  uint8_t address = (uint8_t) *msb;
 
- address = val / 10000;
+ address = val & 0xFF00;
 
   return 0;
 }
