@@ -32,10 +32,9 @@ int main(int argc, char *argv[]) {
 
 int(timer_test_read_config)(uint8_t (timer), enum timer_status_field (field)) 
 {
-
  uint8_t st;
  timer_get_conf(timer, &st);
- timer_display_conf(timer, conf, field);
+ timer_display_conf(timer, st, field);
 
   return 0;
 }
@@ -47,24 +46,28 @@ int(timer_test_time_base)(uint8_t (timer), uint32_t (freq)) {
   return 0;
 }
 
-int(timer_test_int)(uint8_t UNUSED (time)) {
-
-  return 1;
+int(timer_test_int)(uint8_t UNUSED (time)) 
+{
+  //uint8_t bit_no;
+  //timer_print_elapsed_time();
+  //void timer_int_handler();
+  //int timer_subscribe_int(*bit_no);
+  //int timer_unsubscribe_int();
+  return 0;
 }
 
 int(util_get_LSB)(uint16_t (val), uint8_t *(lsb)) {
 
- uint8_t address = (uint8_t) *lsb;
+ *lsb = (uint8_t) val;
 
- address = val & 0x00FF;
   return 0;
 }
 
 int(util_get_MSB)(uint16_t (val), uint8_t *(msb)) {
  
- uint8_t address = (uint8_t) *msb;
+ uint8_t address = (uint8_t)((val & 0xFF00) >> 8);
 
- address = val & 0xFF00;
+ *msb = address;
 
   return 0;
 }
