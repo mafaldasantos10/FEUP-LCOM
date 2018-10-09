@@ -5,27 +5,79 @@
  
 #include "i8254.h"
 
+unsigned int counter =0;
+
 int (timer_set_frequency)(uint8_t (timer), uint32_t (freq)) 
 {
 
- //if (freq < 0)
- // return 1;
-
-uint8_t st;
+uint8_t st, lsb, msb;
 timer_get_conf(timer, &st);
 
-uint8_t control = timer | TIMER_LSB_MSB | st;
+uint8_t control = TIMER_LSB_MSB | (st & 0x0F); //DATA ESTÁ PARADA, NÃO ATUALIZA!!!!
 
-sys_outb(TIMER_CTRL, control);
+switch(timer)
+{
 
-uint32_t f_freq = TIMER_FREQ/freq;
-
-  return 0;
+case 0:
+{
+control |= TIMER_SEL0;
+break;
+}
+case 1:
+{
+control |= TIMER_SEL1;
+break;
+}
+case 2:
+{
+control |= TIMER_SEL2;
+break;
+}
+default:
+{
+  return 1;
+}
 }
 
-int (timer_subscribe_int)(uint8_t *UNUSED(bit_no)) {
-  /* To be completed by the students */
-  printf("%s is not yet implemented!\n", __func__);
+ //checks if the sys call was valid
+ int res = sys_outb(TIMER_CTRL, control);
+
+ if (res != OK)
+ {
+  printf ("Erro!");
+  return 1;
+ }
+
+uint16_t f_freq = TIMER_FREQ/freq;
+
+util_get_LSB(f_freq, &lsb);
+
+util_get_MSB(f_freq, &msb);
+
+ //checks if the sys call was valid
+ int res1 = sys_outb(TIMER_0 + timer, lsb);
+
+ if (res1 != OK)
+ {
+  printf ("Erro!");
+  return 1;
+ }
+
+ //checks if the sys call was valid
+ int res2 = sys_outb(timer + TIMER_0, msb);
+
+ if (res2 != OK)
+ {
+  printf ("Erro!");
+  return 1;
+ }
+
+  return 0;
+
+}
+
+int (timer_subscribe_int)(uint8_t * UNUSED (bit_no)) {
+
 
   return 1;
 }
@@ -37,9 +89,9 @@ int (timer_unsubscribe_int)() {
   return 1;
 }
 
-void (timer_int_handler)() {
-  /* To be completed by the students */
-  printf("%s is not yet implemented!\n", __func__);
+void (timer_int_handler)() 
+{  
+  counter++;
 }
 
 
@@ -62,11 +114,9 @@ int (timer_get_conf)(uint8_t (timer), uint8_t *(st))
 
 if(timer == 0)
 {
- sys_inb(TIMER_0, &status);
-
- //checks if the sys call was valid
  int res2 = sys_inb(TIMER_0, &status);
 
+//checks if the sys call was valid
   if (res2 != OK)
  {
   printf ("Erro!");
@@ -104,7 +154,6 @@ if(timer == 2)
 
   return 0;
 }
-
 
 
 int (timer_display_conf)(uint8_t timer, uint8_t st, enum timer_status_field field)
