@@ -18,24 +18,16 @@ int (timer_set_frequency)(uint8_t (timer), uint32_t (freq))
   switch(timer)
   {
     case 0:
-    {
       control |= TIMER_SEL0;
       break;
-    }
     case 1:
-    {
       control |= TIMER_SEL1;
       break;
-    }
     case 2:
-    {
       control |= TIMER_SEL2;
       break;
-    }
     default:
-    {
       return 1;
-    }
   }
 
   
@@ -64,7 +56,7 @@ int (timer_set_frequency)(uint8_t (timer), uint32_t (freq))
     return 1;
   }
 
-  int res2 = sys_outb(timer + TIMER_0, msb);
+  int res2 = sys_outb(TIMER_0 + timer, msb);
 
   //checks if the sys call was valid
   if (res2 != OK)
