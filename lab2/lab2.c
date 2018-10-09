@@ -48,11 +48,12 @@ int(timer_test_time_base)(uint8_t (timer), uint32_t (freq)) {
 
 int(timer_test_int)(uint8_t UNUSED (time)) 
 {
-  //uint8_t bit_no;
-  //timer_print_elapsed_time();
-  //void timer_int_handler();
-  //int timer_subscribe_int(*bit_no);
-  //int timer_unsubscribe_int();
+  /*uint8_t bit_no;
+  timer_print_elapsed_time();
+  void timer_int_handler();
+  int timer_subscribe_int(*bit_no);
+  int timer_unsubscribe_int();*/
+
   return 0;
 }
 
