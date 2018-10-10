@@ -6,6 +6,7 @@
  *
  * Constants for programming the i8254 Timer. Needs to be completed.
  */
+#define TMPHOOK 2
 
 #define TIMER_FREQ  1193182    /**< @brief clock frequency for timer in PC and AT */
 
