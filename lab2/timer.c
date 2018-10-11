@@ -6,7 +6,8 @@
   #include "i8254.h"
 
 unsigned int counter = 0;
-unsigned int hook_id;
+int hook_id;
+int res;
 
 int (timer_set_frequency)(uint8_t (timer), uint32_t (freq)) 
 {
@@ -31,8 +32,7 @@ int (timer_set_frequency)(uint8_t (timer), uint32_t (freq))
       return 1;
   }
 
-  
-  int res = sys_outb(TIMER_CTRL, control);
+  res = sys_outb(TIMER_CTRL, control);
 
   //checks if the sys call was valid
   if (res != OK)
@@ -48,19 +48,19 @@ int (timer_set_frequency)(uint8_t (timer), uint32_t (freq))
   util_get_MSB(f_freq, &msb);
 
 
-  int res1 = sys_outb(TIMER_0 + timer, lsb);
+  res = sys_outb(TIMER_0 + timer, lsb);
 
   //checks if the sys call was valid
-  if (res1 != OK)
+  if (res != OK)
   {
     printf ("Erro!");
     return 1;
   }
 
-  int res2 = sys_outb(TIMER_0 + timer, msb);
+  res = sys_outb(TIMER_0 + timer, msb);
 
   //checks if the sys call was valid
-  if (res2 != OK)
+  if (res != OK)
   {
     printf ("Erro!");
     return 1;
@@ -69,25 +69,60 @@ int (timer_set_frequency)(uint8_t (timer), uint32_t (freq))
   return 0;
 
 }
+
 
 int (timer_subscribe_int)(uint8_t *(bit_no)) 
 {
-  int temporary= TMPHOOK;
-  sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE, &temporary);
-  sys_irqenable(&hook_id);
+  int temporary = TMPHOOK;
+
+  res = sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE, &temporary);
+
+  //checks if the sys call was valid
+  if (res != OK)
+  {
+    printf ("Erro!");
+    return 1;
+  }
+
+  res = sys_irqenable(&hook_id);
+
+  //checks if the sys call was valid
+  if (res != OK)
+  {
+    printf ("Erro!");
+    return 1;
+  }
 
   hook_id = temporary;
-  *bit_no = BIT(hook_id)
+  *bit_no = BIT(hook_id);
 
   return 0;
 }
 
-int (timer_unsubscribe_int)() {
-    /* To be completed by the students */
- int sys_irqrmpolicy(&hook_id);
 
-  return 1;
+int (timer_unsubscribe_int)() {
+
+  // res = sys_irqdisable(&hook_id);
+
+  // //checks if the sys call was valid
+  // if (res != OK)
+  // {
+  //   printf ("Erro!");
+  //   return 1;
+  // }
+
+  res = sys_irqrmpolicy(&hook_id);
+
+  //checks if the sys call was valid
+  if (res != OK)
+  {
+    printf ("Erro!");
+    return 1;
+  }
+
+  return 0;
 }
+
 
 void (timer_int_handler)() 
 {  
@@ -99,12 +134,10 @@ int (timer_get_conf)(uint8_t (timer), uint8_t *(st))
 {
   uint8_t rb_command = TIMER_RB_CMD | TIMER_RB_SEL(timer);
 
-  sys_outb(TIMER_CTRL, rb_command);
-
   uint32_t status = (uint32_t) *st;
 
   
-  int res = sys_outb(TIMER_CTRL, rb_command);
+  res = sys_outb(TIMER_CTRL, rb_command);
 
   //checks if the sys call was valid
   if (res != OK)
@@ -116,10 +149,10 @@ int (timer_get_conf)(uint8_t (timer), uint8_t *(st))
   //selects the correct timer
   if (timer == 0)
   {
-    int res2 = sys_inb(TIMER_0, &status);
+    res = sys_inb(TIMER_0, &status);
 
     //checks if the sys call was valid
-    if (res2 != OK)
+    if (res != OK)
     {
       printf ("Erro!");
       return 1;
@@ -128,10 +161,10 @@ int (timer_get_conf)(uint8_t (timer), uint8_t *(st))
 
   if (timer == 1)
   {
-    int res3 = sys_inb(TIMER_1, &status);
+    res = sys_inb(TIMER_1, &status);
 
     //checks if the sys call was valid
-    if (res3 != OK)
+    if (res != OK)
     {
       printf ("Erro!");
       return 1;
@@ -140,10 +173,10 @@ int (timer_get_conf)(uint8_t (timer), uint8_t *(st))
 
   if (timer == 2)
   {
-    int res4 = sys_inb(TIMER_2, &status);
+    res = sys_inb(TIMER_2, &status);
 
     //checks if the sys call was valid
-    if (res4 != OK)
+    if (res != OK)
     {
       printf ("Erro!");
       return 1;
@@ -152,6 +185,7 @@ int (timer_get_conf)(uint8_t (timer), uint8_t *(st))
 
   return 0;
 }
+
 
 int (timer_display_conf)(uint8_t timer, uint8_t st, enum timer_status_field field)
 {
@@ -187,8 +221,8 @@ int (timer_display_conf)(uint8_t timer, uint8_t st, enum timer_status_field fiel
     return 1;
   }
 
-timer_print_config(timer, field, conf);
+  timer_print_config(timer, field, conf);
 
-return 0;
+  return 0;
 
 }
