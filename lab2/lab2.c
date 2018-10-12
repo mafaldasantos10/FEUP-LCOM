@@ -59,7 +59,7 @@ int(timer_test_int)(uint8_t time)
 
   timer_subscribe_int(&irq_set);
  
-  while(counter < 60 * time) 
+  while(counter < (int)sys_hz() * time) 
     {   /* You may want to use a different condition */ 
         /* Get a request message. */ 
       if ( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 ) 
@@ -76,7 +76,7 @@ int(timer_test_int)(uint8_t time)
             { /* subscribed interrupt */ 
               timer_int_handler();
 
-              if(counter % 60 == 0)
+              if(counter % (int)sys_hz() == 0)
                 {
                   timer_print_elapsed_time();
                 }
