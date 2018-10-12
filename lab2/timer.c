@@ -5,17 +5,23 @@
 
   #include "i8254.h"
 
-unsigned int counter = 0;
+int counter = 0;
 int hook_id;
 int res;
 
-int (timer_set_frequency)(uint8_t (timer), uint32_t (freq)) 
+int (timer_set_frequency)(uint8_t (timer), uint32_t freq) 
 {
 
   uint8_t st, lsb, msb;
+
+  if (freq < 19 || freq > TIMER_FREQ)
+  {
+    return 1;
+  }
+
   timer_get_conf(timer, &st);
 
-  uint8_t control = TIMER_LSB_MSB | (st & 0x0F); //DATA ESTÁ PARADA, NÃO ATUALIZA!!!!
+  uint8_t control = TIMER_LSB_MSB | (st & 0x0F);
 
   switch(timer)
   {
@@ -32,12 +38,9 @@ int (timer_set_frequency)(uint8_t (timer), uint32_t (freq))
       return 1;
   }
 
-  res = sys_outb(TIMER_CTRL, control);
-
   //checks if the sys call was valid
-  if (res != OK)
+  if (sys_outb(TIMER_CTRL, control) != OK)
   {
-    printf ("Erro!");
     return 1;
   }
 
@@ -47,54 +50,31 @@ int (timer_set_frequency)(uint8_t (timer), uint32_t (freq))
 
   util_get_MSB(f_freq, &msb);
 
-
-  res = sys_outb(TIMER_0 + timer, lsb);
-
   //checks if the sys call was valid
-  if (res != OK)
+  if (sys_outb(TIMER_0 + timer, lsb) != OK)
   {
-    printf ("Erro!");
     return 1;
   }
 
-  res = sys_outb(TIMER_0 + timer, msb);
-
   //checks if the sys call was valid
-  if (res != OK)
+  if (sys_outb(TIMER_0 + timer, msb) != OK)
   {
-    printf ("Erro!");
     return 1;
   }
 
   return 0;
-
 }
 
 
-int (timer_subscribe_int)(uint8_t *(bit_no)) 
+int (timer_subscribe_int)(uint8_t *bit_no) 
 {
-  int temporary = TMPHOOK;
-
-  res = sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE, &temporary);
-
-  //checks if the sys call was valid
-  if (res != OK)
-  {
-    printf ("Erro!");
-    return 1;
-  }
-
-  res = sys_irqenable(&hook_id);
-
-  //checks if the sys call was valid
-  if (res != OK)
-  {
-    printf ("Erro!");
-    return 1;
-  }
-
-  hook_id = temporary;
   *bit_no = BIT(hook_id);
+
+  //checks if the sys call was valid
+  if (sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE, &hook_id) != OK)
+  {
+    return 1;
+  }
 
   return 0;
 }
@@ -102,21 +82,9 @@ int (timer_subscribe_int)(uint8_t *(bit_no))
 
 int (timer_unsubscribe_int)() {
 
-  // res = sys_irqdisable(&hook_id);
-
-  // //checks if the sys call was valid
-  // if (res != OK)
-  // {
-  //   printf ("Erro!");
-  //   return 1;
-  // }
-
-  res = sys_irqrmpolicy(&hook_id);
-
   //checks if the sys call was valid
-  if (res != OK)
+  if (sys_irqrmpolicy(&hook_id) != OK)
   {
-    printf ("Erro!");
     return 1;
   }
 
@@ -132,56 +100,45 @@ void (timer_int_handler)()
 
 int (timer_get_conf)(uint8_t (timer), uint8_t *(st)) 
 {
-  uint8_t rb_command = TIMER_RB_CMD | TIMER_RB_SEL(timer);
+  uint8_t rb_command = TIMER_RB_CMD | TIMER_RB_SEL(timer) | TIMER_RB_COUNT_;
 
-  uint32_t status = (uint32_t) *st;
-
-  
-  res = sys_outb(TIMER_CTRL, rb_command);
+  uint32_t status;
 
   //checks if the sys call was valid
-  if (res != OK)
+  if (sys_outb(TIMER_CTRL, rb_command) != OK)
   {
-    printf ("Erro!");
     return 1;
   }
 
-  //selects the correct timer
-  if (timer == 0)
+    //selects the correct timer
+    switch(timer)
   {
-    res = sys_inb(TIMER_0, &status);
-
-    //checks if the sys call was valid
-    if (res != OK)
-    {
-      printf ("Erro!");
+    case 0:
+      //checks if the sys call was valid
+      if (sys_inb(TIMER_0, &status) != OK)
+      {
+        return 1;
+      }
+      break;
+    case 1:
+      //checks if the sys call was valid
+      if (sys_inb(TIMER_1, &status) != OK)
+      {
+        return 1;
+      }
+      break;
+    case 2:
+      //checks if the sys call was valid
+      if (sys_inb(TIMER_2, &status) != OK)
+      {
+        return 1;
+      }
+      break;
+    default:
       return 1;
-    }
   }
 
-  if (timer == 1)
-  {
-    res = sys_inb(TIMER_1, &status);
-
-    //checks if the sys call was valid
-    if (res != OK)
-    {
-      printf ("Erro!");
-      return 1;
-    }
-  }
-
-  if (timer == 2)
-  {
-    res = sys_inb(TIMER_2, &status);
-
-    //checks if the sys call was valid
-    if (res != OK)
-    {
-      printf ("Erro!");
-      return 1;
-    }
-  }
+  *st = (uint8_t) status;
 
   return 0;
 }

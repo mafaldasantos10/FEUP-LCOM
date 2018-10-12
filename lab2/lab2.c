@@ -2,6 +2,7 @@
 
 #include <lcom/lab2.h>
 #include <lcom/timer.h>
+#include "i8254.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -41,22 +42,24 @@ int(timer_test_read_config)(uint8_t (timer), enum timer_status_field (field))
 
 int(timer_test_time_base)(uint8_t (timer), uint32_t (freq)) {
 
-  timer_set_frequency(timer, freq);
+  //checks if the sys call was valid
+  if (timer_set_frequency(timer, freq) != OK)
+  {
+    return 1;
+  }
 
   return 0;
 }
 
-int(timer_test_int)(uint8_t (time)) 
+int(timer_test_int)(uint8_t time) 
 {
-  uint8_t bit_no;
+  uint8_t irq_set;
   int ipc_status, r;
   message msg;
 
-  timer_int_handler();
-
-  timer_subscribe_int(*bit_no);
+  timer_subscribe_int(&irq_set);
  
-  while( 1 ) 
+  while(counter < 60 * time) 
     {   /* You may want to use a different condition */ 
         /* Get a request message. */ 
       if ( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 ) 
@@ -71,8 +74,12 @@ int(timer_test_int)(uint8_t (time))
           case HARDWARE: /* hardware interrupt notification */ 
             if (msg.m_notify.interrupts & irq_set) 
             { /* subscribed interrupt */ 
-              timer_print_elapsed_time();
               timer_int_handler();
+
+              if(counter % 60 == 0)
+                {
+                  timer_print_elapsed_time();
+                }
             } 
             break; 
           default: 
@@ -85,7 +92,11 @@ int(timer_test_int)(uint8_t (time))
       }
     }
 
-  timer_unsubscribe_int();
+  //checks if the sys call was valid
+  if (timer_unsubscribe_int() != OK)
+  {
+    return 1;
+  }
 
   return 0;
 }
@@ -99,7 +110,7 @@ int(util_get_LSB)(uint16_t (val), uint8_t *(lsb)) {
 
 int(util_get_MSB)(uint16_t (val), uint8_t *(msb)) {
  
- uint8_t address = (uint8_t)((val & 0xFF00) >> 8);
+ uint8_t address = (uint8_t)(val >> 8);
 
  *msb = address;
 
