@@ -19,7 +19,10 @@ int (timer_set_frequency)(uint8_t (timer), uint32_t freq)
     return 1;
   }
 
-  timer_get_conf(timer, &st);
+  if (timer_get_conf(timer, &st) != OK)
+  {
+    return 1;
+  }
 
   uint8_t control = TIMER_LSB_MSB | (st & 0x0F);
 
@@ -101,7 +104,6 @@ void (timer_int_handler)()
 int (timer_get_conf)(uint8_t (timer), uint8_t *(st)) 
 {
   uint8_t rb_command = TIMER_RB_CMD | TIMER_RB_SEL(timer) | TIMER_RB_COUNT_;
-
   uint32_t status;
 
   //checks if the sys call was valid
@@ -110,8 +112,8 @@ int (timer_get_conf)(uint8_t (timer), uint8_t *(st))
     return 1;
   }
 
-    //selects the correct timer
-    switch(timer)
+  //selects the correct timer
+  switch(timer)
   {
     case 0:
       //checks if the sys call was valid
@@ -178,8 +180,10 @@ int (timer_display_conf)(uint8_t timer, uint8_t st, enum timer_status_field fiel
     return 1;
   }
 
-  timer_print_config(timer, field, conf);
+  if (timer_print_config(timer, field, conf) != OK)
+  {
+    return 1;
+  }
 
   return 0;
-
 }
