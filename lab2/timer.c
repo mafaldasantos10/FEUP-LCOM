@@ -6,7 +6,7 @@
   #include "i8254.h"
 
 int counter = 0;
-int hook_id;
+int hook_id = 0;
 int res;
 
 int (timer_set_frequency)(uint8_t (timer), uint32_t freq) 
