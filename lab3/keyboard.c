@@ -1,5 +1,5 @@
   #include <lcom/lcf.h>
-  #include <lcom/lab3.h>
+  #include "keyboard.h"
 
   #include <stdint.h>
 
@@ -51,7 +51,7 @@ uint8_t (kbd_int_handler)()
 				return -1;
 		}
 
-		delay(WAIT_KBC);
+		//delay(WAIT_KBC);
 	}
 
 	return 0;
