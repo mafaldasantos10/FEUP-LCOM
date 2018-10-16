@@ -111,6 +111,8 @@ int (kbd_test_scan)(bool UNUSED (assembly))
     return 1;
   }
 
+  //kbd_print_no_sysinb(cnt);
+
   return 0;
 }
 	
