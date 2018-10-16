@@ -1,9 +1,11 @@
 #include <lcom/lcf.h>
 
+#include "lab3.h"
+#include "keyboard.h"
+#include "i8042.h"
+
 #include <stdbool.h>
 #include <stdint.h>
-
-#include "i8042.h"
 
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
@@ -31,8 +33,8 @@ int main(int argc, char *argv[]) {
 
 int (kbd_test_scan)(bool UNUSED (assembly))
 {
-  uint8_t irq_set;
-  int ipc_status, r, size = 1, int byte1[1], int byte2[2];
+  uint8_t irq_set, byte1[1], byte2[2], read;
+  int ipc_status, r, size = 1;
   bool esc = true, make = true, wait = false;
   message msg;
 
@@ -74,22 +76,24 @@ int (kbd_test_scan)(bool UNUSED (assembly))
               {
               esc = false;
               }
-                
-              if((read>>7) == BIT0 )
+            
+              if((read>>7) == BIT(0))
               {
               make = false;
               }
 
               if(size == 1)
               {
-              byte1[1] = {read};
+              byte1[0] = read;
               kbd_print_scancode(make, size, byte1);
               } 
-              else if (size == 2);
+              if (size == 2)
               {
-              byte2[2] = {MSB, read};
+              byte2[0] = MSB;
+              byte2[1] = read;
               kbd_print_scancode(make, size, byte2);
               }
+
             } 
           break; 
         default: 
@@ -111,12 +115,11 @@ int (kbd_test_scan)(bool UNUSED (assembly))
 }
 	
 int (kbd_test_poll)() 
-{
-    /* To be completed */
+{ 
+    return 0;
 }
 
 int (kbd_test_timed_scan)(uint8_t UNUSED(n)) 
 {
-    /* To be completed */
-    /* When you use argument n for the first time, delete the UNUSED macro */
+  return 0;
 }
