@@ -2,6 +2,7 @@
   #include "keyboard.h"
 
   #include <stdint.h>
+  #include <minix/sysutil.h> 
 
   #include "i8042.h"
 
@@ -51,6 +52,7 @@ uint8_t (kbd_int_handler)()
 				return -1;
 		}
 
+		tickdelay(micros_to_ticks(DELAY_US));
 		//delay(WAIT_KBC);
 	}
 

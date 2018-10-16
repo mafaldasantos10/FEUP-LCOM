@@ -21,7 +21,7 @@
 #define TO_ERR BIT(6)
 #define PAR_ERR BIT(7)
 
-#define WAIT_KBC 2000 //wait ms
+#define DELAY_US 20000 //wait ms
 
 /**@}*/
 
