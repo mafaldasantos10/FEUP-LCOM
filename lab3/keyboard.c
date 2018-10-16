@@ -32,21 +32,27 @@ int (kbd_unsubscribe_int)()
   	return 0;
 }
 
-int (kbd_int_handler)() 
+uint8_t (kbd_int_handler)() 
 {
-	int sys_inb(OUT_BUF, &status); 
+	uint32_t stat, status;
 
-	status = (uint8_t) status;
+	while( 1 ) {
 
-	return status;
-}
+		sys_inb(STAT_REG, &stat); /* assuming it returns OK */
+		/* loop while 8042 output buffer is empty */
 
+		if( stat & OBF ) 
+		{
+			sys_inb(OUT_BUF, &status); /* assuming it returns OK */
 
-bool (kbd_int_size)() 
-{
-	uint32_t status;
-	int sys_inb(OUT_BUF, &status); 
-	status = (uint16_t) status;
+			if ( (stat &(PAR_ERR | TO_ERR)) == 0 )
+				return (uint8_t) status;
+			else
+				return -1;
+		}
 
-	return status;
+		delay(WAIT_KBC);
+	}
+
+	return 0;
 }
