@@ -1,4 +1,4 @@
-#include <lcom/timer.h>
+#include <lcom/lcf.h>
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -29,19 +29,14 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-int (kbd_test_scan)(bool assembly)
- {
-
+int (kbd_test_scan)(bool UNUSED (assembly))
+{
   uint8_t irq_set;
-  int ipc_status, r;
-  bool esc = true; 
-  bool make=true;
-  bool wait = false;
-  int size = 1;
-  int byte[];
+  int ipc_status, r, size = 1, int byte1[1], int byte2[2];
+  bool esc = true, make = true, wait = false;
+  message msg;
 
-
- if (kbd_subscribe_int(&irq_set) != OK)
+  if (kbd_subscribe_int(&irq_set) != OK)
   {
     return 1;
   }
@@ -62,41 +57,40 @@ int (kbd_test_scan)(bool assembly)
             if (msg.m_notify.interrupts & irq_set) 
                 { /* subscribed interrupt */ 
 
-                read = kbd_int_handler();
+                  read = kbd_int_handler();
 
-                if(read == 0xE0)
-                {
-                wait = true;
-                continue;
-                } 
+                  if(read == MSB)
+                  {
+                  wait = true;
+                  continue;
+                  } 
 
-                if(wait == true)
-                {
-                wait = false;
-                size=2;
-                }
+                  if(wait == true)
+                  {
+                  wait = false;
+                  size = 2;
+                  }
 
-                if(read == ESC_BK)
-                {
-                esc = false;
-                }
+                  if(read == ESC_BK)
+                  {
+                  esc = false;
+                  }
                 
-                if((read>>7) == BIT0 )
-                {
-                make = false;
-                }
+                  if((read>>7) == BIT0 )
+                  {
+                  make = false;
+                  }
 
-                if(size = 1)
-                {
-                byte[]={read};
-                } 
-                else (size =2)
-                {
-                byte[]={0xE0,read};
-                }
-
-                int kbd_print_scancode(make, size, bytes[]);
-
+                  if(size == 1)
+                  {
+                  byte1[1] = {read};
+                  kbd_print_scancode(make, size, byte1);
+                  } 
+                  else (size == 2);
+                  {
+                  byte2[2] = {MSB, read};
+                  kbd_print_scancode(make, size, byte2);
+                  }
                 } 
             break; 
           default: 
@@ -116,11 +110,12 @@ int (kbd_test_scan)(bool assembly)
 
   return 0;
 
- }
+}
 	
 int (kbd_test_poll)() {
     /* To be completed */
 }
+
 int (kbd_test_timed_scan)(uint8_t UNUSED(n)) {
     /* To be completed */
     /* When you use argument n for the first time, delete the UNUSED macro */
