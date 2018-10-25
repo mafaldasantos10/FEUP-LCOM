@@ -31,6 +31,6 @@ uint8_t kbd_int_handler();
 
 int kbd_scan_poll();
 
-int kbd_poll_cmd(uint8_t kbdcmd);
+int kbd_poll_cmd();
 
 void kbd_poll();
