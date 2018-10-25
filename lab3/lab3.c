@@ -36,13 +36,12 @@ int (kbd_test_scan)(bool (assembly))
   int ipc_status, r, size = 1;
   bool esc = true, make = true, wait = false;
   message msg;
- 
 
   if (kbd_subscribe_int(&irq_set) != OK)
   {
     return 1;
   }
-  printf("%d",irq_set);
+  printf("%d", irq_set);
  
   while(esc) 
   {   /* You may want to use a different condition */ 
@@ -76,7 +75,7 @@ int (kbd_test_scan)(bool (assembly))
               continue;
               } 
 
-              if(wait==true)
+              if(wait == true)
               {
               wait = false;
               size = 2;
@@ -115,7 +114,7 @@ int (kbd_test_scan)(bool (assembly))
     { /* received a standard message, not a notification */ 
        /* no standard messages expected: do nothing */ 
     }
-       make = true;
+    make = true;
   }
 
   if (kbd_unsubscribe_int() != OK)
@@ -133,6 +132,7 @@ int (kbd_test_poll)()
   uint8_t byte1[1], byte2[2];
   bool esc = true, make = true, wait = false;
   int size = 1;
+
 while(esc)
 {
  kbd_poll();
@@ -142,7 +142,8 @@ while(esc)
         wait = true;
         continue;
        } 
-    if(wait==true)
+
+    if(wait == true)
        {
         wait = false;
         size = 2;
@@ -163,13 +164,15 @@ while(esc)
           byte1[0] = status;
           kbd_print_scancode(make, size, byte1);
         } 
+
     if (size == 2)
         {
            byte2[0] = MSB;
            byte2[1] = status;
            kbd_print_scancode(make, size, byte2);
         }
-make=true;
+
+  make = true;
 }
 
 kbd_poll_cmd(0x20);
