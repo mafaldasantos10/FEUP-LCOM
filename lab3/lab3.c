@@ -133,9 +133,9 @@ int (kbd_test_poll)()
   bool esc = true, make = true, wait = false;
   int size = 1;
 
-while(esc)
-{
- kbd_poll();
+ while(esc)
+ {
+  kbd_poll();
 
     if(status == MSB)
        {
@@ -173,11 +173,11 @@ while(esc)
         }
 
   make = true;
-}
+ }
 
-kbd_poll_cmd(0x20);
+ kbd_poll_cmd(0x20);
 
-return 0;
+ return 0;
 }
 
 int (kbd_test_timed_scan)(uint8_t UNUSED(n)) 

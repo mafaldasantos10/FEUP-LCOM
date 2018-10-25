@@ -17,6 +17,7 @@ int sys_inb_cnt(port_t port, uint32_t *byte);
 #define STAT_REG 0x64
 #define KBC_CMD_REG 0x64
 #define OUT_BUF 0x60
+#define KBC_EN BIT(0)
 
 #define RD_CMD_B 0x20
 #define WRT_CMD_B 0x60

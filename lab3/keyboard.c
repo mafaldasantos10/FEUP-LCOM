@@ -21,11 +21,11 @@ int (kbd_subscribe_int)(uint8_t *bit_no)
 	}
 
 	hook_id = hook_id_temp;
-	printf("hook %d\n", hook_id);
+	//printf("hook %d\n", hook_id);
 
 	*bit_no = BIT(HOOK_ID_TMP);
 
-	printf("dd %d\n",*bit_no );
+	//printf("dd %d\n",*bit_no );
 
 	return 0;
 }
@@ -57,20 +57,17 @@ int sys_inb_cnt(port_t port, uint32_t *byte)
 	return sys_inb(port, byte);
 }
 
-int kbd_poll_cmd(uint8_t kbdcmd)
+int kbd_poll_cmd()
 {
-	while( 1 ) 
-	{
-	sys_inb(STAT_REG, &stat); /* assuming it returns OK */
-	/* loop while 8042 input buffer is not empty */
-		if( (stat & IBF) == 0 )
-		{
-			sys_outb(KBC_CMD_REG, kbdcmd); /* no args command */
-			return 0;
-		}
+uint32_t kbdcmd;
 
-		tickdelay(micros_to_ticks(DELAY_US));
-	}
+sys_outb(KBC_CMD_REG,RD_CMD_B);
+sys_inb(OUT_BUF,&kbdcmd);
+
+kbdcmd = kbdcmd | KBC_EN;
+
+sys_outb(KBC_CMD_REG, WRT_CMD_B);
+sys_outb(OUT_BUF, kbdcmd);
 
 	return 0;
 }
@@ -84,21 +81,25 @@ int kbd_scan_poll()
 	{
 		sys_inb_cnt(STAT_REG, &statpoll); /* assuming it returns OK */
 		/* loop while 8042 output buffer is empty */
-		printf("TESTE 1\n");
+		//printf("TESTE 1\n");
 		if( statpoll & OBF ) 
 		{
-			printf("TESTE 2\n");
+			//printf("TESTE 2\n");
 
 			sys_inb_cnt(OUT_BUF, &status); /* assuming it returns OK */
 
 			if ( (stat &(PAR_ERR | TO_ERR | AUX)) == 0 )
 				return (uint8_t) status;
 			else
+			{
+				//printf("TESTE 3\n");
 				return -1;
+			
+			}
 		}
 
 		tickdelay(micros_to_ticks(DELAY_US));
-		printf("%d\n", i);
+		//printf("%d\n", i);
 		i++;
 	}
 
