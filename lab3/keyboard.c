@@ -1,14 +1,13 @@
-	  #include <lcom/lcf.h>
-	  #include "keyboard.h"
+#include <lcom/lcf.h>
+#include "keyboard.h"
 
-	  #include <stdint.h>
-	  #include <minix/sysutil.h> 
+#include <stdint.h>
+#include <minix/sysutil.h> 
 
-	  #include "i8042.h"
+#include "i8042.h"
 
 int hook_id;
 uint32_t status = 0, stat = 0, counter = 0;
-
 
 int (kbd_subscribe_int)(uint8_t *bit_no)
 {
@@ -25,7 +24,7 @@ int (kbd_subscribe_int)(uint8_t *bit_no)
 
 	*bit_no = BIT(HOOK_ID_TMP);
 
-	//printf("dd %d\n",*bit_no );
+	//printf("dd %d\n", *bit_no );
 
 	return 0;
 }
@@ -59,17 +58,31 @@ int sys_inb_cnt(port_t port, uint32_t *byte)
 
 int kbd_poll_cmd()
 {
-uint32_t kbdcmd;
+	uint32_t kbdcmd;
 
-sys_outb(KBC_CMD_REG,RD_CMD_B);
-sys_inb(OUT_BUF,&kbdcmd);
+	sys_outb(KBC_CMD_REG, RD_CMD_B);
+	sys_inb(OUT_BUF, &kbdcmd);
 
-kbdcmd = kbdcmd | KBC_EN;
+	kbdcmd = kbdcmd | KBC_EN;
 
-sys_outb(KBC_CMD_REG, WRT_CMD_B);
-sys_outb(OUT_BUF, kbdcmd);
+	sys_outb(KBC_CMD_REG, WRT_CMD_B);
+	sys_outb(OUT_BUF, kbdcmd);
 
 	return 0;
+
+	//while( i < 5 ) 
+  	//{
+  	//	sys_inb_cnt(STAT_REG, &stat); /*assuming it returns OK*/
+   	//	/*loop while 8042 input buffer is not empty*/
+    //	if( (stat & IBF) == 0 ) 
+    //	{
+    //  	sys_outb(KBC_CMD_REG, cmd); /*no args command*/
+    //  	return 0;
+    //	}
+
+    //	i++;
+    //	tickdelay(micros_to_ticks(DELAY_US));
+  	//}
 }
 
 int kbd_scan_poll()
@@ -88,13 +101,12 @@ int kbd_scan_poll()
 
 			sys_inb_cnt(OUT_BUF, &status); /* assuming it returns OK */
 
-			if ( (stat &(PAR_ERR | TO_ERR | AUX)) == 0 )
+			if ( (stat & (PAR_ERR | TO_ERR | AUX) ) == 0 )
 				return (uint8_t) status;
 			else
 			{
 				//printf("TESTE 3\n");
 				return -1;
-			
 			}
 		}
 
