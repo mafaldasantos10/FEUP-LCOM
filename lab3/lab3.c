@@ -1,6 +1,5 @@
 #include <lcom/lcf.h>
 
-#include "lab3.h"
 #include "keyboard.h"
 #include "i8042.h"
 
@@ -31,17 +30,19 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-int (kbd_test_scan)(bool UNUSED (assembly))
+int (kbd_test_scan)(bool (assembly))
 {
-  uint8_t irq_set, byte1[1], byte2[2], read;
+  uint8_t irq_set, byte1[1], byte2[2];
   int ipc_status, r, size = 1;
   bool esc = true, make = true, wait = false;
   message msg;
+ 
 
   if (kbd_subscribe_int(&irq_set) != OK)
   {
     return 1;
   }
+  printf("%d",irq_set);
  
   while(esc) 
   {   /* You may want to use a different condition */ 
@@ -59,40 +60,50 @@ int (kbd_test_scan)(bool UNUSED (assembly))
           if (msg.m_notify.interrupts & irq_set) 
             { /* subscribed interrupt */ 
 
-              read = kbd_int_handler();
+             if(!assembly)
+            {
+               kbc_ih();
+            }
 
-              if(read == MSB)
-              {
-              wait = true;
+            else
+            {
+               kbc_asm_ih();
+            }
+
+             if(status == MSB)
+            {
+             wait = true;
               continue;
               } 
-              if(wait == true)
+
+              if(wait==true)
               {
               wait = false;
               size = 2;
               }
 
-              if(read == ESC_BK)
+              if(status == ESC_BK)
               {
               esc = false;
+              make = false;
               }
             
-              if((read>>7) == BIT(0))
+              if((status>>7) == BIT(0))
               {
               make = false;
               }
 
               if(size == 1)
               {
-              byte1[0] = read;
+              byte1[0] = status;
               kbd_print_scancode(make, size, byte1);
               } 
               if (size == 2)
               {
               byte2[0] = MSB;
-              byte2[1] = read;
+              byte2[1] = status;
               kbd_print_scancode(make, size, byte2);
-              }
+            }
 
             } 
           break; 
@@ -104,6 +115,7 @@ int (kbd_test_scan)(bool UNUSED (assembly))
     { /* received a standard message, not a notification */ 
        /* no standard messages expected: do nothing */ 
     }
+       make = true;
   }
 
   if (kbd_unsubscribe_int() != OK)
@@ -111,14 +123,58 @@ int (kbd_test_scan)(bool UNUSED (assembly))
     return 1;
   }
 
-  //kbd_print_no_sysinb(cnt);
+  kbd_print_no_sysinb(counter);
 
   return 0;
 }
 	
 int (kbd_test_poll)() 
 { 
-    return 0;
+  uint8_t byte1[1], byte2[2];
+  bool esc = true, make = true, wait = false;
+  int size = 1;
+while(esc)
+{
+ kbd_poll();
+
+    if(status == MSB)
+       {
+        wait = true;
+        continue;
+       } 
+    if(wait==true)
+       {
+        wait = false;
+        size = 2;
+       }
+
+    if(status == ESC_BK)
+        {
+         esc = false;
+        }
+            
+    if((status>>7) == BIT(0))
+        {
+         make = false;
+        }
+
+    if(size == 1)
+        {
+          byte1[0] = status;
+          kbd_print_scancode(make, size, byte1);
+        } 
+    if (size == 2)
+        {
+           byte2[0] = MSB;
+           byte2[1] = status;
+           kbd_print_scancode(make, size, byte2);
+        }
+make=true;
+}
+
+kbd_poll_cmd(0x20);
+
+return 0;
 }
 
 int (kbd_test_timed_scan)(uint8_t UNUSED(n)) 
