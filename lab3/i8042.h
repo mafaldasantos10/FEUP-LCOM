@@ -9,10 +9,10 @@ extern uint32_t counter;
 #define IRQKEYBOARD 1    /**< @brief kbd IRQ line */
 
 #ifdef LAB3
-	int sys_inb_cnt(port_t port, uint32_t *byte);
-	#else
-	#define sys_inb_cnt(p,q) sys_inb(p,q) 
-	#endif
+int sys_inb_cnt(port_t port, uint32_t *byte);
+#else
+#define sys_inb_cnt(p,q) sys_inb(p,q) 
+#endif
 
 #define STAT_REG 0x64
 #define KBC_CMD_REG 0x64
