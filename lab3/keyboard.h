@@ -5,7 +5,7 @@
  *
  * Functions for using the ........................
  */
-
+int kbc_scan_ih();
 /**
  * @brief Subscribes and enables Timer 0 interrupts
  *
@@ -28,3 +28,9 @@ int kbd_unsubscribe_int();
  * Increments counter
  */
 uint8_t kbd_int_handler();
+
+int kbd_scan_poll();
+
+int kbd_poll_cmd(uint8_t kbdcmd);
+
+void kbd_poll();
