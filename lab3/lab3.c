@@ -59,52 +59,52 @@ int (kbd_test_scan)(bool (assembly))
           if (msg.m_notify.interrupts & irq_set) 
             { /* subscribed interrupt */ 
 
-             if(!assembly)
+            if(!assembly)
             {
-               kbc_ih();
+              kbc_ih();
             }
 
             else
             {
-               kbc_asm_ih();
+              kbc_asm_ih();
             }
 
-             if(status == MSB)
+            if(status == MSB)
             {
-             wait = true;
+              wait = true;
               continue;
-              } 
+            } 
 
-              if(wait == true)
-              {
+            if(wait == true)
+            {
               wait = false;
               size = 2;
-              }
+            }
 
-              if(status == ESC_BK)
-              {
+            if(status == ESC_BK)
+            {
               esc = false;
               make = false;
-              }
+            }
             
-              if((status>>7) == BIT(0))
-              {
+            if((status>>7) == BIT(0))
+            {
               make = false;
-              }
+            }
 
-              if(size == 1)
-              {
+            if(size == 1)
+            {
               byte1[0] = status;
               kbd_print_scancode(make, size, byte1);
-              } 
-              if (size == 2)
-              {
+            } 
+
+            if (size == 2)
+            {
               byte2[0] = MSB;
               byte2[1] = status;
               kbd_print_scancode(make, size, byte2);
             }
-
-            } 
+          }
           break; 
         default: 
           break; /* no other notifications expected: do nothing */ 
@@ -112,7 +112,7 @@ int (kbd_test_scan)(bool (assembly))
     } 
     else 
     { /* received a standard message, not a notification */ 
-       /* no standard messages expected: do nothing */ 
+      /* no standard messages expected: do nothing */ 
     }
     make = true;
   }
@@ -129,55 +129,74 @@ int (kbd_test_scan)(bool (assembly))
 	
 int (kbd_test_poll)() 
 { 
-  uint8_t byte1[1], byte2[2];
-  bool esc = true, make = true, wait = false;
+  uint8_t byte1[1], byte2[2], pstatus = 0;
+  bool esc = true, make = true, wait = false, stop = false;
   int size = 1;
 
  while(esc)
  {
-  kbd_poll();
+    kbd_poll();
+
+    //printf("status: %x ", status);
+    //printf("pstatus: %x \n", pstatus);
+
+    if(status == pstatus)
+      stop = true;
+    else
+      stop = false;
 
     if(status == MSB)
-       {
-        wait = true;
-        continue;
-       } 
+    {
+      wait = true;
+      continue;
+    }
+
+    pstatus = status;
 
     if(wait == true)
-       {
-        wait = false;
-        size = 2;
-       }
+    {
+      wait = false;
+      size = 2;
+    }
 
     if(status == ESC_BK)
-        {
-         esc = false;
-        }
+    {
+      esc = false;
+    }
             
     if((status>>7) == BIT(0))
-        {
-         make = false;
-        }
+    {
+      make = false;
+    }
 
     if(size == 1)
-        {
-          byte1[0] = status;
-          kbd_print_scancode(make, size, byte1);
-        } 
+    {
+      byte1[0] = status;
+
+      if(stop == false)
+      {
+        kbd_print_scancode(make, size, byte1);
+      }
+    } 
 
     if (size == 2)
-        {
-           byte2[0] = MSB;
-           byte2[1] = status;
-           kbd_print_scancode(make, size, byte2);
-        }
+    {
+      byte2[0] = MSB;
+      byte2[1] = status;
 
-  make = true;
- }
+      if(stop == false)
+      {
+        kbd_print_scancode(make, size, byte2);
+      }
+    }
 
- kbd_poll_cmd(0x20);
+    size = 1;
+    make = true;
+  }
 
- return 0;
+  kbd_poll_cmd();
+
+  return 0;
 }
 
 int (kbd_test_timed_scan)(uint8_t UNUSED(n)) 
