@@ -2,7 +2,7 @@
 
 #include "keyboard.h"
 #include "i8042.h"
-#include "timer.c"
+#include <lcom/timer.h>
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -30,6 +30,7 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
+
 
 int (kbd_test_scan)(bool (assembly))
 {
@@ -64,11 +65,12 @@ int (kbd_test_scan)(bool (assembly))
             {
               kbc_ih();
             }
-
             else
             {
               kbc_asm_ih();
             }
+
+            //printf("status: %x", status);
 
             if(status == MSB)
             {
@@ -125,11 +127,13 @@ int (kbd_test_scan)(bool (assembly))
     return 1;
   }
 
-  kbd_print_no_sysinb(counter);
+  if (!assembly)
+    kbd_print_no_sysinb(counter);
 
   return 0;
 }
 	
+
 int (kbd_test_poll)() 
 { 
   uint8_t byte1[1], byte2[2], pstatus = 0;
@@ -198,6 +202,7 @@ int (kbd_test_poll)()
   return 0;
 }
 
+
 int (kbd_test_timed_scan)(uint8_t n)
 {
 
@@ -216,7 +221,7 @@ int (kbd_test_timed_scan)(uint8_t n)
     return 1;
   }
  
- while(esc && timer_counter < (n* (uint8_t) sys_hz()) )
+  while(esc && timer_counter < (n * (uint8_t) sys_hz()) )
   { 
    /* Get a request message. */ 
     if ( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 )
@@ -230,13 +235,15 @@ int (kbd_test_timed_scan)(uint8_t n)
       {
         case HARDWARE: /* hardware interrupt notification */ 
           if (msg.m_notify.interrupts & BIT(irq_set_timer)) 
-            {
+          {
               timer_int_handler();
-            }
+          }
           if (msg.m_notify.interrupts & BIT(irq_set_keyboard)) 
-            { /* subscribed interrupt */ 
+          { /* subscribed interrupt */ 
 
-              kbc_ih();
+            timer_counter = 0; //resets the timer if another interrupt is needed
+
+            kbc_ih();
           
             if(status == MSB)
             {
@@ -274,8 +281,8 @@ int (kbd_test_timed_scan)(uint8_t n)
               kbd_print_scancode(make, size, byte2);
             }
           }
-          break; 
-        default: 
+          break;
+        default:
           break; /* no other notifications expected: do nothing */ 
       } 
     } 
@@ -284,7 +291,6 @@ int (kbd_test_timed_scan)(uint8_t n)
       /* no standard messages expected: do nothing */ 
     }
 
- 
     size = 1;
     make = true;
     counter = 0;

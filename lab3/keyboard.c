@@ -24,6 +24,7 @@ int (kbd_subscribe_int)(uint8_t *bit_no)
 	return 0;
 }
 
+
 int (kbd_unsubscribe_int)() 
 {
 	//checks if the sys call was valid
@@ -35,16 +36,19 @@ int (kbd_unsubscribe_int)()
 	return 0;
 }
 
+
 void (kbc_ih)(void) 
 {
 	kbc_scan_ih();
 }
+
 
 int sys_inb_cnt(port_t port, uint32_t *byte)
 {
 	counter++;
 	return sys_inb(port, byte);
 }
+
 
 int kbd_poll_cmd()
 {
@@ -59,21 +63,8 @@ int kbd_poll_cmd()
 	sys_outb(OUT_BUF, kbdcmd);
 
 	return 0;
-
-	//while( i < 5 ) 
-  	//{
-  	//	sys_inb_cnt(STAT_REG, &stat); /*assuming it returns OK*/
-   	//	/*loop while 8042 input buffer is not empty*/
-    //	if( (stat & IBF) == 0 ) 
-    //	{
-    //  	sys_outb(KBC_CMD_REG, cmd); /*no args command*/
-    //  	return 0;
-    //	}
-
-    //	i++;
-    //	tickdelay(micros_to_ticks(DELAY_US));
-  	//}
 }
+
 
 int kbd_scan_poll()
 {
@@ -107,6 +98,7 @@ int kbd_scan_poll()
 
 	return -1;
 }
+
 
 int kbc_scan_ih()
 {

@@ -1,5 +1,15 @@
 #pragma once
 
+extern uint32_t status; //global variable that contains the scan of the buffer
+extern uint32_t stat;
+extern uint32_t counter;
+extern int timer_counter;
+
+#ifdef LAB3
+int sys_inb_cnt(port_t port, uint32_t *byte);
+#else
+#define sys_inb_cnt(p,q) sys_inb(p,q) 
+#endif
 
 int kbc_scan_ih();
 
