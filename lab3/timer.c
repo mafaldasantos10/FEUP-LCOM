@@ -1,13 +1,12 @@
-  #include <lcom/lcf.h>
-  #include <lcom/timer.h>
+#include <lcom/lcf.h>
+#include <lcom/timer.h>
 
-  #include <stdint.h>
+#include <stdint.h>
 
-  #include "i8254.h"
+#include "i8254.h"
 
-int timer_counter = 0;
-static int hook_id_timer = 0 ;
-int res;
+int timer_counter = 0, res;
+static int hook_id_timer = 0;
 
 int (timer_set_frequency)(uint8_t (timer), uint32_t freq) 
 {
@@ -71,7 +70,7 @@ int (timer_set_frequency)(uint8_t (timer), uint32_t freq)
 
 int (timer_subscribe_int)(uint8_t *bit_no) 
 {
- *bit_no = hook_id_timer;
+  *bit_no = hook_id_timer;
 
   //printf("dd %d\n", *bit_no );
 
