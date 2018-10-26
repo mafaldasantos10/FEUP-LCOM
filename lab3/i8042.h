@@ -5,6 +5,8 @@ extern uint32_t status; //global variable that contains the scan of the buffer
 extern uint32_t stat;
 extern uint32_t counter;
 
+extern int timer_counter;
+
 #define HOOK_ID_TMP 2
 #define IRQKEYBOARD 1    /**< @brief kbd IRQ line */
 
@@ -25,8 +27,7 @@ int sys_inb_cnt(port_t port, uint32_t *byte);
 
 #define ESC_BK 0x81
 #define MSB 0xE0
-
-#define BIT(n) (0x01 << (n))
+#define BIT(n) (0x01<<(n))
 #define OBF BIT(0)
 #define IBF BIT(1)
 #define AUX BIT(5)

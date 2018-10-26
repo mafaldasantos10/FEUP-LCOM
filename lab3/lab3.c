@@ -2,6 +2,7 @@
 
 #include "keyboard.h"
 #include "i8042.h"
+#include "timer.c"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -41,7 +42,7 @@ int (kbd_test_scan)(bool (assembly))
   {
     return 1;
   }
-  printf("%d", irq_set);
+ // printf("%d", irq_set);
  
   while(esc) 
   {   /* You may want to use a different condition */ 
@@ -56,7 +57,7 @@ int (kbd_test_scan)(bool (assembly))
       switch (_ENDPOINT_P(msg.m_source))
       {
         case HARDWARE: /* hardware interrupt notification */ 
-          if (msg.m_notify.interrupts & irq_set) 
+          if (msg.m_notify.interrupts & BIT(irq_set)) 
             { /* subscribed interrupt */ 
 
             if(!assembly)
@@ -114,6 +115,8 @@ int (kbd_test_scan)(bool (assembly))
     { /* received a standard message, not a notification */ 
       /* no standard messages expected: do nothing */ 
     }
+
+    size = 1;
     make = true;
   }
 
@@ -135,15 +138,10 @@ int (kbd_test_poll)()
 
  while(esc)
  {
-    kbd_poll();
-
-    //printf("status: %x ", status);
-    //printf("pstatus: %x \n", pstatus);
-
-    if(status == pstatus)
-      stop = true;
-    else
-      stop = false;
+    if(kbd_scan_poll() == -1)
+    {
+      continue;
+    } 
 
     if(status == MSB)
     {
@@ -194,12 +192,116 @@ int (kbd_test_poll)()
     make = true;
   }
 
+  kbd_print_no_sysinb(counter);
   kbd_poll_cmd();
 
   return 0;
 }
 
-int (kbd_test_timed_scan)(uint8_t UNUSED(n)) 
+int (kbd_test_timed_scan)(uint8_t n)
 {
+
+  uint8_t irq_set_keyboard, irq_set_timer, byte1[1], byte2[2];
+  int ipc_status, r, size = 1;
+  bool esc = true, make = true, wait = false;
+  message msg;
+
+  if (kbd_subscribe_int(&irq_set_keyboard) != OK)
+  {
+    return 1;
+  }
+ // printf("%d", irq_set);
+   if (timer_subscribe_int(&irq_set_timer) != OK)
+  {
+    return 1;
+  }
+ 
+ while(esc && timer_counter < (n* (uint8_t) sys_hz()) )
+  { 
+   /* Get a request message. */ 
+    if ( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 )
+    {
+      printf("driver_receive failed with: %d", r); 
+      continue;
+    }
+    if (is_ipc_notify(ipc_status))
+    { /* received notification */ 
+      switch (_ENDPOINT_P(msg.m_source))
+      {
+        case HARDWARE: /* hardware interrupt notification */ 
+          if (msg.m_notify.interrupts & BIT(irq_set_timer)) 
+            {
+              timer_int_handler();
+            }
+          if (msg.m_notify.interrupts & BIT(irq_set_keyboard)) 
+            { /* subscribed interrupt */ 
+
+              kbc_ih();
+          
+            if(status == MSB)
+            {
+              wait = true;
+              continue;
+            } 
+
+            if(wait == true)
+            {
+              wait = false;
+              size = 2;
+            }
+
+            if(status == ESC_BK)
+            {
+              esc = false;
+              make = false;
+            }
+            
+            if((status>>7) == BIT(0))
+            {
+              make = false;
+            }
+
+            if(size == 1)
+            {
+              byte1[0] = status;
+              kbd_print_scancode(make, size, byte1);
+            } 
+
+            if (size == 2)
+            {
+              byte2[0] = MSB;
+              byte2[1] = status;
+              kbd_print_scancode(make, size, byte2);
+            }
+          }
+          break; 
+        default: 
+          break; /* no other notifications expected: do nothing */ 
+      } 
+    } 
+    else 
+    { /* received a standard message, not a notification */ 
+      /* no standard messages expected: do nothing */ 
+    }
+
+ 
+    size = 1;
+    make = true;
+    counter = 0;
+
+  }
+
+ if (kbd_unsubscribe_int() != OK)
+  {  
+    return 1;
+  }
+
+  if (timer_unsubscribe_int() != OK)
+  {
+    return 1;
+  }
+ 
+  kbd_print_no_sysinb(counter);
+
   return 0;
 }
