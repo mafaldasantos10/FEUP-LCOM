@@ -10,7 +10,7 @@ _C_LABEL(kbc_asm_ih):
 		mov ecx, 5
 
 L1:		cmp ecx, 0
-		jb L4
+		je L4
 		xor eax, eax
 
 		in eax, STAT_REG
@@ -36,7 +36,40 @@ L2:		mov ebx, eax
 		jmp L1
 
 L3:		mov _C_LABEL(status), al
+		mov BYTE PTR _C_LABEL(error), 0
 		ret
 
-L4:		mov BYTE PTR _C_LABEL(status), -1
+L4:		mov BYTE PTR _C_LABEL(error), 1
 		ret
+
+/*
+void (kbc_ih)(void) 
+{
+	int i = 0;
+	
+	while( i < 5 ) 
+	{
+		sys_inb_cnt(STAT_REG, &stat);
+		if( stat & OBF ) 
+		{
+			sys_inb_cnt(OUT_BUF, &status);
+
+			if ( (stat &(PAR_ERR | TO_ERR)) == 0 )
+			{
+				error = false;
+				return;
+			}
+			else
+			{
+				error = true;
+				return;
+			}
+		}
+
+		tickdelay(micros_to_ticks(DELAY_US));
+		i++;
+	}
+
+	error = true;
+	return;
+}*/
