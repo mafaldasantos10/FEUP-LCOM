@@ -213,6 +213,11 @@ int (kbd_test_timed_scan)(uint8_t n)
   bool esc = true, make = true, wait = false;
   message msg;
 
+  if (n < 0)
+  {
+    return 1;
+  }
+
   if (kbd_subscribe_int(&irq_set_keyboard) != OK)
   {
     return 1;
