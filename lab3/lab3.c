@@ -43,7 +43,7 @@ int (kbd_test_scan)(bool (assembly))
   {
     return 1;
   }
- // printf("%d", irq_set);
+  // printf("%d", irq_set);
  
   while(esc) 
   {   /* You may want to use a different condition */ 
@@ -90,7 +90,7 @@ int (kbd_test_scan)(bool (assembly))
               make = false;
             }
             
-            if((status>>7) == BIT(0))
+            if((status >> 7) == BIT(0))
             {
               make = false;
             }
@@ -98,6 +98,7 @@ int (kbd_test_scan)(bool (assembly))
             if(size == 1)
             {
               byte1[0] = status;
+
               kbd_print_scancode(make, size, byte1);
             } 
 
@@ -105,6 +106,7 @@ int (kbd_test_scan)(bool (assembly))
             {
               byte2[0] = MSB;
               byte2[1] = status;
+              
               kbd_print_scancode(make, size, byte2);
             }
           }
@@ -136,8 +138,8 @@ int (kbd_test_scan)(bool (assembly))
 
 int (kbd_test_poll)() 
 { 
-  uint8_t byte1[1], byte2[2], pstatus = 0;
-  bool esc = true, make = true, wait = false, stop = false;
+  uint8_t byte1[1], byte2[2];
+  bool esc = true, make = true, wait = false;
   int size = 1;
 
  while(esc)
@@ -153,8 +155,6 @@ int (kbd_test_poll)()
       continue;
     }
 
-    pstatus = status;
-
     if(wait == true)
     {
       wait = false;
@@ -166,7 +166,7 @@ int (kbd_test_poll)()
       esc = false;
     }
             
-    if((status>>7) == BIT(0))
+    if((status >> 7) == BIT(0))
     {
       make = false;
     }
@@ -174,11 +174,8 @@ int (kbd_test_poll)()
     if(size == 1)
     {
       byte1[0] = status;
-
-      if(stop == false)
-      {
-        kbd_print_scancode(make, size, byte1);
-      }
+      
+      kbd_print_scancode(make, size, byte1);
     } 
 
     if (size == 2)
@@ -186,10 +183,7 @@ int (kbd_test_poll)()
       byte2[0] = MSB;
       byte2[1] = status;
 
-      if(stop == false)
-      {
-        kbd_print_scancode(make, size, byte2);
-      }
+      kbd_print_scancode(make, size, byte2);
     }
 
     size = 1;
@@ -215,8 +209,8 @@ int (kbd_test_timed_scan)(uint8_t n)
   {
     return 1;
   }
- // printf("%d", irq_set);
-   if (timer_subscribe_int(&irq_set_timer) != OK)
+  // printf("%d", irq_set);
+  if (timer_subscribe_int(&irq_set_timer) != OK)
   {
     return 1;
   }
@@ -263,7 +257,7 @@ int (kbd_test_timed_scan)(uint8_t n)
               make = false;
             }
             
-            if((status>>7) == BIT(0))
+            if((status >> 7) == BIT(0))
             {
               make = false;
             }
@@ -271,6 +265,7 @@ int (kbd_test_timed_scan)(uint8_t n)
             if(size == 1)
             {
               byte1[0] = status;
+
               kbd_print_scancode(make, size, byte1);
             } 
 
@@ -278,6 +273,7 @@ int (kbd_test_timed_scan)(uint8_t n)
             {
               byte2[0] = MSB;
               byte2[1] = status;
+
               kbd_print_scancode(make, size, byte2);
             }
           }
@@ -295,7 +291,7 @@ int (kbd_test_timed_scan)(uint8_t n)
     make = true;
   }
 
- if (kbd_unsubscribe_int() != OK)
+  if (kbd_unsubscribe_int() != OK)
   {  
     return 1;
   }

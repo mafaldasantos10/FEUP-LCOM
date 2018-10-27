@@ -16,7 +16,7 @@ L1:		cmp ecx, 0
 		in eax, STAT_REG
 		
 		and eax, OBF
-		cmp eax, 0x0001
+		cmp eax, 0x0001				
 		je L2
 		dec ecx
 		jmp L1
@@ -40,30 +40,3 @@ L3:		mov _C_LABEL(status), al
 
 L4:		mov BYTE PTR _C_LABEL(status), -1
 		ret
-
-
-/*
-int kbc_scan_ih()
-{
-	int i = 0;
-	
-	while( i < 5 ) 
-	{
-		sys_inb_cnt(STAT_REG, &stat); 
-
-		if( stat & OBF ) 
-		{
-			sys_inb_cnt(OUT_BUF, &status); 
-
-			if ( (stat &(PAR_ERR | TO_ERR)) == 0 )
-				return (uint8_t) status;
-			else
-				return -1;
-		}
-
-		tickdelay(micros_to_ticks(DELAY_US));
-		i++;
-	}
-
-	return -1;
-}*/

@@ -71,7 +71,6 @@ int (timer_set_frequency)(uint8_t (timer), uint32_t freq)
 int (timer_subscribe_int)(uint8_t *bit_no) 
 {
   *bit_no = hook_id_timer;
-
   //printf("dd %d\n", *bit_no );
 
   //checks if the sys call was valid

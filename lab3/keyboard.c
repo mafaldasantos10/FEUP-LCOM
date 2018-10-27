@@ -75,24 +75,19 @@ int kbd_scan_poll()
 	{
 		sys_inb_cnt(STAT_REG, &statpoll); /* assuming it returns OK */
 		/* loop while 8042 output buffer is empty */
-		//printf("TESTE 1\n");
 		if( statpoll & OBF ) 
 		{
-			//printf("TESTE 2\n");
-
 			sys_inb_cnt(OUT_BUF, &status); /* assuming it returns OK */
 
 			if ( (stat & (PAR_ERR | TO_ERR | AUX) ) == 0 )
 				return (uint8_t) status;
 			else
 			{
-				//printf("TESTE 3\n");
 				return -1;
 			}
 		}
 
 		tickdelay(micros_to_ticks(DELAY_US));
-		//printf("%d\n", i);
 		i++;
 	}
 
