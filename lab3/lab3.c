@@ -293,7 +293,7 @@ int (kbd_test_timed_scan)(uint8_t n)
 
     size = 1;
     make = true;
-    counter = 0;
+    //counter = 0;
 
   }
 
