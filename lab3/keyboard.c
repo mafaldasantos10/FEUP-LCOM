@@ -6,8 +6,11 @@
 
 #include "i8042.h"
 
+//global variables
 static int hook_id = 2;
 uint32_t status = 0, stat = 0, counter = 0;
+bool error = false;
+
 
 int (kbd_subscribe_int)(uint8_t *bit_no)
 {
@@ -39,7 +42,33 @@ int (kbd_unsubscribe_int)()
 
 void (kbc_ih)(void) 
 {
-	kbc_scan_ih();
+	int i = 0;
+	
+	while( i < 5 ) 
+	{
+		sys_inb_cnt(STAT_REG, &stat); /* assuming it returns OK */
+		/* loop while 8042 output buffer is empty */
+		if( stat & OBF ) 
+		{
+			sys_inb_cnt(OUT_BUF, &status); /* assuming it returns OK */
+
+			if ( (stat &(PAR_ERR | TO_ERR)) == 0 )
+			{
+				error = false;
+				return;
+			}
+			else
+			{
+				error = true;
+				return;
+			}
+		}
+
+		i++;
+	}
+
+	error = true;
+	return;
 }
 
 
@@ -87,33 +116,6 @@ int kbd_scan_poll()
 			}
 		}
 
-		tickdelay(micros_to_ticks(DELAY_US));
-		i++;
-	}
-
-	return -1;
-}
-
-
-int kbc_scan_ih()
-{
-	int i = 0;
-	
-	while( i < 5 ) 
-	{
-		sys_inb_cnt(STAT_REG, &stat); /* assuming it returns OK */
-		/* loop while 8042 output buffer is empty */
-		if( stat & OBF ) 
-		{
-			sys_inb_cnt(OUT_BUF, &status); /* assuming it returns OK */
-
-			if ( (stat &(PAR_ERR | TO_ERR)) == 0 )
-				return (uint8_t) status;
-			else
-				return -1;
-		}
-
-		tickdelay(micros_to_ticks(DELAY_US));
 		i++;
 	}
 

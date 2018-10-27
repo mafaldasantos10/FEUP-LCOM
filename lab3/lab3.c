@@ -59,7 +59,7 @@ int (kbd_test_scan)(bool (assembly))
       {
         case HARDWARE: /* hardware interrupt notification */ 
           if (msg.m_notify.interrupts & BIT(irq_set)) 
-            { /* subscribed interrupt */ 
+          { /* subscribed interrupt */
 
             if(!assembly)
             {
@@ -71,6 +71,9 @@ int (kbd_test_scan)(bool (assembly))
             }
 
             //printf("status: %x", status);
+
+            if(error == true)
+              continue;
 
             if(status == MSB)
             {
@@ -106,11 +109,17 @@ int (kbd_test_scan)(bool (assembly))
             {
               byte2[0] = MSB;
               byte2[1] = status;
-              
+
               kbd_print_scancode(make, size, byte2);
             }
           }
-          break; 
+
+          tickdelay(micros_to_ticks(DELAY_US));
+
+          size = 1;
+          make = true;
+
+          break;
         default: 
           break; /* no other notifications expected: do nothing */ 
       } 
@@ -119,9 +128,6 @@ int (kbd_test_scan)(bool (assembly))
     { /* received a standard message, not a notification */ 
       /* no standard messages expected: do nothing */ 
     }
-
-    size = 1;
-    make = true;
   }
 
   if (kbd_unsubscribe_int() != OK)
@@ -142,8 +148,8 @@ int (kbd_test_poll)()
   bool esc = true, make = true, wait = false;
   int size = 1;
 
- while(esc)
- {
+  while(esc)
+  {
     if(kbd_scan_poll() == -1)
     {
       continue;
@@ -188,6 +194,8 @@ int (kbd_test_poll)()
 
     size = 1;
     make = true;
+
+    tickdelay(micros_to_ticks(DELAY_US));
   }
 
   kbd_print_no_sysinb(counter);
