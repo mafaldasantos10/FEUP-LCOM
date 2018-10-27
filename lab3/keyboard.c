@@ -75,7 +75,13 @@ void (kbc_ih)(void)
 int sys_inb_cnt(port_t port, uint32_t *byte)
 {
 	counter++;
-	return sys_inb(port, byte);
+
+	int ver = sys_inb(port, byte);
+
+	if (ver != OK)
+		return -1;
+	else
+		return ver;
 }
 
 
