@@ -33,6 +33,77 @@ int main(int argc, char *argv[]) {
 
 int (mouse_test_packet)(uint32_t cnt) {
     /* To be completed */
+uint8_t irq_set;
+  int ipc_status, r, size = 1;
+  message msg;
+
+  if (mouse_subscribe_int(&irq_set) != OK)
+  {
+    return 1;
+  }
+  // printf("%d", irq_set);
+ 
+  while(1) 
+  {   /* You may want to use a different condition */ 
+      /* Get a request message. */ 
+    if ( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 )
+    {
+      printf("driver_receive failed with: %d", r); 
+      continue;
+    }
+    if (is_ipc_notify(ipc_status))
+    { /* received notification */ 
+      switch (_ENDPOINT_P(msg.m_source))
+      {
+        case HARDWARE: /* hardware interrupt notification */ 
+          if (msg.m_notify.interrupts & BIT(irq_set)) 
+          { /* subscribed interrupt */
+
+              kbc_ih();
+            
+            //printf("status: %x", status);
+
+            if(error == true)
+              continue;
+
+            if(size == 1)
+            {
+              size++;
+              continue;
+            } 
+
+            if(size == 2)
+            {
+              size++
+              continue;
+            }
+            //falta guardar numa packet[]
+            //falta a funcao para a imprimir, o stor n deu ainda
+          }
+
+          tickdelay(micros_to_ticks(DELAY_US));
+
+          size = 1;
+          
+
+          break;
+        default: 
+          break; /* no other notifications expected: do nothing */ 
+      } 
+    } 
+    else 
+    { /* received a standard message, not a notification */ 
+      /* no standard messages expected: do nothing */ 
+    }
+  }
+
+  if (kbd_unsubscribe_int() != OK)
+  {
+    return 1;
+  }
+
+  return 0;
+
     printf("%s(%u): under construction\n", __func__, cnt);
     return 1;
 }
