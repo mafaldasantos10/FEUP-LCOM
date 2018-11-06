@@ -110,7 +110,7 @@ int mouse_poll()
 		{
 			sys_inb(OUT_BUF, &status); /* assuming it returns OK */
 
-			if ( (stat & (PAR_ERR | TO_ERR | AUX) ) == 0 )
+			if ( (statpoll & (PAR_ERR | TO_ERR | AUX) ) == 0 )
 				return (uint8_t) status;
 			else
 			{
@@ -124,37 +124,54 @@ int mouse_poll()
 	return -1;
 }
 
-
 void enable_int()
 {
 	sys_outb(STAT_REG, KBC_CMD);
-	sys_outb(STAT_REG, STREAM_MODE);
+	sys_outb(OUT_BUF, STREAM_MODE);
 	sys_outb(STAT_REG, KBC_CMD);
-	sys_outb(STAT_REG, KBC_EN);
+	sys_outb(OUT_BUF, KBC_EN);
 }
 
 void disable_int()
 {
 	sys_outb(STAT_REG, KBC_CMD);
-	sys_outb(STAT_REG, DISABLE);
+	sys_outb(OUT_BUF, DISABLE);
 }
 
 void enable_poll()
 {
 	sys_outb(STAT_REG, KBC_CMD);
-	sys_outb(STAT_REG, DISABLE);
+	sys_outb(OUT_BUF, DISABLE);
 	sys_outb(STAT_REG, KBC_CMD);
-	sys_outb(STAT_REG, REMOTE_MODE);
-	sys_outb(STAT_REG, KBC_CMD);
-	sys_outb(STAT_REG, KBC_EN);
-
+	sys_outb(OUT_BUF, REMOTE_MODE);
 }
-
 
 void disable_poll()
 {
 	sys_outb(STAT_REG, KBC_CMD);
-	sys_outb(STAT_REG, DISABLE);
+	sys_outb(OUT_BUF, DISABLE);
 	sys_outb(STAT_REG, KBC_CMD);
-	sys_outb(STAT_REG, STREAM_MODE);
+	sys_outb(OUT_BUF, STREAM_MODE);
+}
+
+int mouse_poll_cmd(bool finish)
+{
+	uint32_t ms_cmd;
+
+	sys_outb(STAT_REG, RD_CMD_B);
+	sys_inb(OUT_BUF, &ms_cmd);
+
+	ms_cmd = ms_cmd & MOUSE_DIS;
+
+	sys_outb(STAT_REG, WRT_CMD_B);
+	if(!finish)
+	{
+		sys_outb(OUT_BUF, ms_cmd);
+	}
+	else
+	{
+		sys_outb(OUT_BUF, minix_get_dflt_kbc_cmd_byte());
+	}
+
+	return 0;
 }
