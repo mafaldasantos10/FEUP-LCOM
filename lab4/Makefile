@@ -1,6 +1,6 @@
 PROG=lab4
 
-SRCS = lab4.c mouse.c
+SRCS = lab4.c PS2mouse.c timer.c
 
 CPPFLAGS += -pedantic -DLAB4
 
