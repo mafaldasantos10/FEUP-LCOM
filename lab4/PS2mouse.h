@@ -34,3 +34,5 @@ void enable_poll();
 void disable_poll();
 
 int mouse_poll();
+
+int mouse_poll_cmd(bool finish);

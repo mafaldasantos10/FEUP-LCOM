@@ -48,7 +48,6 @@ int (mouse_test_packet)(uint32_t cnt) {
     	return 1;
   	}
   	// printf("%d", irq_set);
- 
   	while(cnt > 0 ) 
   	{   /* You may want to use a different condition */ 
     	/* Get a request message. */ 
@@ -65,9 +64,8 @@ int (mouse_test_packet)(uint32_t cnt) {
           			if (msg.m_notify.interrupts & BIT(irq_set)) 
           			{ /* subscribed interrupt */
 
-              			mouse_ih();
+              		mouse_ih();
 
-            
             			//printf("status: %x", status);
 
             			if(error == true)
@@ -95,14 +93,11 @@ int (mouse_test_packet)(uint32_t cnt) {
             			array[2] = status;
 
             			cnt--;
-            		packet_create();
-            		mouse_print_packet(&pp);
-
+            		  packet_create();
+            		  mouse_print_packet(&pp);
           			}
 
           			tickdelay(micros_to_ticks(DELAY_US));
-
-
           			size = 1;
           			break;
         		default: 
@@ -127,15 +122,15 @@ int (mouse_test_packet)(uint32_t cnt) {
 
 int (mouse_test_remote)(uint16_t period, uint8_t cnt) {
 
-//uint8_t irq_set;
-int size = 1;
-uint32_t array[3];
+  //uint8_t irq_set;
+  int size = 1;
+  uint32_t array[3];
 
+  mouse_poll_cmd(0);
+  enable_poll();
 
-    while(cnt > 0) 
-	{   
-		enable_poll();
-
+  while(cnt > 0)
+	{
 		if(mouse_poll() == -1)
 		{
 			continue;
@@ -144,7 +139,7 @@ uint32_t array[3];
 		if(size == 1)
 		{
 			uint8_t temp = (uint8_t)status;
-			if((temp<<4)>>7)
+			if( (temp << 4) >> 7)
 			{
 				array[0] = status;
 				size++;
@@ -168,13 +163,11 @@ uint32_t array[3];
 		mouse_print_packet(&pp);
 		tickdelay(micros_to_ticks(period));
 
-
 		size = 1;
-
 	}
 
 	disable_poll();
-	minix_get_dflt_kbc_cmd_byte();
+  mouse_poll_cmd(1);
 
 	return 0;
 }

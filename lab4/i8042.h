@@ -14,6 +14,7 @@
 #define DISABLE 0xF5
 #define DISABLE_MOUSE 0xA7
 #define REMOTE_MODE 0xF0
+#define MOUSE_DIS 0x1D
 
 #define RD_CMD_B 0x20
 #define WRT_CMD_B 0x60
