@@ -1,9 +1,9 @@
-// IMPORTANT: you must include the following line in all your C files
 #include <lcom/lcf.h>
+#include <lcom/timer.h>
+
 #include "PS2mouse.h"
 #include "i8042.h"
 
-#include <lcom/timer.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -178,12 +178,12 @@ int (mouse_test_async)(uint8_t idle_time) {
   int ipc_status, r, size = 1;
   message msg;
 
-  enable_int();
-
-  if(idle_time<0)
+  if(idle_time < 0)
   {
     return -1;
   }
+
+  enable_int();
 
   if (mouse_subscribe_int(&irq_set_mouse) != OK)
   {
@@ -212,58 +212,58 @@ int (mouse_test_async)(uint8_t idle_time) {
           {
               timer_int_handler();
           }
+          
           if (msg.m_notify.interrupts & BIT(irq_set_mouse)) 
           { /* subscribed interrupt */ 
 
-           timer_counter = 0; //resets the timer if another interrupt is needed
-           
-       		 mouse_ih();
+            timer_counter = 0; //resets the timer if another interrupt is needed
 
-       		 if(error == true)
+            mouse_ih();
+
+            if(error == true)
        		 	continue;
 
-       		 if(size == 1)
-       		 {
-       		 	uint8_t temp = (uint8_t)status;
-       		 	if((temp<<4)>>7)
-       		 	{
-       		 		array[0] = status;
-       		 		size++;
-       		 	}
+            if(size == 1)
+            {
+              uint8_t temp = (uint8_t)status;
 
-       		 	continue;
-       		 } 
+              if((temp << 4) >> 7)
+              {
+                array[0] = status;
+       		 		  size++;
+              }
 
-       		 if(size == 2)
-       		 {
-       		 	array[1] = status;
-       		 	size++;
-       		 	continue;
-       		 }
+              continue;
+            }
 
-       		 array[2] = status;
+            if(size == 2)
+            {
+              array[1] = status;
+              size++;
+              continue;
+            }
 
-       		 packet_create();
-       		 mouse_print_packet(&pp);
+            array[2] = status;
 
+            packet_create();
+
+            mouse_print_packet(&pp);
           }
-
-          tickdelay(micros_to_ticks(DELAY_US));
-          size = 1;
-
           break;
         default:
           break; /* no other notifications expected: do nothing */ 
-      } 
+      }
     } 
     else 
     { /* received a standard message, not a notification */ 
       /* no standard messages expected: do nothing */ 
     }
-    
+
+    size = 1;
   }
 
   disable_int();
+  
   if (mouse_unsubscribe_int() != OK)
   {  
     return 1;
@@ -273,7 +273,6 @@ int (mouse_test_async)(uint8_t idle_time) {
   {
     return 1;
   }
-
 
   return 0;
 }
