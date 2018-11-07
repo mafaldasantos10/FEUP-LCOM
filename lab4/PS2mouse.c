@@ -43,23 +43,22 @@ void (mouse_ih)(void)
 	{
 		sys_inb(STAT_REG, &stat); /* assuming it returns OK */
 		/* loop while 8042 output buffer is empty */
-		
-			sys_inb(OUT_BUF, &status); /* assuming it returns OK */ //validation missing
 
-			if ( (stat &(PAR_ERR | TO_ERR)) == 0 )
-			{
-				error = false;
-				return;
-			}
-			else
-			{
-				error = true;
-				return;
-			}
-		
+		sys_inb(OUT_BUF, &status); /* assuming it returns OK */ //validation missing
 
-		i++;
+		if ( (stat &(PAR_ERR | TO_ERR)) == 0 )
+		{
+			error = false;
+			return;
+		}
+		else
+		{
+			error = true;
+			return;
+		}
 	}
+	
+	i++;
 
 	error = true;
 	return;
@@ -129,19 +128,19 @@ void enable_int()
 	sys_outb(STAT_REG, KBC_CMD);
 	sys_outb(OUT_BUF, STREAM_MODE);
 	sys_outb(STAT_REG, KBC_CMD);
-	sys_outb(OUT_BUF, KBC_EN);
+	sys_outb(OUT_BUF, EN_DATA);
 }
 
 void disable_int()
 {
 	sys_outb(STAT_REG, KBC_CMD);
-	sys_outb(OUT_BUF, DISABLE);
+	sys_outb(OUT_BUF, DIS_DATA);
 }
 
 void enable_poll()
 {
 	sys_outb(STAT_REG, KBC_CMD);
-	sys_outb(OUT_BUF, DISABLE);
+	sys_outb(OUT_BUF, DIS_DATA);
 	sys_outb(STAT_REG, KBC_CMD);
 	sys_outb(OUT_BUF, REMOTE_MODE);
 }
@@ -149,9 +148,9 @@ void enable_poll()
 void disable_poll()
 {
 	sys_outb(STAT_REG, KBC_CMD);
-	sys_outb(OUT_BUF, DISABLE);
-	sys_outb(STAT_REG, KBC_CMD);
 	sys_outb(OUT_BUF, STREAM_MODE);
+	sys_outb(STAT_REG, KBC_CMD);
+	sys_outb(OUT_BUF, DIS_DATA);
 }
 
 int mouse_poll_cmd(bool finish)
@@ -161,9 +160,10 @@ int mouse_poll_cmd(bool finish)
 	sys_outb(STAT_REG, RD_CMD_B);
 	sys_inb(OUT_BUF, &ms_cmd);
 
-	ms_cmd = ms_cmd & MOUSE_DIS;
+	ms_cmd = ms_cmd & MOUSE_CMD;
 
 	sys_outb(STAT_REG, WRT_CMD_B);
+
 	if(!finish)
 	{
 		sys_outb(OUT_BUF, ms_cmd);
