@@ -10,7 +10,6 @@
 uint32_t array[3];
 
 // Any header files included below this line should have been created by you
-
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
   lcf_set_language("EN-US");
@@ -81,7 +80,6 @@ int (mouse_test_packet)(uint32_t cnt) {
             				array[0] = status;
             				size++;
             			 }
-             				
               		continue;
             		} 
 
@@ -97,7 +95,6 @@ int (mouse_test_packet)(uint32_t cnt) {
             		cnt--;
             		packet_create();
             		mouse_print_packet(&pp);
-
           		}
 
           		//tickdelay(micros_to_ticks(DELAY_US));
@@ -114,48 +111,81 @@ int (mouse_test_packet)(uint32_t cnt) {
   	}
 
 	if (mouse_unsubscribe_int() != OK)
-  	{
-    	return 1;
-  	}
+  {
+    return 1;
+  }
 
   disable_int();
 
   return 0;
 }
 
+
 int (mouse_test_remote)(uint16_t period, uint8_t cnt) 
 {
+  int size = 1;
+  //mouse_poll_cmd(0);
+  //enable_poll();
 
-int size = 1;
-
-//mouse_poll_cmd(0);
-
-//enable_poll();
-
-    while(cnt > 0) 
+  while(cnt > 0)
 	{    
-      int_mouse(READ_DATA);
+    int_mouse(READ_DATA);
+    //printf("read_data %x\n", READ_DATA);
 
-  for(unsigned int i =0; i<3; i++)
-{
-    mouse_ih();
+    for(unsigned int i = 0; i < 3;)
+    {
+      printf("i %x\n", i);
+      printf("size %x\n", size);
+      mouse_ih();
 
-    array[i] = status;
-   printf("array %x\n", array[i]);
+      printf("status_main %x\n", status);
 
-    size = 1;
-  }
+      if(error == true)
+        continue;
+
+      if(size == 1)
+      {
+        uint8_t temp = (uint8_t)status;
+
+        if(temp & BIT(3))
+        {
+          array[0] = status;
+          printf("status1 %x\n", status);
+          size++;
+          //printf("array1 %x\n", array[i]);
+          i++;
+        }
+        continue;
+      } 
+
+      if(size == 2)
+      {
+        array[1] = status;
+        printf("status2 %x\n", status);
+        size++;
+        //printf("array2 %x\n", array[i]);
+        i++;
+        continue;
+      }
+
+      array[2] = status;
+      printf("status3 %x\n", status);
+      //printf("array3 %x\n", array[i]);
+      i++;
+      size = 1;
+    }
 
     packet_create();
     mouse_print_packet(&pp);
     tickdelay(micros_to_ticks(period*1000));
 
-  cnt--;
+    cnt--;
+  }
 
-}
+  disable_poll();
 
-	disable_poll();
-  mouse_poll_cmd(1);
+  if(mouse_poll_cmd(1) != OK)
+    return 1;
 
 	return 0;
 }

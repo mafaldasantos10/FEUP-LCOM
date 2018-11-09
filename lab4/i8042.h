@@ -33,15 +33,13 @@
 #define AUX BIT(5)
 #define TO_ERR BIT(6)
 #define PAR_ERR BIT(7)
-#define BIT4 BIT(4)
 
 //packets
-
+#define L_B BIT(0)
 #define R_B BIT(1)
 #define M_B BIT(2)
-#define L_B BIT(0)
-#define Y_OVF BIT(7)
 #define X_OVF BIT(6)
+#define Y_OVF BIT(7)
 
 #define DELAY_US 20000 //wait ms
 
