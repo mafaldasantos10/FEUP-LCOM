@@ -38,3 +38,9 @@ int mouse_poll();
 int mouse_poll_cmd(bool finish);
 
 void int_mouse(uint8_t write);
+
+void check_v_line(mouse_ev_t evt);
+
+bool validMoveL(uint8_t tolerance);
+
+bool validMoveR(uint8_t tolerance);
