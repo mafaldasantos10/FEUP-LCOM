@@ -25,7 +25,7 @@ void (mouse_ih)(void);
 
 void packet_create();
 
-void enable_int();
+void mouse_write_int();
 
 void disable_int();
 
@@ -36,3 +36,5 @@ void disable_poll();
 int mouse_poll();
 
 int mouse_poll_cmd(bool finish);
+
+void int_mouse(uint8_t write);
