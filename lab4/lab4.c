@@ -38,10 +38,11 @@ int main(int argc, char *argv[]) {
 int (mouse_test_packet)(uint32_t cnt) {
 
 	uint8_t irq_set;
-	int ipc_status, r, size = 1;
+	int ipc_status, r, s = 1;
 	message msg;
 	
 	mouse_write_int();
+  
 
  	if (mouse_subscribe_int(&irq_set) != OK)
   {
@@ -65,40 +66,58 @@ int (mouse_test_packet)(uint32_t cnt) {
           		if (msg.m_notify.interrupts & BIT(irq_set)) 
           		{ /* subscribed interrupt */
 
+                printf(". ");
+
               	mouse_ih();
             
             		//printf("status: %x", status);
 
             		if(error == true)
+                {
+                  printf("$");
               		continue;
+                }
 
-            		if(size == 1)
+            		if(s == 1)
             		{
-            			uint8_t temp = (uint8_t)status;
-            			if(temp & BIT(3))
+            			//uint8_t temp = (uint8_t)status;
+            			if(status & BIT(3))
             			{
             				array[0] = status;
-            				size++;
-            			 }
+            				s++;
+                     printf(",");
+            			}
               		continue;
             		} 
 
-            		if(size == 2)
+            		if(s == 2)
             		{
             			array[1] = status;
-              		size++;
+              		s++;
+                   printf("!");
               		continue;
             		}
 
+                if(s == 3)
+                {
+
+                printf("?");
+
             		array[2] = status;
 
+
             		cnt--;
+
+
             		packet_create();
+
             		mouse_print_packet(&pp);
+                s = 1;
+                }
           		}
 
           		//tickdelay(micros_to_ticks(DELAY_US));
-          		size = 1;
+          		
           		break;
         		default: 
          			break; /* no other notifications expected: do nothing */ 
@@ -193,13 +212,14 @@ int (mouse_test_remote)(uint16_t period, uint8_t cnt)
 int (mouse_test_async)(uint8_t idle_time) {
 
   uint8_t irq_set_mouse, irq_set_timer;
-  int ipc_status, r, size = 1;
+  int ipc_status, r, s = 1;
   message msg;
 
   if(idle_time<0)
   {
     return -1;
   }
+
   mouse_write_int();
 
   if (mouse_subscribe_int(&irq_set_mouse) != OK)
@@ -212,7 +232,7 @@ int (mouse_test_async)(uint8_t idle_time) {
     return -1;
   }
  
-  while(timer_counter/60 < idle_time)
+  while(timer_counter < (idle_time * (uint8_t) sys_hz()))
   { 
    /* Get a request message. */ 
     if ( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 )
@@ -238,32 +258,45 @@ int (mouse_test_async)(uint8_t idle_time) {
             
                 //printf("status: %x", status);
 
-            if(error == true)
-              continue;
+                if(error == true)
+                {
+                  printf("$");
+                  continue;
+                }
 
-            if(size == 1)
-            {
-              uint8_t temp = (uint8_t)status;
-              if((temp<<4)>>7)
-              {
-                array[0] = status;
-                size++;
-              }
+                if(s == 1)
+                {
+                  //uint8_t temp = (uint8_t)status;
+                  if(status & BIT(3))
+                  {
+                    array[0] = status;
+                    s++;
+                     printf(",");
+                  }
+                  continue;
+                } 
 
-              continue;
-            } 
+                if(s == 2)
+                {
+                  array[1] = status;
+                  s++;
+                   printf("!");
+                  continue;
+                }
 
-            if(size == 2)
-            {
-              array[1] = status;
-              size++;
-              continue;
-            }
+                if(s == 3)
+                {
 
-            array[2] = status;
+                printf("?");
 
-            packet_create();
-            mouse_print_packet(&pp);
+                array[2] = status;
+
+                packet_create();
+
+                mouse_print_packet(&pp);
+
+                s = 1;
+                }
           }
           break;
         default:
@@ -276,7 +309,7 @@ int (mouse_test_async)(uint8_t idle_time) {
     }
 
     //tickdelay(micros_to_ticks(DELAY_US));
-    size = 1;
+   // size = 1;
   }
 
   if (mouse_unsubscribe_int() != OK)
