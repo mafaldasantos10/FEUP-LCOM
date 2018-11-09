@@ -43,7 +43,6 @@ int (mouse_test_packet)(uint32_t cnt) {
 	
 	mouse_write_int();
   
-
  	if (mouse_subscribe_int(&irq_set) != OK)
   {
   	return 1;
@@ -66,15 +65,14 @@ int (mouse_test_packet)(uint32_t cnt) {
           		if (msg.m_notify.interrupts & BIT(irq_set)) 
           		{ /* subscribed interrupt */
 
-                printf(". ");
-
+                //printf(". ");
               	mouse_ih();
             
             		//printf("status: %x", status);
 
             		if(error == true)
                 {
-                  printf("$");
+                  //printf("$");
               		continue;
                 }
 
@@ -85,7 +83,7 @@ int (mouse_test_packet)(uint32_t cnt) {
             			{
             				array[0] = status;
             				s++;
-                     printf(",");
+                    //printf(",");
             			}
               		continue;
             		} 
@@ -94,30 +92,22 @@ int (mouse_test_packet)(uint32_t cnt) {
             		{
             			array[1] = status;
               		s++;
-                   printf("!");
+                  //printf("!");
               		continue;
             		}
 
                 if(s == 3)
                 {
+                  //printf("?");
+                  array[2] = status;
+            		  cnt--;
 
-                printf("?");
-
-            		array[2] = status;
-
-
-            		cnt--;
-
-
-            		packet_create();
-
-            		mouse_print_packet(&pp);
-                s = 1;
+            		  packet_create();
+            		  mouse_print_packet(&pp);
+                  s = 1;
                 }
           		}
-
           		//tickdelay(micros_to_ticks(DELAY_US));
-          		
           		break;
         		default: 
          			break; /* no other notifications expected: do nothing */ 
@@ -153,11 +143,10 @@ int (mouse_test_remote)(uint16_t period, uint8_t cnt)
 
     for(unsigned int i = 0; i < 3;)
     {
-      printf("i %x\n", i);
-      printf("size %x\n", size);
+      //printf("i %x\n", i);
+      //printf("size %x\n", size);
       mouse_ih();
-
-      printf("status_main %x\n", status);
+      //printf("status_main %x\n", status);
 
       if(error == true)
         continue;
@@ -169,7 +158,7 @@ int (mouse_test_remote)(uint16_t period, uint8_t cnt)
         if(temp & BIT(3))
         {
           array[0] = status;
-          printf("status1 %x\n", status);
+          //printf("status1 %x\n", status);
           size++;
           //printf("array1 %x\n", array[i]);
           i++;
@@ -180,7 +169,7 @@ int (mouse_test_remote)(uint16_t period, uint8_t cnt)
       if(size == 2)
       {
         array[1] = status;
-        printf("status2 %x\n", status);
+        //printf("status2 %x\n", status);
         size++;
         //printf("array2 %x\n", array[i]);
         i++;
@@ -188,7 +177,7 @@ int (mouse_test_remote)(uint16_t period, uint8_t cnt)
       }
 
       array[2] = status;
-      printf("status3 %x\n", status);
+      //printf("status3 %x\n", status);
       //printf("array3 %x\n", array[i]);
       i++;
       size = 1;
@@ -215,7 +204,7 @@ int (mouse_test_async)(uint8_t idle_time) {
   int ipc_status, r, s = 1;
   message msg;
 
-  if(idle_time<0)
+  if(idle_time < 0)
   {
     return -1;
   }
@@ -255,48 +244,44 @@ int (mouse_test_async)(uint8_t idle_time) {
            timer_counter = 0; //resets the timer if another interrupt is needed
            
        	  	mouse_ih();
-            
-                //printf("status: %x", status);
+            //printf("status: %x", status);
 
-                if(error == true)
-                {
-                  printf("$");
-                  continue;
-                }
+            if(error == true)
+            {
+              //printf("$");
+              continue;
+            }
 
-                if(s == 1)
-                {
-                  //uint8_t temp = (uint8_t)status;
-                  if(status & BIT(3))
-                  {
-                    array[0] = status;
-                    s++;
-                     printf(",");
-                  }
-                  continue;
-                } 
+            if(s == 1)
+            {
+              //uint8_t temp = (uint8_t)status;
+              if(status & BIT(3))
+              {
+                array[0] = status;
+                s++;
+                //printf(",");
+              }
+              continue;
+            } 
 
-                if(s == 2)
-                {
-                  array[1] = status;
-                  s++;
-                   printf("!");
-                  continue;
-                }
+            if(s == 2)
+            {
+              array[1] = status;
+              s++;
+              //printf("!");
+              continue;
+            }
 
-                if(s == 3)
-                {
+            if(s == 3)
+            {
+              //printf("?");
+              array[2] = status;
 
-                printf("?");
+              packet_create();
+              mouse_print_packet(&pp);
 
-                array[2] = status;
-
-                packet_create();
-
-                mouse_print_packet(&pp);
-
-                s = 1;
-                }
+              s = 1;
+            }
           }
           break;
         default:
@@ -309,7 +294,6 @@ int (mouse_test_async)(uint8_t idle_time) {
     }
 
     //tickdelay(micros_to_ticks(DELAY_US));
-   // size = 1;
   }
 
   if (mouse_unsubscribe_int() != OK)
@@ -328,8 +312,105 @@ int (mouse_test_async)(uint8_t idle_time) {
 }
 
 
-int (mouse_test_gesture)(uint8_t UNUSED(x_len),uint8_t UNUSED(tolerance)) {
-    /* To be completed */
-    printf("%s: under construction\n", __func__);
+int (mouse_test_gesture)(uint8_t UNUSED(x_len), uint8_t (tolerance)) 
+{
+  uint8_t irq_set;
+  int ipc_status, r, s = 1;
+  message msg;
+
+  struct mouse_ev gest;
+  gest.delta_x = &pp.bytes[1];
+  gest.delta_y = &pp.bytes[2];
+  
+  mouse_write_int();
+  
+  if (mouse_subscribe_int(&irq_set) != OK)
+  {
     return 1;
+  }
+    // printf("%d", irq_set);
+ 
+    while(1) 
+    {   /* You may want to use a different condition */ 
+      /* Get a request message. */ 
+      if ( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 )
+      {
+          printf("driver_receive failed with: %d", r); 
+          continue;
+      }
+      if (is_ipc_notify(ipc_status))
+      { /* received notification */ 
+          switch (_ENDPOINT_P(msg.m_source))
+          {
+            case HARDWARE: /* hardware interrupt notification */ 
+              if (msg.m_notify.interrupts & BIT(irq_set)) 
+              { /* subscribed interrupt */
+
+                //printf(". ");
+                mouse_ih();
+                //printf("status: %x", status);
+
+                if(error == true)
+                {
+                  //printf("$");
+                  continue;
+                }
+
+                if(s == 1)
+                {
+                  //uint8_t temp = (uint8_t)status;
+                  if(status & BIT(3))
+                  {
+                    array[0] = status;
+                    s++;
+                    //printf(",");
+                  }
+                  continue;
+                } 
+
+                if(s == 2)
+                {
+                  array[1] = status;
+                  s++;
+                  //printf("!");
+                  continue;
+                }
+
+                if(s == 3)
+                {
+                  //printf("?");
+                  array[2] = status;
+
+                  packet_create();
+                  mouse_print_packet(&pp);
+
+                  if( pp.lb )
+                    gest.type = LB_PRESSED;
+
+                  //if(validMoveL(tolerance))
+                    check_v_line(&gest);
+
+                  s = 1;
+                }
+              }
+              //tickdelay(micros_to_ticks(DELAY_US));
+              break;
+            default: 
+              break; /* no other notifications expected: do nothing */ 
+          } 
+      } 
+      else 
+      {   /* received a standard message, not a notification */ 
+          /* no standard messages expected: do nothing */ 
+      }
+    }
+
+  if (mouse_unsubscribe_int() != OK)
+  {
+    return 1;
+  }
+
+  disable_int();
+
+  return 0;
 }

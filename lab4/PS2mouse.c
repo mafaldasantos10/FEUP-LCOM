@@ -147,8 +147,6 @@ void int_mouse(uint8_t write)
 		}
 	}
 
-			
-
 	return;
 }
 
@@ -173,7 +171,6 @@ void disable_poll()
 {
 	int_mouse(STREAM_MODE);
 	int_mouse(DIS_DATA);
-	
 }
 
 int mouse_poll_cmd(bool finish)
@@ -200,3 +197,76 @@ int mouse_poll_cmd(bool finish)
 
 	return 0;
 }
+
+typedef enum {INIT, DRAWL, DRAWR, HOLD, FINAL} state_t;
+typedef enum {LB_PRESSED, LB_RELEASE, RB_PRESSED, RB_RELEASED, BUTTON_EV, MOUSE_MOV} mouse_ev_t;
+
+struct mouse_ev {
+	enum mouse_ev_t type;
+    int16_t delta_x, delta_y;
+};
+
+void check_v_line(mouse_ev_t evt) 
+{
+	static state_t st = INIT; // initial state; keep state
+
+	switch (st) 
+	{
+		case INIT:
+			if( evt->type == LB_PRESSED )
+			{
+				state = DRAWL;
+				break;
+			}
+		case DRAWL:
+			if( evt->type == LB_RELEASE ) 
+			{
+				state = HOLD;
+			} 
+			break;
+		case HOLD:
+			if( evt->type == RB_PRESSED ) 
+			{
+				state = DRAWR;
+				break;
+			}
+			else if( evt->type == LB_PRESSED ) 
+				state = DRAWL;
+			else
+				state = INIT;
+		case DRAWR:
+			if( evt->type == RB_RELEASE ) 
+				state = FINAL;
+			else if( evt->type == LB_PRESSED )
+				state = DRAWL;
+			else
+				state = INIT;
+			break;
+		default:
+			break;
+	}
+}
+
+bool validMoveL(uint8_t tolerance)
+{
+	if( (pp.delta_x + pp.delta_y + tolerance) < 0)
+		return false;
+
+	return true;
+}
+
+bool validMoveR(uint8_t tolerance)
+{
+	if( (pp.delta_x + pp.delta_y - tolerance) < 0)
+		return false;
+
+	return true;
+}
+
+// bool validMoveC(uint8_t tolerance)
+// {
+// 	if( abs(pp.delta_x + pp.delta_y) < tolerance)
+// 		return false;
+
+// 	return true;
+// }
