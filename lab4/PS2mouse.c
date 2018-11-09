@@ -37,37 +37,38 @@ int (mouse_unsubscribe_int)()
 
 void (mouse_ih)(void) 
 {
-		if(sys_inb(STAT_REG, &stat) != OK)
-		{
-			error = true;
-			return;
-		} /* assuming it returns OK */
-		/* loop while 8042 output buffer is empty */
+		//if(sys_inb(STAT_REG, &stat) != OK)
+		//{
+		//	error = true;
+		//	return;
+	printf("status_pre_ih %x\n", status);
 
-		if(sys_inb(OUT_BUF, &status) != OK)
-		{
-			error = true;
-			return;
-		}
-	
+	if(sys_inb(OUT_BUF, &status) != OK)
+	{
+		error = true;
+		return;
+	}
 
 	error = false;
+
+	printf("status_ih %x\n", status);
 	return;
 }
 
 void packet_create()
 {
-	
 	pp.bytes[0] = array[0];
-	printf("array2 %x\n", array[0]);
+	//printf("array4 %x\n", array[0]);
 	pp.bytes[1] = array[1];
-	printf("array2 %x\n", array[1]);
+	//printf("array5 %x\n", array[1]);
 	pp.bytes[2] = array[2];
-	printf("array2 %x\n", array[2]);
-	pp.rb = (array[0] & R_B)>>1;
-	pp.mb = (array[0]& M_B)>>2;
-	pp.lb = (array[0]& L_B);
-	if((array[0] & BIT(4))>>4 ==0)
+	//printf("array6 %x\n", array[2]);
+
+	pp.lb = (array[0] & L_B);
+	pp.rb = (array[0] & R_B) >> 1;
+	pp.mb = (array[0] & M_B) >> 2;
+
+	if((array[0] & BIT(4)) >> 4 == 0)
 	{
 		pp.delta_x = (array[1] & 0x00FF);
 	}
@@ -76,7 +77,7 @@ void packet_create()
 		pp.delta_x = (array[1] | 0xFF00);	
     }
 	
-	if((array[0] & BIT(5))>>5 ==0)
+	if((array[0] & BIT(5)) >> 5 == 0)
 	{
 		pp.delta_y = (array[2] & 0x00FF);
 	}
@@ -85,10 +86,10 @@ void packet_create()
 		pp.delta_y = (array[2] | 0xFF00);	
     }
 	
-	pp.x_ov = (array[0]& X_OVF)>>6;
-	pp.y_ov = (array[0]& Y_OVF)>>7;
-
+	pp.x_ov = (array[0] & X_OVF) >> 6;
+	pp.y_ov = (array[0] & Y_OVF) >> 7;
 }
+
 
 int mouse_poll()
 {
@@ -117,15 +118,17 @@ int mouse_poll()
 	return -1;
 }
 
+
 void int_mouse(uint8_t write)
 {
-	uint32_t read = 0x00;
+	uint32_t read;
 	int ok = 0;
+
 	while(!ok)	
 	{
 		sys_inb(STAT_REG, &stat);
 
-		if(!((stat & IBF)>>1))
+		if(!((stat & IBF) >> 1))
 		{
 			sys_outb(STAT_REG, KBC_CMD);
 
@@ -142,9 +145,9 @@ void int_mouse(uint8_t write)
 
 		sys_inb(STAT_REG, &stat);
 
-		if(!((stat & IBF)>>1))
+		if(!((stat & IBF) >> 1))
 		{
-			sys_outb(0x60, write);
+			sys_outb(OUT_BUF, write);
 
 			sys_inb(OUT_BUF, &read);
 			if(read == 0xFE)
@@ -158,7 +161,6 @@ void int_mouse(uint8_t write)
 			else
 				ok = 1;
 		}
-
 	}
 
 	return;
@@ -200,11 +202,13 @@ int mouse_poll_cmd(bool finish)
 
 	if(!finish)
 	{
-		sys_outb(OUT_BUF, ms_cmd);
+		if(sys_outb(OUT_BUF, ms_cmd) != OK)
+			return 1;
 	}
 	else
 	{
-		sys_outb(OUT_BUF, minix_get_dflt_kbc_cmd_byte());
+		if(sys_outb(OUT_BUF, minix_get_dflt_kbc_cmd_byte()) != OK)
+			return 1;
 	}
 
 	return 0;
