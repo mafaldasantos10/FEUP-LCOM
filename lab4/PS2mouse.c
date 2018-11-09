@@ -41,7 +41,7 @@ void (mouse_ih)(void)
 		//{
 		//	error = true;
 		//	return;
-	printf("status_pre_ih %x\n", status);
+	//printf("status_pre_ih %x\n", status);
 
 	if(sys_inb(OUT_BUF, &status) != OK)
 	{
@@ -51,7 +51,8 @@ void (mouse_ih)(void)
 
 	error = false;
 
-	printf("status_ih %x\n", status);
+
+	//printf("status_ih %x\n", status);
 	return;
 }
 
@@ -121,18 +122,20 @@ int mouse_poll()
 
 void int_mouse(uint8_t write)
 {
-	uint32_t read;
-	int ok = 0;
+	uint32_t read = 0;
+	//int ok = 0;
 
-	while(!ok)	
+	while(read != ACK)	
 	{
+		sys_outb(STAT_REG, KBC_CMD);
 		sys_inb(STAT_REG, &stat);
 
 		if(!((stat & IBF) >> 1))
 		{
-			sys_outb(STAT_REG, KBC_CMD);
+			sys_outb(OUT_BUF, write);
 
 			sys_inb(OUT_BUF, &read);
+
 			if(read == 0xFE)
 			{
 				continue;
@@ -142,26 +145,9 @@ void int_mouse(uint8_t write)
 				return;
 			}
 		}
-
-		sys_inb(STAT_REG, &stat);
-
-		if(!((stat & IBF) >> 1))
-		{
-			sys_outb(OUT_BUF, write);
-
-			sys_inb(OUT_BUF, &read);
-			if(read == 0xFE)
-			{
-				continue;
-			}
-			else if(read == 0xFC)
-			{
-				return;
-			}
-			else
-				ok = 1;
-		}
 	}
+
+			
 
 	return;
 }
@@ -185,8 +171,9 @@ void enable_poll()
 
 void disable_poll()
 {
-	int_mouse(DIS_DATA);
 	int_mouse(STREAM_MODE);
+	int_mouse(DIS_DATA);
+	
 }
 
 int mouse_poll_cmd(bool finish)
