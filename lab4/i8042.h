@@ -9,9 +9,11 @@
 #define STAT_REG 0x64
 #define KBC_CMD 0xD4
 #define OUT_BUF 0x60
+#define ACK 0xFA
 
 #define EN_DATA 0xF4
 #define DIS_DATA 0xF5
+#define READ_DATA 0xEB
 
 #define STREAM_MODE 0xEA
 #define REMOTE_MODE 0xF0
@@ -31,7 +33,15 @@
 #define AUX BIT(5)
 #define TO_ERR BIT(6)
 #define PAR_ERR BIT(7)
+#define BIT4 BIT(4)
 
+//packets
+
+#define R_B BIT(1)
+#define M_B BIT(2)
+#define L_B BIT(0)
+#define Y_OVF BIT(7)
+#define X_OVF BIT(6)
 
 #define DELAY_US 20000 //wait ms
 

@@ -37,30 +37,21 @@ int (mouse_unsubscribe_int)()
 
 void (mouse_ih)(void) 
 {
-	int i = 0;
-	
-	while( i < 5 ) 
-	{
-		sys_inb(STAT_REG, &stat); /* assuming it returns OK */
+		if(sys_inb(STAT_REG, &stat) != OK)
+		{
+			error = true;
+			return;
+		} /* assuming it returns OK */
 		/* loop while 8042 output buffer is empty */
 
-		sys_inb(OUT_BUF, &status); /* assuming it returns OK */ //validation missing
-
-		if ( (stat &(PAR_ERR | TO_ERR)) == 0 )
-		{
-			error = false;
-			return;
-		}
-		else
+		if(sys_inb(OUT_BUF, &status) != OK)
 		{
 			error = true;
 			return;
 		}
-	}
 	
-	i++;
 
-	error = true;
+	error = false;
 	return;
 }
 
@@ -68,11 +59,14 @@ void packet_create()
 {
 	
 	pp.bytes[0] = array[0];
+	printf("array2 %x\n", array[0]);
 	pp.bytes[1] = array[1];
+	printf("array2 %x\n", array[1]);
 	pp.bytes[2] = array[2];
-	pp.rb = (array[0]<<6>>7);
-	pp.mb = (array[0]<<5>>7);
-	pp.lb = (array[0]<<7>>7);
+	printf("array2 %x\n", array[2]);
+	pp.rb = (array[0] & R_B)>>1;
+	pp.mb = (array[0]& M_B)>>2;
+	pp.lb = (array[0]& L_B);
 	if((array[0] & BIT(4))>>4 ==0)
 	{
 		pp.delta_x = (array[1] & 0x00FF);
@@ -91,8 +85,8 @@ void packet_create()
 		pp.delta_y = (array[2] | 0xFF00);	
     }
 	
-	pp.x_ov = (array[0]<<1>>7);
-	pp.y_ov = (array[0]>>7);
+	pp.x_ov = (array[0]& X_OVF)>>6;
+	pp.y_ov = (array[0]& Y_OVF)>>7;
 
 }
 
@@ -123,34 +117,74 @@ int mouse_poll()
 	return -1;
 }
 
-void enable_int()
+void int_mouse(uint8_t write)
 {
-	sys_outb(STAT_REG, KBC_CMD);
-	sys_outb(OUT_BUF, STREAM_MODE);
-	sys_outb(STAT_REG, KBC_CMD);
-	sys_outb(OUT_BUF, EN_DATA);
+	uint32_t read = 0x00;
+	int ok = 0;
+	while(!ok)	
+	{
+		sys_inb(STAT_REG, &stat);
+
+		if(!((stat & IBF)>>1))
+		{
+			sys_outb(STAT_REG, KBC_CMD);
+
+			sys_inb(OUT_BUF, &read);
+			if(read == 0xFE)
+			{
+				continue;
+			}
+			if(read == 0xFC)
+			{
+				return;
+			}
+		}
+
+		sys_inb(STAT_REG, &stat);
+
+		if(!((stat & IBF)>>1))
+		{
+			sys_outb(0x60, write);
+
+			sys_inb(OUT_BUF, &read);
+			if(read == 0xFE)
+			{
+				continue;
+			}
+			else if(read == 0xFC)
+			{
+				return;
+			}
+			else
+				ok = 1;
+		}
+
+	}
+
+	return;
+}
+
+void mouse_write_int()
+{
+	int_mouse(STREAM_MODE);
+	int_mouse(EN_DATA);
 }
 
 void disable_int()
 {
-	sys_outb(STAT_REG, KBC_CMD);
-	sys_outb(OUT_BUF, DIS_DATA);
+	int_mouse(DIS_DATA);
 }
 
 void enable_poll()
 {
-	sys_outb(STAT_REG, KBC_CMD);
-	sys_outb(OUT_BUF, DIS_DATA);
-	sys_outb(STAT_REG, KBC_CMD);
-	sys_outb(OUT_BUF, REMOTE_MODE);
+	int_mouse(DIS_DATA);
+	int_mouse(REMOTE_MODE);
 }
 
 void disable_poll()
 {
-	sys_outb(STAT_REG, KBC_CMD);
-	sys_outb(OUT_BUF, STREAM_MODE);
-	sys_outb(STAT_REG, KBC_CMD);
-	sys_outb(OUT_BUF, DIS_DATA);
+	int_mouse(DIS_DATA);
+	int_mouse(STREAM_MODE);
 }
 
 int mouse_poll_cmd(bool finish)
