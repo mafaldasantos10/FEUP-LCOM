@@ -6,13 +6,14 @@
 
 #include "i8042.h"
 
+//VARIABLES
 static int hook_id = 2;
-uint32_t status, stat; 
+uint32_t status, stat;
 bool error = false;
 struct packet pp;
-struct packet saved_packet;
 struct mouse_ev gest;
 state_t state = INIT;
+
 
 int (mouse_subscribe_int)(uint8_t *bit_no)
 {
@@ -27,6 +28,7 @@ int (mouse_subscribe_int)(uint8_t *bit_no)
 	return 0;
 }
 
+
 int (mouse_unsubscribe_int)() 
 {
 	//checks if the sys call was valid
@@ -38,6 +40,7 @@ int (mouse_unsubscribe_int)()
 	return 0;
 }
 
+
 void (mouse_ih)(void) 
 {
 	if(sys_inb(OUT_BUF, &status) != OK)
@@ -48,19 +51,15 @@ void (mouse_ih)(void)
 
 	error = false;
 
-
-	//printf("status_ih %x\n", status);
 	return;
 }
+
 
 void packet_create()
 {
 	pp.bytes[0] = array[0];
-	//printf("array4 %x\n", array[0]);
 	pp.bytes[1] = array[1];
-	//printf("array5 %x\n", array[1]);
 	pp.bytes[2] = array[2];
-	//printf("array6 %x\n", array[2]);
 
 	pp.lb = (array[0] & L_B);
 	pp.rb = (array[0] & R_B) >> 1;
@@ -88,20 +87,33 @@ void packet_create()
 	pp.y_ov = (array[0] & Y_OVF) >> 7;
 }
 
+
 int set_mouse(uint8_t write)
 {
 	uint32_t read = 0;
 
 	while(read != ACK)	
 	{
-		sys_outb(STAT_REG, KBC_CMD);
-		sys_inb(STAT_REG, &stat);
+		if(sys_outb(STAT_REG, KBC_CMD) != OK)
+		{
+			return 1;
+		}
+		if(sys_inb(STAT_REG, &stat) != OK)
+		{
+			return 1;
+		}
 
 		if(!((stat & IBF) >> 1))
 		{
-			sys_outb(OUT_BUF, write);
+			if(sys_outb(OUT_BUF, write) != OK)
+			{
+				return 1;
+			}
 
-			sys_inb(OUT_BUF, &read);
+			if(sys_inb(OUT_BUF, &read) != OK)
+			{
+				return 1;
+			}
 
 			if(read == NACK)
 			{
@@ -117,6 +129,7 @@ int set_mouse(uint8_t write)
 	return 0;
 }
 
+
 int mouse_write_int()
 {
 	if(set_mouse(STREAM_MODE) != OK)
@@ -130,6 +143,7 @@ int mouse_write_int()
 	}
 	return 0;
 }
+
 
 int disable_int()
 {
@@ -157,220 +171,227 @@ int disable_poll()
 	return 0;
 }
 
-int mouse_poll_cmd(bool finish)
+
+bool check_call()
 {
 	uint32_t ms_cmd;
 
-	sys_outb(STAT_REG, RD_CMD_B);
-	sys_inb(OUT_BUF, &ms_cmd);
-
-	if(ms_cmd == ERROR)
+	if(sys_inb(STAT_REG, &ms_cmd) != OK)
 	{
 		return 1;
 	}
 
-	ms_cmd = ms_cmd & MOUSE_CMD;
-
-	sys_outb(STAT_REG, WRT_CMD_B);
-
-	if(!finish)
+	if((ms_cmd & IBF) >> 1)
 	{
-		if(sys_outb(OUT_BUF, ms_cmd) != OK)
-			return 1;
-	}
-	else
-	{
-		if(sys_outb(OUT_BUF, minix_get_dflt_kbc_cmd_byte()) != OK)
-			return 1;
+		return 1;
 	}
 
 	return 0;
 }
 
+
+int mouse_poll_cmd()
+{
+	if(check_call())
+	{
+		return 1;
+	}
+
+	if(sys_outb(STAT_REG, WRT_CMD_B) != OK)
+	{
+		return 1;
+	}
+
+	if(check_call())
+	{
+		return 1;
+	}
+
+	if(sys_outb(OUT_BUF, minix_get_dflt_kbc_cmd_byte()) != OK)
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
+
 void create_enum(uint8_t tolerance)
 {
- if( pp.lb && !pp.rb && !pp.mb )
-  {
-  
-  	 if(pp.delta_x != 0 && pp.delta_y != 0)
-	 {
-	 	
- 		if(validMoveL(tolerance))
- 		{
- 			
-
- 			gest.delta_x += pp.delta_x;
-   			gest.delta_y += pp.delta_y;
- 			gest.type = MOUSE_MOV;
- 		}
- 		else
- 		{
- 			printf("() \n");
- 			 gest.type = BUTTON_EV;
- 		}
-
- 	return;
-
- 	}	
- 	printf("MMMM \n");
-    gest.type = LB_PRESSED;
-    return;
- }
-
-
- if(!pp.lb && !pp.rb &&!pp.mb)
-  {
-  	if(state == DRAWL)
+	if( pp.lb && !pp.rb && !pp.mb )
   	{
-    	gest.type = LB_RELEASED;
-	}
-	else if(state == HOLD)
-	{
-		printf("** \n");
-		 if(pp.delta_x != 0 || pp.delta_y != 0)
+  	 	if(pp.delta_x != 0 && pp.delta_y != 0)
 	 	{
-	 	printf("$$ \n");
- 			if(validMoveC(tolerance))
+ 			if(validMoveL(tolerance))
  			{
- 				printf(".. \n");
- 			   gest.type = MOUSE_MOV;
+ 				gest.delta_x += pp.delta_x;
+   				gest.delta_y += pp.delta_y;
+ 				gest.type = MOUSE_MOV;
  			}
  			else
  			{
- 				gest.type = BUTTON_EV;
+ 			 	gest.type = BUTTON_EV;
  			}
-		
+
+ 			return;
+ 		}
+
+    	gest.type = LB_PRESSED;
+    	return;
+ 	}
+
+ 	if(!pp.lb && !pp.rb &&!pp.mb)
+  	{
+  		if(state == DRAWL)
+  		{
+    		gest.type = LB_RELEASED;
+		}
+		else if(state == HOLD)
+		{
+			if(pp.delta_x != 0 || pp.delta_y != 0)
+	 		{
+ 				if(validMoveC(tolerance))
+ 				{
+ 			  	 	gest.type = MOUSE_MOV;
+ 				}
+ 				else
+ 				{
+ 					gest.type = BUTTON_EV;
+ 				}
+ 			}
+ 		}
+		else if(state == DRAWR)
+		{
+			gest.type = RB_RELEASED;
+		}
+		else
+		{
+		 	gest.type = BUTTON_EV;
 		}
 
-	}
-	else if(state == DRAWR)
-	{
-		gest.type = RB_RELEASED;
-	}
-	else
-	{
-		 gest.type = BUTTON_EV;
-	}
-    return;
-  } 
+    	return;
+    } 
 
-  if( !pp.lb && pp.rb && !pp.mb)
-  {
-  	
-  	 if(pp.delta_x != 0 && pp.delta_y != 0)
-	 {
-	 		
- 		if(validMoveR(tolerance))
- 		{
- 			
-
- 			gest.delta_x += pp.delta_x;
-   			gest.delta_y += pp.delta_y;
- 			gest.type = MOUSE_MOV;
- 		}
- 		else
- 		{
- 			 gest.type = BUTTON_EV;
- 		}
+    if( !pp.lb && pp.rb && !pp.mb)
+  	{
+  		if(pp.delta_x != 0 && pp.delta_y != 0)
+  		{
+  			if(validMoveR(tolerance))
+  			{
+  				gest.delta_x += pp.delta_x;
+  				gest.delta_y += pp.delta_y;
+  				gest.type = MOUSE_MOV;
+  			}
+  			else
+ 			{
+ 			 	gest.type = BUTTON_EV;
+ 			}
  		
- 	return;
+ 			return;
+ 		}
 
- 	}
-    gest.type = RB_PRESSED;
-    return;
-  }
+    	gest.type = RB_PRESSED;
+
+    	return;
+  	}
  	
- else
- {
- 	gest.type = BUTTON_EV;
- }
-
+ 	else
+ 	{
+ 		gest.type = BUTTON_EV;
+ 	}
 }
 
+
 void check_v_line(uint8_t x_len) 
-{ // initial state; keep state
-
-switch (state) 
+{
+	switch (state) 
 	{
-		//typedef enum {INIT, DRAWL, HOLD,DRAWR, FINAL} state_t;
-
 		case INIT:
 
-			if( gest.type == LB_PRESSED )
+			if(gest.type == LB_PRESSED )
 			{
 				gest.delta_x = 0;
  			    gest.delta_y = 0;
-				state = DRAWL;
-				
+				state = DRAWL;	
 			}
 			break;
 
 		case DRAWL:
-		if(gest.type == MOUSE_MOV)
-		{
-			printf("delta %x \n", gest.delta_x);
-			state = DRAWL;
-		}
-		
 
-			else if( gest.type == LB_RELEASED && gest.delta_x >= x_len) 
+			if(gest.type == MOUSE_MOV)
+			{
+				state = DRAWL;
+			}
+		
+			else if(gest.type == LB_RELEASED && gest.delta_x >= x_len) 
 			{
 				state = HOLD;
 				break;
 			} 
 
-		else
-		{
-			state = INIT;
-		}
-		break;
+			else
+			{
+				state = INIT;
+			}
+			break;
+
 		case HOLD:
 
 			if( gest.type == RB_PRESSED ) 
 			{
 				state = DRAWR;
+				gest.delta_x = 0;
+				gest.delta_y = 0;
 				break;
 			}
+
 			else if(gest.type == MOUSE_MOV)
 			{
 				state = HOLD;
 			}
 
-			else if( gest.type == LB_PRESSED ) 
+			else if(gest.type == LB_PRESSED ) 
+			{
 				state = DRAWL;
+				gest.delta_x = 0;
+				gest.delta_y = 0;
+			}
 
 			else
+			{
 				state = INIT;
+			}
 			break;
 
 		case DRAWR:
 
-		if(gest.type == MOUSE_MOV)
-		{
-			printf("delta2 %x \n", gest.delta_x);
-			state = DRAWR;
-		}
+			if(gest.type == MOUSE_MOV)
+			{
+				state = DRAWR;
+			}
 		
-
-			else if( gest.type == RB_RELEASED && gest.delta_x >= x_len) 
+			else if(gest.type == RB_RELEASED && gest.delta_x >= x_len) 
 			{
 				state = FINAL;
 				break;
 			} 
 
-
 			else if( gest.type == LB_PRESSED )
+			{
 				state = DRAWL;
+			}
 
 			else
+			{
 				state = INIT;
-
+			}
 			break;
+
 		default:
 			break;
 	}
-	printf("state %x \n", state);
 }
+
 
 bool validMoveL(uint8_t tolerance)
 {
@@ -383,7 +404,8 @@ bool validMoveL(uint8_t tolerance)
 	return true;
 }
 
-bool validMoveR(uint8_t tolerance) //mudar
+
+bool validMoveR(uint8_t tolerance)
 {
 	if(pp.delta_x >= -tolerance)
 	{
@@ -392,26 +414,28 @@ bool validMoveR(uint8_t tolerance) //mudar
 		return true;
 		}
 		else
+		{
 			return false;
+		}
 	}
 	else
+	{
 		return false;	
-
-
+	}
 }
 
 
- bool validMoveC(uint8_t tolerance)
- {
+bool validMoveC(uint8_t tolerance)
+{
  	if( abs(pp.delta_x) > tolerance)
  	{
  		return false;
  	}
  
-  if(abs(pp.delta_y) > tolerance)
-  {
+  	if(abs(pp.delta_y) > tolerance)
+  	{
  		return false;
-  }
+  	}
 
  	return true;
- }
+}
