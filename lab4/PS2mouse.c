@@ -12,6 +12,7 @@ bool error = false;
 struct packet pp;
 struct packet saved_packet;
 struct mouse_ev gest;
+state_t state = INIT;
 
 int (mouse_subscribe_int)(uint8_t *bit_no)
 {
@@ -186,119 +187,231 @@ int mouse_poll_cmd(bool finish)
 	return 0;
 }
 
-typedef enum {INIT, DRAWL, DRAWR, HOLD, FINAL} state_t;
-
-void create_enum()
+void create_enum(uint8_t tolerance)
 {
- if( pp.lb )
+ if( pp.lb && !pp.rb && !pp.mb )
   {
+  
+  	 if(pp.delta_x != 0 && pp.delta_y != 0)
+	 {
+	 	
+ 		if(validMoveL(tolerance))
+ 		{
+ 			
+
+ 			gest.delta_x += pp.delta_x;
+   			gest.delta_y += pp.delta_y;
+ 			gest.type = MOUSE_MOV;
+ 		}
+ 		else
+ 		{
+ 			printf("() \n");
+ 			 gest.type = BUTTON_EV;
+ 		}
+
+ 	return;
+
+ 	}	
+ 	printf("MMMM \n");
     gest.type = LB_PRESSED;
     return;
-  }
+ }
 
- if( pp.lb == 0 && saved_packet.lb == 1)
+
+ if(!pp.lb && !pp.rb &&!pp.mb)
   {
-    gest.type = LB_RELEASED;
+  	if(state == DRAWL)
+  	{
+    	gest.type = LB_RELEASED;
+	}
+	else if(state == HOLD)
+	{
+		printf("** \n");
+		 if(pp.delta_x != 0 || pp.delta_y != 0)
+	 	{
+	 	printf("$$ \n");
+ 			if(validMoveC(tolerance))
+ 			{
+ 				printf(".. \n");
+ 			   gest.type = MOUSE_MOV;
+ 			}
+ 			else
+ 			{
+ 				gest.type = BUTTON_EV;
+ 			}
+		
+		}
+
+	}
+	else if(state == DRAWR)
+	{
+		gest.type = RB_RELEASED;
+	}
+	else
+	{
+		 gest.type = BUTTON_EV;
+	}
     return;
   } 
 
-  if( pp.rb )
+  if( !pp.lb && pp.rb && !pp.mb)
   {
+  	
+  	 if(pp.delta_x != 0 && pp.delta_y != 0)
+	 {
+	 		
+ 		if(validMoveR(tolerance))
+ 		{
+ 			
+
+ 			gest.delta_x += pp.delta_x;
+   			gest.delta_y += pp.delta_y;
+ 			gest.type = MOUSE_MOV;
+ 		}
+ 		else
+ 		{
+ 			 gest.type = BUTTON_EV;
+ 		}
+ 		
+ 	return;
+
+ 	}
     gest.type = RB_PRESSED;
     return;
   }
-
- if( pp.lb == 0 && saved_packet.rb == 1)
-  {
-    gest.type = RB_RELEASED;
-    return;
-  } 
-
- if(pp.lb == 0 && pp.lb == 0 && (saved_packet.delta_y != pp.delta_y || saved_packet.delta_x != pp.delta_x)) 
- {
- 	gest.type = MOUSE_MOV;
- 	return;
- }
-
+ 	
  else
  {
  	gest.type = BUTTON_EV;
  }
 
 }
-void check_v_line(enum mouse_ev_t evt) 
-{
-	static state_t state = INIT; // initial state; keep state
 
-	switch (state) 
+void check_v_line(uint8_t x_len) 
+{ // initial state; keep state
+
+switch (state) 
 	{
+		//typedef enum {INIT, DRAWL, HOLD,DRAWR, FINAL} state_t;
+
 		case INIT:
 
-			if( evt == LB_PRESSED )
+			if( gest.type == LB_PRESSED )
 			{
+				gest.delta_x = 0;
+ 			    gest.delta_y = 0;
 				state = DRAWL;
-				break;
+				
 			}
-
-		case DRAWL:
-
-			if( evt == LB_RELEASED ) 
-			{
-				state = HOLD;
-			} 
 			break;
 
+		case DRAWL:
+		if(gest.type == MOUSE_MOV)
+		{
+			printf("delta %x \n", gest.delta_x);
+			state = DRAWL;
+		}
+		
+
+			else if( gest.type == LB_RELEASED && gest.delta_x >= x_len) 
+			{
+				state = HOLD;
+				break;
+			} 
+
+		else
+		{
+			state = INIT;
+		}
+		break;
 		case HOLD:
 
-			if( evt == RB_PRESSED ) 
+			if( gest.type == RB_PRESSED ) 
 			{
 				state = DRAWR;
 				break;
 			}
+			else if(gest.type == MOUSE_MOV)
+			{
+				state = HOLD;
+			}
 
-			else if( evt == LB_PRESSED ) 
+			else if( gest.type == LB_PRESSED ) 
 				state = DRAWL;
 
 			else
 				state = INIT;
+			break;
 
 		case DRAWR:
 
-			if( evt == RB_RELEASED ) 
-				state = FINAL;
+		if(gest.type == MOUSE_MOV)
+		{
+			printf("delta2 %x \n", gest.delta_x);
+			state = DRAWR;
+		}
+		
 
-			else if( evt == LB_PRESSED )
+			else if( gest.type == RB_RELEASED && gest.delta_x >= x_len) 
+			{
+				state = FINAL;
+				break;
+			} 
+
+
+			else if( gest.type == LB_PRESSED )
 				state = DRAWL;
 
 			else
 				state = INIT;
-			
+
 			break;
 		default:
 			break;
 	}
+	printf("state %x \n", state);
 }
 
 bool validMoveL(uint8_t tolerance)
 {
-	if( (pp.delta_x + pp.delta_y + tolerance) < 0)
+	if( (pp.delta_x + tolerance) < 0)
+		return false;
+
+	if( (pp.delta_y + tolerance) < 0)
 		return false;
 
 	return true;
 }
 
-bool validMoveR(uint8_t tolerance)
+bool validMoveR(uint8_t tolerance) //mudar
 {
-	if( (pp.delta_x + pp.delta_y - tolerance) < 0)
-		return false;
+	if(pp.delta_x >= -tolerance)
+	{
+		if(pp.delta_y <= tolerance)
+		{
+		return true;
+		}
+		else
+			return false;
+	}
+	else
+		return false;	
 
-	return true;
+
 }
 
-// bool validMoveC(uint8_t tolerance)
-// {
-// 	if( abs(pp.delta_x + pp.delta_y) < tolerance)
-// 		return false;
 
-// 	return true;
-// }
+ bool validMoveC(uint8_t tolerance)
+ {
+ 	if( abs(pp.delta_x) > tolerance)
+ 	{
+ 		return false;
+ 	}
+ 
+  if(abs(pp.delta_y) > tolerance)
+  {
+ 		return false;
+  }
+
+ 	return true;
+ }
