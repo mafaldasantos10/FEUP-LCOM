@@ -41,13 +41,15 @@ int (mouse_test_packet)(uint32_t cnt) {
 	int ipc_status, r, s = 1;
 	message msg;
 	
-	mouse_write_int();
+	if(mouse_write_int() != OK)
+  {
+    return 1;
+  }
   
  	if (mouse_subscribe_int(&irq_set) != OK)
   {
   	return 1;
   }
-  	// printf("%d", irq_set);
  
   	while(cnt > 0 ) 
   	{   /* You may want to use a different condition */ 
@@ -65,25 +67,19 @@ int (mouse_test_packet)(uint32_t cnt) {
           		if (msg.m_notify.interrupts & BIT(irq_set)) 
           		{ /* subscribed interrupt */
 
-                //printf(". ");
               	mouse_ih();
-            
-            		//printf("status: %x", status);
-
+   
             		if(error == true)
                 {
-                  //printf("$");
               		continue;
                 }
 
             		if(s == 1)
             		{
-            			//uint8_t temp = (uint8_t)status;
             			if(status & BIT(3))
             			{
             				array[0] = status;
             				s++;
-                    //printf(",");
             			}
               		continue;
             		} 
@@ -92,13 +88,11 @@ int (mouse_test_packet)(uint32_t cnt) {
             		{
             			array[1] = status;
               		s++;
-                  //printf("!");
               		continue;
             		}
 
                 if(s == 3)
                 {
-                  //printf("?");
                   array[2] = status;
             		  cnt--;
 
@@ -107,7 +101,6 @@ int (mouse_test_packet)(uint32_t cnt) {
                   s = 1;
                 }
           		}
-          		//tickdelay(micros_to_ticks(DELAY_US));
           		break;
         		default: 
          			break; /* no other notifications expected: do nothing */ 
@@ -124,7 +117,10 @@ int (mouse_test_packet)(uint32_t cnt) {
     return 1;
   }
 
-  disable_int();
+  if(disable_int() != OK)
+  {
+    return 1;
+  }
 
   return 0;
 }
@@ -133,20 +129,17 @@ int (mouse_test_packet)(uint32_t cnt) {
 int (mouse_test_remote)(uint16_t period, uint8_t cnt) 
 {
   int size = 1;
-  //mouse_poll_cmd(0);
-  //enable_poll();
 
   while(cnt > 0)
 	{    
-    int_mouse(READ_DATA);
-    //printf("read_data %x\n", READ_DATA);
+    if(set_mouse(READ_DATA) != OK)
+    {
+      return 1;
+    }
 
     for(unsigned int i = 0; i < 3;)
     {
-      //printf("i %x\n", i);
-      //printf("size %x\n", size);
       mouse_ih();
-      //printf("status_main %x\n", status);
 
       if(error == true)
         continue;
@@ -158,9 +151,7 @@ int (mouse_test_remote)(uint16_t period, uint8_t cnt)
         if(temp & BIT(3))
         {
           array[0] = status;
-          //printf("status1 %x\n", status);
           size++;
-          //printf("array1 %x\n", array[i]);
           i++;
         }
         continue;
@@ -169,16 +160,12 @@ int (mouse_test_remote)(uint16_t period, uint8_t cnt)
       if(size == 2)
       {
         array[1] = status;
-        //printf("status2 %x\n", status);
         size++;
-        //printf("array2 %x\n", array[i]);
         i++;
         continue;
       }
 
       array[2] = status;
-      //printf("status3 %x\n", status);
-      //printf("array3 %x\n", array[i]);
       i++;
       size = 1;
     }
@@ -190,10 +177,15 @@ int (mouse_test_remote)(uint16_t period, uint8_t cnt)
     cnt--;
   }
 
-  disable_poll();
+  if(disable_poll() != OK)
+  {
+    return 1;
+  }
 
   if(mouse_poll_cmd(1) != OK)
+  {
     return 1;
+  }
 
 	return 0;
 }
@@ -209,13 +201,16 @@ int (mouse_test_async)(uint8_t idle_time) {
     return -1;
   }
 
-  mouse_write_int();
+  if(mouse_write_int() != OK)
+  {
+    return 1;
+  }
 
   if (mouse_subscribe_int(&irq_set_mouse) != OK)
   {
     return -1;
   }
-  // printf("%d", irq_set);
+
   if (timer_subscribe_int(&irq_set_timer) != OK)
   {
     return -1;
@@ -237,6 +232,7 @@ int (mouse_test_async)(uint8_t idle_time) {
           if (msg.m_notify.interrupts & BIT(irq_set_timer)) 
           {
               timer_int_handler();
+              
           }
           if (msg.m_notify.interrupts & BIT(irq_set_mouse)) 
           { /* subscribed interrupt */ 
@@ -244,22 +240,18 @@ int (mouse_test_async)(uint8_t idle_time) {
            timer_counter = 0; //resets the timer if another interrupt is needed
            
        	  	mouse_ih();
-            //printf("status: %x", status);
 
             if(error == true)
             {
-              //printf("$");
               continue;
             }
 
             if(s == 1)
             {
-              //uint8_t temp = (uint8_t)status;
               if(status & BIT(3))
               {
                 array[0] = status;
                 s++;
-                //printf(",");
               }
               continue;
             } 
@@ -268,13 +260,11 @@ int (mouse_test_async)(uint8_t idle_time) {
             {
               array[1] = status;
               s++;
-              //printf("!");
               continue;
             }
 
             if(s == 3)
             {
-              //printf("?");
               array[2] = status;
 
               packet_create();
@@ -306,29 +296,34 @@ int (mouse_test_async)(uint8_t idle_time) {
     return 1;
   }
 
-  disable_int();
+  if(disable_int() != OK)
+  {
+    return 1;
+  }
 
   return 0;
 }
 
 
-int (mouse_test_gesture)(uint8_t UNUSED(x_len), uint8_t (tolerance)) 
+int (mouse_test_gesture)(uint8_t UNUSED(x_len), uint8_t UNUSED(tolerance)) 
 {
   uint8_t irq_set;
   int ipc_status, r, s = 1;
   message msg;
 
   struct mouse_ev gest;
-  gest.delta_x = &pp.bytes[1];
-  gest.delta_y = &pp.bytes[2];
+  gest.delta_x = pp.bytes[1];
+  gest.delta_y = pp.bytes[2];
   
-  mouse_write_int();
+  if(mouse_write_int() != OK)
+  {
+    return 1;
+  }
   
   if (mouse_subscribe_int(&irq_set) != OK)
   {
     return 1;
   }
-    // printf("%d", irq_set);
  
     while(1) 
     {   /* You may want to use a different condition */ 
@@ -346,24 +341,20 @@ int (mouse_test_gesture)(uint8_t UNUSED(x_len), uint8_t (tolerance))
               if (msg.m_notify.interrupts & BIT(irq_set)) 
               { /* subscribed interrupt */
 
-                //printf(". ");
                 mouse_ih();
                 //printf("status: %x", status);
 
                 if(error == true)
                 {
-                  //printf("$");
                   continue;
                 }
 
                 if(s == 1)
                 {
-                  //uint8_t temp = (uint8_t)status;
                   if(status & BIT(3))
                   {
                     array[0] = status;
                     s++;
-                    //printf(",");
                   }
                   continue;
                 } 
@@ -372,13 +363,11 @@ int (mouse_test_gesture)(uint8_t UNUSED(x_len), uint8_t (tolerance))
                 {
                   array[1] = status;
                   s++;
-                  //printf("!");
                   continue;
                 }
 
                 if(s == 3)
                 {
-                  //printf("?");
                   array[2] = status;
 
                   packet_create();
@@ -388,7 +377,7 @@ int (mouse_test_gesture)(uint8_t UNUSED(x_len), uint8_t (tolerance))
                     gest.type = LB_PRESSED;
 
                   //if(validMoveL(tolerance))
-                    check_v_line(&gest);
+                    check_v_line(gest);
 
                   s = 1;
                 }
@@ -410,7 +399,10 @@ int (mouse_test_gesture)(uint8_t UNUSED(x_len), uint8_t (tolerance))
     return 1;
   }
 
-  disable_int();
+  if(disable_int() != OK)
+  {
+    return 1;
+  }
 
   return 0;
 }

@@ -25,21 +25,17 @@ void (mouse_ih)(void);
 
 void packet_create();
 
-void mouse_write_int();
+int mouse_write_int();
 
-void disable_int();
+int disable_int();
 
-void enable_poll();
-
-void disable_poll();
-
-int mouse_poll();
+int disable_poll();
 
 int mouse_poll_cmd(bool finish);
 
-void int_mouse(uint8_t write);
+int set_mouse(uint8_t write);
 
-void check_v_line(mouse_ev_t evt);
+void check_v_line(enum mouse_ev_t evt);
 
 bool validMoveL(uint8_t tolerance);
 

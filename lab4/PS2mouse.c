@@ -37,12 +37,6 @@ int (mouse_unsubscribe_int)()
 
 void (mouse_ih)(void) 
 {
-		//if(sys_inb(STAT_REG, &stat) != OK)
-		//{
-		//	error = true;
-		//	return;
-	//printf("status_pre_ih %x\n", status);
-
 	if(sys_inb(OUT_BUF, &status) != OK)
 	{
 		error = true;
@@ -91,39 +85,9 @@ void packet_create()
 	pp.y_ov = (array[0] & Y_OVF) >> 7;
 }
 
-
-int mouse_poll()
-{
-	int i = 0;
-	uint32_t statpoll = 0;
-
-	while( i < 5 )
-	{
-		sys_inb(STAT_REG, &statpoll); /* assuming it returns OK */
-		/* loop while 8042 output buffer is empty */
-		if( statpoll & OBF ) 
-		{
-			sys_inb(OUT_BUF, &status); /* assuming it returns OK */
-
-			if ( (statpoll & (PAR_ERR | TO_ERR | AUX) ) == 0 )
-				return (uint8_t) status;
-			else
-			{
-				return -1;
-			}
-		}
-
-		i++;
-	}
-
-	return -1;
-}
-
-
-void int_mouse(uint8_t write)
+int set_mouse(uint8_t write)
 {
 	uint32_t read = 0;
-	//int ok = 0;
 
 	while(read != ACK)	
 	{
@@ -136,13 +100,13 @@ void int_mouse(uint8_t write)
 
 			sys_inb(OUT_BUF, &read);
 
-			if(read == 0xFE)
+			if(read == NACK)
 			{
 				continue;
 			}
-			if(read == 0xFC)
+			if(read == ERROR)
 			{
-				return;
+				return 1;
 			}
 		}
 	}
@@ -150,27 +114,40 @@ void int_mouse(uint8_t write)
 	return;
 }
 
-void mouse_write_int()
+int mouse_write_int()
 {
-	int_mouse(STREAM_MODE);
-	int_mouse(EN_DATA);
+	if(set_mouse(STREAM_MODE) != OK)
+	{
+		return 1;
+	}
+
+	if(set_mouse(EN_DATA) != OK)
+	{
+		return 1;
+	}
 }
 
-void disable_int()
+int disable_int()
 {
-	int_mouse(DIS_DATA);
+	if(set_mouse(DIS_DATA) != OK)
+	{
+		return 1;
+	}
 }
 
-void enable_poll()
-{
-	int_mouse(DIS_DATA);
-	int_mouse(REMOTE_MODE);
-}
 
-void disable_poll()
+int disable_poll()
 {
-	int_mouse(STREAM_MODE);
-	int_mouse(DIS_DATA);
+	if(set_mouse(STREAM_MODE) != OK)
+	{
+		return 1;
+	}
+
+	if(set_mouse(DIS_DATA) != OK)
+	{
+		return 1;
+	}
+
 }
 
 int mouse_poll_cmd(bool finish)
@@ -179,6 +156,11 @@ int mouse_poll_cmd(bool finish)
 
 	sys_outb(STAT_REG, RD_CMD_B);
 	sys_inb(OUT_BUF, &ms_cmd);
+
+	if(ms_cmd == ERROR)
+	{
+		return 1;
+	}
 
 	ms_cmd = ms_cmd & MOUSE_CMD;
 
@@ -206,7 +188,7 @@ struct mouse_ev {
     int16_t delta_x, delta_y;
 };
 
-void check_v_line(mouse_ev_t evt) 
+void check_v_line(enum mouse_ev_t evt) 
 {
 	static state_t st = INIT; // initial state; keep state
 
