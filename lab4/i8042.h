@@ -10,6 +10,8 @@
 #define KBC_CMD 0xD4
 #define OUT_BUF 0x60
 #define ACK 0xFA
+#define NACK 0xFE
+#define ERROR 0xFC
 
 #define EN_DATA 0xF4
 #define DIS_DATA 0xF5
