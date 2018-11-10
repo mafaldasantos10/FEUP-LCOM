@@ -305,15 +305,11 @@ int (mouse_test_async)(uint8_t idle_time) {
 }
 
 
-int (mouse_test_gesture)(uint8_t UNUSED(x_len), uint8_t UNUSED(tolerance)) 
+int (mouse_test_gesture)(uint8_t x_len, uint8_t tolerance)
 {
   uint8_t irq_set;
   int ipc_status, r, s = 1;
   message msg;
-
-  
-  gest.delta_x = pp.bytes[1];
-  gest.delta_y = pp.bytes[2];
   
   if(mouse_write_int() != OK)
   {
@@ -325,7 +321,7 @@ int (mouse_test_gesture)(uint8_t UNUSED(x_len), uint8_t UNUSED(tolerance))
     return 1;
   }
  
-    while(1) 
+    while(state != FINAL) 
     {   /* You may want to use a different condition */ 
       /* Get a request message. */ 
       if ( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 )
@@ -374,10 +370,9 @@ int (mouse_test_gesture)(uint8_t UNUSED(x_len), uint8_t UNUSED(tolerance))
                   mouse_print_packet(&pp);
 
                   saved_packet = pp;
-                  create_enum();
-                  //if(validMoveL(tolerance))
-                    check_v_line(gest.type);
 
+                  create_enum(tolerance);
+                  check_v_line(x_len);
                   s = 1;
                 }
               }
