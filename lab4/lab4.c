@@ -311,7 +311,7 @@ int (mouse_test_gesture)(uint8_t UNUSED(x_len), uint8_t UNUSED(tolerance))
   int ipc_status, r, s = 1;
   message msg;
 
-  struct mouse_ev gest;
+  
   gest.delta_x = pp.bytes[1];
   gest.delta_y = pp.bytes[2];
   
@@ -373,11 +373,10 @@ int (mouse_test_gesture)(uint8_t UNUSED(x_len), uint8_t UNUSED(tolerance))
                   packet_create();
                   mouse_print_packet(&pp);
 
-                  if( pp.lb )
-                    gest.type = LB_PRESSED;
-
+                  saved_packet = pp;
+                  create_enum();
                   //if(validMoveL(tolerance))
-                    check_v_line(gest);
+                    check_v_line(gest.type);
 
                   s = 1;
                 }
