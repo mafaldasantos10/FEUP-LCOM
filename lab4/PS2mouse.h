@@ -4,8 +4,10 @@
 extern uint32_t status, stat; //global variable that contains the scan of the buffer
 extern uint32_t array[3];
 extern struct packet pp;
+extern struct packet saved_packet;
 extern bool error;
 extern int timer_counter;
+extern struct mouse_ev gest;
 //extern uint32_t counter;
 //extern int timer_counter;
 //extern bool error;
@@ -40,3 +42,5 @@ void check_v_line(enum mouse_ev_t evt);
 bool validMoveL(uint8_t tolerance);
 
 bool validMoveR(uint8_t tolerance);
+
+void create_enum();

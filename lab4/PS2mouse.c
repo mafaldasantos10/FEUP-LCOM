@@ -10,6 +10,8 @@ static int hook_id = 2;
 uint32_t status, stat; 
 bool error = false;
 struct packet pp;
+struct packet saved_packet;
+struct mouse_ev gest;
 
 int (mouse_subscribe_int)(uint8_t *bit_no)
 {
@@ -111,7 +113,7 @@ int set_mouse(uint8_t write)
 		}
 	}
 
-	return;
+	return 0;
 }
 
 int mouse_write_int()
@@ -125,6 +127,7 @@ int mouse_write_int()
 	{
 		return 1;
 	}
+	return 0;
 }
 
 int disable_int()
@@ -133,6 +136,8 @@ int disable_int()
 	{
 		return 1;
 	}
+
+	return 0;
 }
 
 
@@ -148,6 +153,7 @@ int disable_poll()
 		return 1;
 	}
 
+	return 0;
 }
 
 int mouse_poll_cmd(bool finish)
@@ -181,48 +187,92 @@ int mouse_poll_cmd(bool finish)
 }
 
 typedef enum {INIT, DRAWL, DRAWR, HOLD, FINAL} state_t;
-typedef enum {LB_PRESSED, LB_RELEASE, RB_PRESSED, RB_RELEASED, BUTTON_EV, MOUSE_MOV} mouse_ev_t;
 
-struct mouse_ev {
-	enum mouse_ev_t type;
-    int16_t delta_x, delta_y;
-};
+void create_enum()
+{
+ if( pp.lb )
+  {
+    gest.type = LB_PRESSED;
+    return;
+  }
 
+ if( pp.lb == 0 && saved_packet.lb == 1)
+  {
+    gest.type = LB_RELEASED;
+    return;
+  } 
+
+  if( pp.rb )
+  {
+    gest.type = RB_PRESSED;
+    return;
+  }
+
+ if( pp.lb == 0 && saved_packet.rb == 1)
+  {
+    gest.type = RB_RELEASED;
+    return;
+  } 
+
+ if(pp.lb == 0 && pp.lb == 0 && (saved_packet.delta_y != pp.delta_y || saved_packet.delta_x != pp.delta_x)) 
+ {
+ 	gest.type = MOUSE_MOV;
+ 	return;
+ }
+
+ else
+ {
+ 	gest.type = BUTTON_EV;
+ }
+
+}
 void check_v_line(enum mouse_ev_t evt) 
 {
-	static state_t st = INIT; // initial state; keep state
+	static state_t state = INIT; // initial state; keep state
 
-	switch (st) 
+	switch (state) 
 	{
 		case INIT:
-			if( evt->type == LB_PRESSED )
+
+			if( evt == LB_PRESSED )
 			{
 				state = DRAWL;
 				break;
 			}
+
 		case DRAWL:
-			if( evt->type == LB_RELEASE ) 
+
+			if( evt == LB_RELEASED ) 
 			{
 				state = HOLD;
 			} 
 			break;
+
 		case HOLD:
-			if( evt->type == RB_PRESSED ) 
+
+			if( evt == RB_PRESSED ) 
 			{
 				state = DRAWR;
 				break;
 			}
-			else if( evt->type == LB_PRESSED ) 
+
+			else if( evt == LB_PRESSED ) 
 				state = DRAWL;
+
 			else
 				state = INIT;
+
 		case DRAWR:
-			if( evt->type == RB_RELEASE ) 
+
+			if( evt == RB_RELEASED ) 
 				state = FINAL;
-			else if( evt->type == LB_PRESSED )
+
+			else if( evt == LB_PRESSED )
 				state = DRAWL;
+
 			else
 				state = INIT;
+			
 			break;
 		default:
 			break;
