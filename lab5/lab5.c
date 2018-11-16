@@ -1,5 +1,6 @@
 // IMPORTANT: you must include the following line in all your C files
 #include <lcom/lcf.h>
+#include "interface.h"
 
 #include <lcom/lab5.h>
 
@@ -34,23 +35,26 @@ int main(int argc, char *argv[]) {
 
 int (video_test_init)(uint16_t mode, uint8_t delay) {
   /* To be completed */
-  printf("%s(0x%03x, %u): under construction\n", __func__, mode, delay);
+  vg_init(mode);
+  //sys_inb(0x64,NULL);
+ // printf("..\n");
+  sleep(delay);
+  vg_exit();
+  return 0;
+}
+
+int (video_test_rectangle)(uint16_t UNUSED(mode), uint16_t UNUSED(x), uint16_t UNUSED(y),
+                       uint16_t UNUSED(width), uint16_t UNUSED(height), uint32_t UNUSED(color)) {
+  /* To be completed */
+  //printf("%s(0x%03X, %u, %u, %u, %u, 0x%08x): under construction\n",
+      //   __func__, mode, x, y, width, height, color);
 
   return 1;
 }
 
-int (video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y,
-                       uint16_t width, uint16_t height, uint32_t color) {
+int (video_test_pattern)(uint16_t UNUSED(mode), uint8_t UNUSED(no_rectangles), uint32_t UNUSED(first), uint8_t UNUSED(step)) {
   /* To be completed */
-  printf("%s(0x%03X, %u, %u, %u, %u, 0x%08x): under construction\n",
-         __func__, mode, x, y, width, height, color);
-
-  return 1;
-}
-
-int (video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first) {
-  /* To be completed */
-  printf("%s(0x%03x, %u, 0x%08x): under construction\n", __func__, mode, no_rectangles, first);
+  //printf("%s(0x%03x, %u, 0x%08x): under construction\n", __func__, mode, no_rectangles, first);
 
   return 1;
 }
