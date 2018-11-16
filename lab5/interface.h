@@ -1,3 +1,5 @@
 #pragma once
 
-//int vg_init(uint16_t mode);
+//static int call();
+
+//static void * mapping();
