@@ -33,13 +33,12 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-int (video_test_init)(uint16_t mode, uint8_t delay) {
-  /* To be completed */
+int (video_test_init)(uint16_t mode, uint8_t delay) 
+{
   vg_init(mode);
-  //sys_inb(0x64,NULL);
- // printf("..\n");
   sleep(delay);
   vg_exit();
+  
   return 0;
 }
 
