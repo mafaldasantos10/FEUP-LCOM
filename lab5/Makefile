@@ -1,6 +1,6 @@
 PROG=lab5 
 
-SRCS = lab5.c interface.c 
+SRCS = lab5.c interface.c keyboard.c
 
 CPPFLAGS += -pedantic -DLAB5
 
