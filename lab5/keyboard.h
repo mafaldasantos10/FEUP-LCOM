@@ -7,8 +7,6 @@ extern uint32_t counter;
 extern int timer_counter;
 extern bool error2;
 
-
-
 //prototypes
 int kbd_subscribe_int(uint8_t *bit_no);
 

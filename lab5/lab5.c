@@ -41,9 +41,20 @@ int main(int argc, char *argv[]) {
 
 int (video_test_init)(uint16_t mode, uint8_t delay) 
 {
-  vg_init(mode);
-  sleep(delay);
-  vg_exit();
+  if(vg_init(mode) == NULL)
+  {
+    return 1;
+  }
+
+  if(sleep(delay) != 0)
+  {
+    return 1;
+  }
+
+  if(vg_exit())
+  {
+    return 1;
+  }
   
   return 0;
 }
@@ -51,13 +62,15 @@ int (video_test_init)(uint16_t mode, uint8_t delay)
 int (video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y,
                        uint16_t width, uint16_t height, uint32_t color)
 {
-
   uint8_t irq_set, byte1[1], byte2[2];
   int ipc_status, r, size = 1;
   bool esc = true, make = true, wait = false;
   message msg;
 
-  vg_init(mode);
+  if(vg_init(mode) == NULL)
+  {
+    return 1;
+  }
 
   if (kbd_subscribe_int(&irq_set) != OK)
   {
@@ -135,7 +148,10 @@ int (video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y,
     return 1;
   }
 
-  vg_exit();
+  if(vg_exit())
+  {
+    return 1;
+  }
 
   return 0;
 }
@@ -147,7 +163,10 @@ int (video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, u
   bool esc = true, make = true, wait = false;
   message msg;
 
-  vg_init(mode);
+  if(vg_init(mode) == NULL)
+  {
+    return 1;
+  }
 
   if (kbd_subscribe_int(&irq_set) != OK)
   {
@@ -224,7 +243,10 @@ int (video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, u
     return 1;
   }
 
-  vg_exit();
+  if(vg_exit())
+  {
+    return 1;
+  }
 
   return 0;
 }
@@ -236,7 +258,10 @@ int (video_test_xpm) (const char *xpm[], uint16_t x, uint16_t y)
   bool esc = true, make = true, wait = false;
   message msg;
 
-  vg_init(0x105);
+  if(vg_init(0x105) == NULL)
+  {
+    return 1;
+  }
 
   if (kbd_subscribe_int(&irq_set) != OK)
   {
@@ -313,7 +338,10 @@ int (video_test_xpm) (const char *xpm[], uint16_t x, uint16_t y)
     return 1;
   }
 
-  vg_exit();
+  if(vg_exit())
+  {
+    return 1;
+  }
 
   return 0;
 }
@@ -334,7 +362,10 @@ int (video_test_move) (const char * xpm[], uint16_t xi, uint16_t  yi, uint16_t x
     return 1;
   }
 
-  vg_init(0x105);
+  if(vg_init(0x105) == NULL)
+  {
+    return 1;
+  }
 
   if (kbd_subscribe_int(&irq_set_keyboard) != OK)
   {
@@ -418,7 +449,7 @@ int (video_test_move) (const char * xpm[], uint16_t xi, uint16_t  yi, uint16_t x
 
     if(speed > 0)
     {
-      if((xf == x) && (yf == y))
+       if(!keep)
       {
         continue;
       }
@@ -430,7 +461,7 @@ int (video_test_move) (const char * xpm[], uint16_t xi, uint16_t  yi, uint16_t x
 
     else if(speed < 0)
     {
-      if((xf == x) && (yf == y))
+      if(!keep)
       {
         continue;
       }
@@ -451,7 +482,21 @@ int (video_test_move) (const char * xpm[], uint16_t xi, uint16_t  yi, uint16_t x
     return 1;
   }
 
-  vg_exit();
+  if(vg_exit())
+  {
+    return 1;
+  }
  
+  return 0;
+}
+
+int (video_test_controller)()
+{
+  vg_vbe_contr_info_t info_p;
+
+  get_controller_info(&info_p);
+
+  vg_display_vbe_contr_info(&info_p);
+
   return 0;
 }
