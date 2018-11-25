@@ -158,7 +158,7 @@ int (video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, u
     return 1;
   }
 
-  draw_pattern(no_rectangles, first, step);
+  draw_pattern(no_rectangles, first, step, mode);
 
   while(esc) 
   {   /* You may want to use a different condition */ 

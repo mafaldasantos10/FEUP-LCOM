@@ -24,6 +24,11 @@
 #define PAR_ERR BIT(7)
 #define DELAY_US 20000 //wait ms
 
+#define INDEXED 0x105
+#define DC_15 0x110
+#define DC_24 0x115
+#define DC_16 0x11A
+#define DC_32 0x14C
 /**@}*/
 
 #endif /* _LCOM_I8042_H */
