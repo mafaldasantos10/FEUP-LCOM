@@ -4,7 +4,6 @@
 #define HOOK_ID_TMP 2
 #define IRQKEYBOARD 1    /**< @brief kbd IRQ line */
 
-
 #define STAT_REG 0x64
 #define KBC_CMD_REG 0x64
 #define OUT_BUF 0x60
@@ -29,6 +28,9 @@
 #define DC_24 0x115
 #define DC_16 0x11A
 #define DC_32 0x14C
+
+//#define PB2BASE(m) (((m) >> 4) & 0xF000)
+//#define PB2OFF(m) ((m) & 0xFFFF)
 /**@}*/
 
 #endif /* _LCOM_I8042_H */

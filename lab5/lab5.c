@@ -109,16 +109,12 @@ int (video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y,
             if(size == 1)
             {
               byte1[0] = status;
-
-              kbd_print_scancode(make, size, byte1);
             } 
 
             if (size == 2)
             {
               byte2[0] = MSB;
               byte2[1] = status;
-
-              kbd_print_scancode(make, size, byte2);
             }
             
           }
@@ -235,7 +231,7 @@ int (video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, u
 
 int (video_test_xpm) (const char *xpm[], uint16_t x, uint16_t y)
 {
-   uint8_t irq_set, byte1[1], byte2[2];
+  uint8_t irq_set, byte1[1], byte2[2];
   int ipc_status, r, size = 1;
   bool esc = true, make = true, wait = false;
   message msg;
