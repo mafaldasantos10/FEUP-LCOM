@@ -10,9 +10,11 @@
 
 static int res_y, res_x, bits_pixel;
 static char* video_mem;
+static int st;
 bool error = false;
 uint16_t savedx, savedy;
 int wd, hg, new_counter = 0;
+uint8_t blueMask, greenMask, redMask;
 
 
 void *(vg_init)(uint16_t mode)
@@ -28,6 +30,10 @@ void *(vg_init)(uint16_t mode)
 	struct minix_mem_range mr; /* physical memory range */
 	unsigned int vram_base = vmi_p.PhysBasePtr; /* VRAM’s physical addresss */
 	unsigned int vram_size = res_y * res_x * ceil(bits_pixel / 8); /* VRAM’s size, but you can use the frame-buffer size, instead */
+
+	redMask = vmi_p.RedMaskSize;
+	blueMask = vmi_p.BlueMaskSize;
+	greenMask = vmi_p.GreenMaskSize;
 	/* frame-buffer VM address */
 	/* Allow memory mapping */
     mr.mr_base = (phys_bytes) vram_base;
@@ -61,14 +67,22 @@ void *(vg_init)(uint16_t mode)
 
 int (vg_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) //verificar se coordenadas existem
 {
-	for(unsigned int i = 0; i < len; x++, i++)
+	int number_pix = bits_pixel/8;
+	if(bits_pixel ==15){number_pix = 2;}
+	
+	for(int i = 0; i < len; x++, i++)
 	{
-		video_mem[(y * bits_pixel * res_x) / 8 + (x * bits_pixel) / 8] = color;
+		uint32_t colortemp = color;
+		int video_mem_temp = 0;
+		for(int j=0; j< number_pix; ++j, video_mem_temp++)
+		{
+			*(video_mem + ((y * bits_pixel * res_x) / 8 + (x * bits_pixel) / 8 )  + video_mem_temp) = colortemp;
+			colortemp = colortemp >> 8;
+		}
 	}
 
 	return 0;
 }
-
 
 int (vg_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color)
 {
@@ -81,12 +95,70 @@ int (vg_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height,
 	return 0;
 }
 
+int Color_Mode(unsigned int i, unsigned int j, uint8_t no_rectangles, uint32_t first, uint8_t step, uint32_t mode)
+{ 
+	uint32_t R,G,B;
 
-void draw_pattern(uint8_t no_rectangles, uint32_t first, uint8_t step)
+	switch(mode)
+	{
+       case INDEXED:
+
+          st = (first + (i * no_rectangles + j) * step) % (1 << bits_pixel);
+          break;
+
+        case DC_24:
+          R = (((first >> 16) & 0x00ff) + j * step) % (1 << redMask);
+          // first = old_first;
+          G = (((first >> 8) & 0x00ff) + i * step) % (1 << greenMask);
+          // first = old_first;
+          B = ((first & 0x00ff) + (i + j) * step) % (1 << blueMask);
+          // first = old_first;
+          st = ((R << 16) | (G << 8) | B);
+          break;
+
+           case DC_16:
+          R = (((first >> 11) & 0x001f) + j * step) % (1 << redMask);
+          // first = old_first;
+          G = (((first >> 5) & 0x003f) + i * step) % (1 << greenMask);
+          // first = old_first;
+          B = ((first & 0x001f) + (i + j) * step) % (1 << blueMask);
+          // first = old_first;
+          st = ((R << 11) | (G << 5) | B);
+          break;
+
+        case DC_15:
+          R = (((first >> 10) & 0x001f) + j * step) % (1 << redMask);
+          // first = old_first;
+          G = (((first >> 5) & 0x001f) + i * step) % (1 << greenMask);
+          // first = old_first;
+          B = ((first & 0x001f) + (i + j) * step) % (1 << blueMask);
+          // first = old_first;
+          st = ((R << 10) | (G << 5) | B);
+          break;
+
+        case DC_32:
+          R = (((first >> 16) & 0x00ff) + j * step) % (1 << redMask);
+          // first = old_first;
+          G = (((first >> 8) & 0x00ff) + i * step) % (1 << greenMask);
+          // first = old_first;
+          B = ((first & 0x00ff) + (i + j) * step) % (1 << blueMask);
+          // first = old_first;
+          st = ((R << 16) | (G << 8) | B);
+          break;
+
+
+        default:
+          break;
+
+      }
+
+      return st;
+}
+
+void draw_pattern(uint8_t no_rectangles, uint32_t first, uint8_t step, uint32_t mode)
 {
 	int sidex;
 	int sidey;
-	static int st;
 
 	sidey=res_y/no_rectangles;
 	sidex=res_x/no_rectangles;
@@ -95,13 +167,12 @@ void draw_pattern(uint8_t no_rectangles, uint32_t first, uint8_t step)
 	{
 		for(unsigned int x = 0, j = 0; j < no_rectangles; j++, x += sidex)
 		{
-			st = (first + (i * no_rectangles + j) * step) % (1 << bits_pixel);
+			st =  Color_Mode(i, j, no_rectangles, first, step, mode);
 
 			vg_draw_rectangle(x, y, sidex, sidey, st);
 		}
 	}
 }
-
 
 void pix_map(const char *xpm[], uint16_t x, uint16_t y)
 {
