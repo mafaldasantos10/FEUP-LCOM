@@ -28,9 +28,6 @@
 #define DC_24 0x115
 #define DC_16 0x11A
 #define DC_32 0x14C
-
-//#define PB2BASE(m) (((m) >> 4) & 0xF000)
-//#define PB2OFF(m) ((m) & 0xFFFF)
 /**@}*/
 
 #endif /* _LCOM_I8042_H */
