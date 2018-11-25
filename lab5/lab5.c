@@ -376,7 +376,9 @@ int (video_test_move) (const char * xpm[], uint16_t xi, uint16_t  yi, uint16_t x
   {
     return 1;
   }
- 
+
+  pix_map(xpm, xi, yi);
+  
   while(esc)
   { 
    /* Get a request message. */ 
