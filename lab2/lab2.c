@@ -97,8 +97,9 @@ int(timer_test_int)(uint8_t time)
         switch (_ENDPOINT_P(msg.m_source))
         { 
           case HARDWARE: /* hardware interrupt notification */ 
-            if (msg.m_notify.interrupts & irq_set) 
+            if (msg.m_notify.interrupts & BIT(irq_set)) 
             { /* subscribed interrupt */ 
+              
               timer_int_handler();
 
               if(counter % (int)sys_hz() == 0)
