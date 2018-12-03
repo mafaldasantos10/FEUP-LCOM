@@ -1,13 +1,14 @@
 #ifndef _LCOM_I8254_H_
 #define _LCOM_I8254_H_
 
+//GLOBAL VARIABLE
+extern int timer_counter;
+
 /** @defgroup i8254 i8254
  * @{
  *
- * Constants for programming the i8254 Timer. Needs to be completed.
+ * Constants for programming the i8254 Timer.
  */
-extern int counter;
-
 #define TIMER_FREQ  1193182    /**< @brief clock frequency for timer in PC and AT */
 
 #define BIT(n) (0x01<<(n))
