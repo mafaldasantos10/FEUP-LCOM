@@ -6,6 +6,7 @@
 .global _C_LABEL(kbc_asm_ih)
 
 	.text
+	
 _C_LABEL(kbc_asm_ih):
 		mov ecx, 5
 

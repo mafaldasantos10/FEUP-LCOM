@@ -6,20 +6,22 @@
 
 #include "i8042.h"
 
-//global variables
+//VARIABLE INITIALIZATION
 static int hook_id = 2;
 uint32_t status = 0, stat = 0, counter = 0;
 bool error = false;
 
 
+//FUNCTIONS
+//////////////////////////////////////////////////////////////////
+
 int (kbd_subscribe_int)(uint8_t *bit_no)
 {
 	*bit_no = hook_id;
-
 	//printf("dd %d\n", *bit_no );
 
 	//checks if the sys call was valid
-	if (sys_irqsetpolicy(IRQKEYBOARD, (IRQ_REENABLE | IRQ_EXCLUSIVE), &hook_id) != OK)
+	if (sys_irqsetpolicy(IRQ_KEYBOARD, (IRQ_REENABLE | IRQ_EXCLUSIVE), &hook_id) != OK)
 	{
 		return 1;
 	}
@@ -27,6 +29,7 @@ int (kbd_subscribe_int)(uint8_t *bit_no)
 	return 0;
 }
 
+//////////////////////////////////////////////////////////////////
 
 int (kbd_unsubscribe_int)() 
 {
@@ -39,6 +42,7 @@ int (kbd_unsubscribe_int)()
 	return 0;
 }
 
+//////////////////////////////////////////////////////////////////
 
 void (kbc_ih)(void) 
 {
@@ -71,19 +75,23 @@ void (kbc_ih)(void)
 	return;
 }
 
+//////////////////////////////////////////////////////////////////
 
 int sys_inb_cnt(port_t port, uint32_t *byte)
 {
 	counter++;
 
-	int ver = sys_inb(port, byte);
+	int temp = sys_inb(port, byte);
 
-	if (ver != OK)
+	if (temp != OK)
+	{
 		return -1;
-	else
-		return ver;
+	}
+
+	return temp;
 }
 
+//////////////////////////////////////////////////////////////////
 
 int kbd_poll_cmd()
 {
@@ -100,17 +108,17 @@ int kbd_poll_cmd()
 	return 0;
 }
 
+//////////////////////////////////////////////////////////////////
 
 int kbd_scan_poll()
 {
 	int i = 0;
-	uint32_t statpoll = 0;
 
 	while( i < 5 )
 	{
-		sys_inb_cnt(STAT_REG, &statpoll); /* assuming it returns OK */
+		sys_inb_cnt(STAT_REG, &stat); /* assuming it returns OK */
 		/* loop while 8042 output buffer is empty */
-		if( statpoll & OBF ) 
+		if( stat & OBF ) 
 		{
 			sys_inb_cnt(OUT_BUF, &status); /* assuming it returns OK */
 
