@@ -1,19 +1,20 @@
 #pragma once
 
-//global variables
+//GLOBAL VARIABLES
 extern uint32_t status; //global variable that contains the scan of the buffer
 extern uint32_t stat;
 extern uint32_t counter;
 extern int timer_counter;
 extern bool error;
 
+///////////
 #ifdef LAB3
 int sys_inb_cnt(port_t port, uint32_t *byte);
 #else
 #define sys_inb_cnt(p,q) sys_inb(p,q) 
 #endif
 
-//prototypes
+//PROTOTYPES
 int kbd_subscribe_int(uint8_t *bit_no);
 
 int kbd_unsubscribe_int();

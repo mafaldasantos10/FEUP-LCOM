@@ -2,7 +2,7 @@
 #define _LCOM_I8042_H_
 
 #define HOOK_ID_TMP 2
-#define IRQKEYBOARD 1    /**< @brief kbd IRQ line */
+#define IRQ_KEYBOARD 1    /**< @brief kbd IRQ line */
 
 
 #define STAT_REG 0x64

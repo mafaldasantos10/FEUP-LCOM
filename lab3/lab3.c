@@ -31,19 +31,25 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
+//FUNCTIONS
+//////////////////////////////////////////////////////////////////
 
 int (kbd_test_scan)(bool (assembly))
 {
-  uint8_t irq_set, byte1[1], byte2[2];
-  int ipc_status, r, size = 1;
-  bool esc = true, make = true, wait = false;
-  message msg;
+  uint8_t bit_no_kb;
 
-  if (kbd_subscribe_int(&irq_set) != OK)
+  if (kbd_subscribe_int(&bit_no_kb) != OK)
   {
     return 1;
   }
   // printf("%d", irq_set);
+
+  uint32_t irq_set_keyboard = BIT(bit_no_kb);
+
+  uint8_t byte1[1], byte2[2];
+  int ipc_status, r, size = 1;
+  bool esc = true, make = true, wait = false;
+  message msg;
  
   while(esc) 
   {   /* You may want to use a different condition */ 
@@ -58,7 +64,7 @@ int (kbd_test_scan)(bool (assembly))
       switch (_ENDPOINT_P(msg.m_source))
       {
         case HARDWARE: /* hardware interrupt notification */ 
-          if (msg.m_notify.interrupts & BIT(irq_set)) 
+          if (msg.m_notify.interrupts & irq_set_keyboard)
           { /* subscribed interrupt */
 
             if(!assembly)
@@ -69,7 +75,6 @@ int (kbd_test_scan)(bool (assembly))
             {
               kbc_asm_ih();
             }
-
             //printf("status: %x", status);
 
             if(error == true)
@@ -136,11 +141,14 @@ int (kbd_test_scan)(bool (assembly))
   }
 
   if (!assembly)
+  {
     kbd_print_no_sysinb(counter);
+  }
 
   return 0;
 }
-	
+
+//////////////////////////////////////////////////////////////////
 
 int (kbd_test_poll)() 
 { 
@@ -204,29 +212,34 @@ int (kbd_test_poll)()
   return 0;
 }
 
+//////////////////////////////////////////////////////////////////
 
 int (kbd_test_timed_scan)(uint8_t n)
 {
-
-  uint8_t irq_set_keyboard, irq_set_timer, byte1[1], byte2[2];
-  int ipc_status, r, size = 1;
-  bool esc = true, make = true, wait = false;
-  message msg;
-
   if (n < 0)
   {
     return 1;
   }
 
-  if (kbd_subscribe_int(&irq_set_keyboard) != OK)
+  uint8_t bit_no_kb, bit_no_timer;
+
+  if (kbd_subscribe_int(&bit_no_kb) != OK)
   {
     return 1;
   }
   // printf("%d", irq_set);
-  if (timer_subscribe_int(&irq_set_timer) != OK)
+  if (timer_subscribe_int(&bit_no_timer) != OK)
   {
     return 1;
   }
+
+  uint32_t irq_set_keyboard = BIT(bit_no_kb);
+  uint32_t irq_set_timer = BIT(bit_no_timer);
+
+  uint8_t byte1[1], byte2[2];
+  int ipc_status, r, size = 1;
+  bool esc = true, make = true, wait = false;
+  message msg;
  
   while(esc && timer_counter < (n * (uint8_t) sys_hz()) )
   { 
@@ -241,11 +254,11 @@ int (kbd_test_timed_scan)(uint8_t n)
       switch (_ENDPOINT_P(msg.m_source))
       {
         case HARDWARE: /* hardware interrupt notification */ 
-          if (msg.m_notify.interrupts & BIT(irq_set_timer)) 
+          if (msg.m_notify.interrupts & irq_set_timer)
           {
               timer_int_handler();
           }
-          if (msg.m_notify.interrupts & BIT(irq_set_keyboard)) 
+          if (msg.m_notify.interrupts & irq_set_keyboard) 
           { /* subscribed interrupt */ 
 
             timer_counter = 0; //resets the timer if another interrupt is needed

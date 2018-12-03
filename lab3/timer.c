@@ -5,12 +5,16 @@
 
 #include "i8254.h"
 
-int timer_counter = 0, res;
+//VARIABLES
+int timer_counter = 0;
 static int hook_id_timer = 0;
+
+
+//FUNCTIONS
+//////////////////////////////////////////////////////////////////
 
 int (timer_set_frequency)(uint8_t (timer), uint32_t freq) 
 {
-
   uint8_t st, lsb, msb;
 
   if (freq < 19 || freq > TIMER_FREQ)
@@ -46,7 +50,7 @@ int (timer_set_frequency)(uint8_t (timer), uint32_t freq)
     return 1;
   }
 
-  uint16_t f_freq = TIMER_FREQ/freq;
+  uint16_t f_freq = TIMER_FREQ / freq;
 
   util_get_LSB(f_freq, &lsb);
 
@@ -67,11 +71,11 @@ int (timer_set_frequency)(uint8_t (timer), uint32_t freq)
   return 0;
 }
 
+//////////////////////////////////////////////////////////////////
 
 int (timer_subscribe_int)(uint8_t *bit_no) 
 {
   *bit_no = hook_id_timer;
-  //printf("dd %d\n", *bit_no );
 
   //checks if the sys call was valid
   if (sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE, &hook_id_timer) != OK)
@@ -82,9 +86,10 @@ int (timer_subscribe_int)(uint8_t *bit_no)
   return 0;
 }
 
+//////////////////////////////////////////////////////////////////
 
-int (timer_unsubscribe_int)() {
-
+int (timer_unsubscribe_int)()
+{
   //checks if the sys call was valid
   if (sys_irqrmpolicy(&hook_id_timer) != OK)
   {
@@ -94,12 +99,14 @@ int (timer_unsubscribe_int)() {
   return 0;
 }
 
+//////////////////////////////////////////////////////////////////
 
 void (timer_int_handler)() 
-{  
+{
   timer_counter++;
 }
 
+//////////////////////////////////////////////////////////////////
 
 int (timer_get_conf)(uint8_t (timer), uint8_t *(st)) 
 {
@@ -145,10 +152,10 @@ int (timer_get_conf)(uint8_t (timer), uint8_t *(st))
   return 0;
 }
 
+//////////////////////////////////////////////////////////////////
 
 int (timer_display_conf)(uint8_t timer, uint8_t st, enum timer_status_field field)
 {
-
   union timer_status_field_val conf;
 
   if (field == base)
