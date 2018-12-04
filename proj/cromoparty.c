@@ -1,4 +1,5 @@
 #include <machine/int86.h>
+#include <lcom/lcf.h>
 #include "cromoparty.h"
 
 #include <math.h>
@@ -8,29 +9,33 @@
 static int res_y, res_x;
 static unsigned bits_pixel;
 static char* video_mem;
+uint8_t blueMask, greenMask, redMask;
 
 void *(vg_init)(uint16_t mode)
 {
   lm_init(true);
   vbe_mode_info_t vmi_p;
   get_mode_info(mode, &vmi_p);
+
   bits_pixel = vmi_p.BitsPerPixel;
   res_y = vmi_p.YResolution;
   res_x = vmi_p.XResolution;
   int r;
 
   struct minix_mem_range mr; /* physical memory range */
-	unsigned int vram_base = vmi_p.PhysBasePtr; /* VRAM’s physical addresss */
-	unsigned int vram_size = res_y * res_x * ceil(bits_pixel / 8); /* VRAM’s size, but you can use the frame-buffer size, instead */
+  unsigned int vram_base = vmi_p.PhysBasePtr; /* VRAM’s physical addresss */
+  unsigned int vram_size = res_y * res_x * ceil(bits_pixel / 8); /* VRAM’s size, but you can use the frame-buffer size, instead */
+
   redMask = vmi_p.RedMaskSize;
   blueMask = vmi_p.BlueMaskSize;
   greenMask = vmi_p.GreenMaskSize;
-	/* frame-buffer VM address */
-	/* Allow memory mapping */
+  /* frame-buffer VM address */
+  /* Allow memory mapping */
   mr.mr_base = (phys_bytes) vram_base;
   mr.mr_limit = mr.mr_base + vram_size;
+
   if( OK != (r = sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr)))
-  	panic("sys_privctl (ADD_MEM) failed: %d\n", r);
+  panic("sys_privctl (ADD_MEM) failed: %d\n", r);
   /* Map memory */
     
   video_mem = vm_map_phys(SELF, (void *)mr.mr_base, vram_size);
@@ -40,6 +45,7 @@ void *(vg_init)(uint16_t mode)
   //VARIABLES
   struct reg86u reg;
   memset(&reg, 0, sizeof(reg));
+
   reg.u.w.ax = 0x4F02; // VBE call, function 02 -- set VBE mode
   reg.u.w.bx = (1 << 14) | mode; // set bit 14: linear framebuffer
   reg.u.b.intno = 0x10;
@@ -86,95 +92,163 @@ int get_mode_info(uint16_t mode, vbe_mode_info_t * vmi_p)
   return 0;
 }
 
+Bitmap* loadBitmap(const char* filename) {
+    // allocating necessary size
+    Bitmap* bmp = (Bitmap*) malloc(sizeof(Bitmap));
 
-unsigned char *LoadBitmapFile(char *filename, bitmapv5header *bitmapv5header)
-{
-    FILE *filePtr; //our file pointer
-    BITMAPFILEHEADER bitmapFileHeader; //our bitmap file header
-    unsigned char *bitmapImage;  //store image data
-    int imageIdx = 0;  //image index counter
-    unsigned char tempRGB;  //our swap variable
-
-    //open filename in read binary mode
-    filePtr = fopen(filename,"rb");
+    // open filename in read binary mode
+    FILE *filePtr;
+    filePtr = fopen(filename, "rb");
     if (filePtr == NULL)
         return NULL;
 
-    //read the bitmap file header
-    fread(&bitmapFileHeader, sizeof(BITMAPFILEHEADER), 1, filePtr);
+    // read the bitmap file header
+    BitmapFileHeader bitmapFileHeader;
+    fread(&bitmapFileHeader, 2, 1, filePtr);
 
-    //verify that this is a bmp file by check bitmap id
-    if (bitmapFileHeader.bfType != 0x4D42)
-    {
+    // verify that this is a bmp file by check bitmap id
+    if (bitmapFileHeader.type != 0x4D42) {
         fclose(filePtr);
         return NULL;
     }
 
-    //read the bitmap info header
-    fread(BITMAPV5HEADER, sizeof(BITMAPINFOHEADER), 1, filePtr);
+    int rd;
+    do {
+        if ((rd = fread(&bitmapFileHeader.size, 4, 1, filePtr)) != 1)
+            break;
+        if ((rd = fread(&bitmapFileHeader.reserved, 4, 1, filePtr)) != 1)
+            break;
+        if ((rd = fread(&bitmapFileHeader.offset, 4, 1, filePtr)) != 1)
+            break;
+    } while (0);
 
-    //move file point to the begging of bitmap data
-    fseek(filePtr, bitmapFileHeader.bfOffBits, SEEK_SET);
+    if (rd != 1) {
+        fprintf(stderr, "Error reading file\n");
+        exit(-1);
+    }
 
-    //allocate enough memory for the bitmap image data
-    bitmapImage = (unsigned char*)malloc(bitmapv5header->biSizeImage);
+    // read the bitmap info header
+    BitmapInfoHeader bitmapInfoHeader;
+    fread(&bitmapInfoHeader, sizeof(BitmapInfoHeader), 1, filePtr);
 
-    //verify memory allocation
-    if (!bitmapImage)
-    {
+    // move file pointer to the begining of bitmap data
+    fseek(filePtr, bitmapFileHeader.offset, SEEK_SET);
+
+    // allocate enough memory for the bitmap image data
+    unsigned char* bitmapImage = (unsigned char*) malloc(
+            bitmapInfoHeader.imageSize);
+
+    // verify memory allocation
+    if (!bitmapImage) {
         free(bitmapImage);
         fclose(filePtr);
         return NULL;
     }
 
-    //read in the bitmap image data
-    fread(bitmapImage, bitmapv5header->biSizeImage, filePtr);
+    // read in the bitmap image data
+    fread(bitmapImage, bitmapInfoHeader.imageSize, 1, filePtr);
 
-    //make sure bitmap image data was read
-    if (bitmapImage == NULL)
-    {
+    // make sure bitmap image data was read
+    if (bitmapImage == NULL) {
         fclose(filePtr);
         return NULL;
     }
 
-    //swap the r and b values to get RGB (bitmap is BGR)
-    for (imageIdx = 0; imageIdx < bitmapv5header->biSizeImage; imageIdx += 3)
-    {
-        tempRGB = bitmapImage[imageIdx];
-        bitmapImage[imageIdx] = bitmapImage[imageIdx + 2];
-        bitmapImage[imageIdx + 2] = tempRGB;
+    // close file and return bitmap image data
+    fclose(filePtr);
+
+    bmp->bitmapData = bitmapImage;
+    bmp->bitmapInfoHeader = bitmapInfoHeader;
+
+    return bmp;
+}
+
+void setPixel(int color, uint16_t x_ant, uint16_t y_ant)
+{
+  video_mem[(y_ant * bits_pixel * res_x) / 8 + (x_ant * bits_pixel) / 8] = color;
+}
+
+void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment) {
+    if (bmp == NULL)
+        return;
+
+    int width = bmp->bitmapInfoHeader.width;
+    int drawWidth = width;
+    int height = bmp->bitmapInfoHeader.height;
+
+    if (alignment == ALIGN_CENTER)
+        x -= width / 2;
+    else if (alignment == ALIGN_RIGHT)
+        x -= width;
+
+    if (x + width < 0 || x > res_x || y + height < 0
+            || y > res_y)
+        return;
+
+    int xCorrection = 0;
+    if (x < 0) {
+        xCorrection = -x;
+        drawWidth -= xCorrection;
+        x = 0;
+
+        if (drawWidth > res_x)
+            drawWidth = res_x;
+    } else if (x + drawWidth >= res_x) {
+        drawWidth = res_x - x;
     }
 
-    //close file and return bitmap image data
-    fclose(filePtr);
-    return bitmapImage;
+    char* bufferStartPos;
+    char* imgStartPos;
+
+    int i;
+    for (i = 0; i < height; i++) {
+        int pos = y + height - 1 - i;
+
+        if (pos < 0 || pos >= res_y)
+            continue;
+
+        bufferStartPos = video_mem;
+        bufferStartPos += x * 4 + pos * res_x * 4;
+
+        imgStartPos = (char*)(bmp->bitmapData) + xCorrection * 4 + i * width * 4;
+
+        memcpy(bufferStartPos, imgStartPos, drawWidth * 4);
+    }
 }
 
-void setPixel(uint16_t x, uint16_t y, int color)
-{
-	//32
-	video_mem[(y_ant * bits_pixel * res_x) / 8 + (x_ant * bits_pixel) / 8] = color;
-}
-void bit_map(const char *bitmap[], uint16_t x, uint16_t y)
-{
-        uint16_t x_ant = x;
-        uint16_t y_ant = y;
-        int colorCounter = 0;
+// void drawBitmap(Bitmap* bmp, int x, int y) {
+//     if (bmp == NULL)
+//         return;
 
-        for(int i = 0; i < hg; i++, y_ant++)
-        {
-                if((y + i) >= res_y)
-                {
-                        continue;
-                }
-                for(int j = 0; j < wd; j++, x_ant++,colorCounter+=4)
-                {
-                        if((x + j) >= res_x)
-                        {
-                                continue;
-                        }
-                       setPixel(x, y, bitmap[colorCounter]);
-                }
-                x_ant = x;
-        }
+//     uint16_t x_ant = x;
+//     uint16_t y_ant = y;
+//     int colorCounter = 0;
+
+//      for(int i = 0; i < y; i++, y_ant++)
+//       {
+//          if((y + i) >= res_y)
+//           {
+//             continue;
+//           }
+//          for(int j = 0; j < x; j++, x_ant++, colorCounter += 4)
+//           {
+//              if((x + j) >= res_x)
+//              {
+//                  continue;
+//              }
+
+//               setPixel(bmp->bitmapData[colorCounter], x_ant, y_ant);
+//           }
+
+//        x_ant = x;
+         
+//     }
+// }
+
+void deleteBitmap(Bitmap* bmp) {
+    if (bmp == NULL)
+        return;
+
+    free(bmp->bitmapData);
+    free(bmp);
 }
