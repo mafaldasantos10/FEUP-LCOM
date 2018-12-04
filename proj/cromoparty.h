@@ -1,10 +1,15 @@
 #pragma once
 
+
+ extern uint16_t x;
+ extern uint16_t y;
+ extern bool keep;
+
+
 /** @defgroup Bitmap Bitmap
  * @{
  * Functions for manipulating bitmaps
  */
-
 typedef enum {
     ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT
 } Alignment;
@@ -64,3 +69,5 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment);
  * @param bitmap bitmap to be destroyed
  */
 void deleteBitmap(Bitmap* bmp);
+
+int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, uint16_t yf, int16_t speed, uint8_t fr_rate);
