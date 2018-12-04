@@ -1,12 +1,13 @@
 #include <lcom/lcf.h>
-#include "cromoparty.h"
-#include "keyboard.h"
-#include "i8042.h"
-#include "i8254.h"
 
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "i8042.h"
+#include "i8254.h"
+#include "cromoparty.h"
+#include "keyboard.h"
 
 uint16_t y = 768;
 
@@ -34,21 +35,14 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-int (proj_main_loop)(int argc, char *argv[]) {
+int (proj_main_loop)(int argc, char *argv[]) 
+{
+  printf("(%d, %p): under construction\n", argc, argv);
 
-  uint8_t irq_set_keyboard, irq_set_timer, byte1[1], byte2[2];
-  int ipc_status, r, size = 1;
-  bool esc = true, make = true, wait = false;
-  message msg;
-
-  	/* To be completed */
-  	if(vg_init(0x144) == NULL)
-  	{
-  		return 1;
-  	}
-
-   printf("(%d, %p): under construction\n", argc, argv);
-
+  if(vg_init(0x144) == NULL)
+  {
+  	return 1;
+  }
 
 	Bitmap * background = loadBitmap("/home/lcom/labs/proj/bitmap/discof.bmp"); //local onde esta
   drawBitmap(background, 0, 0, ALIGN_LEFT);
@@ -58,24 +52,33 @@ int (proj_main_loop)(int argc, char *argv[]) {
   Bitmap * cromossoma1 = loadBitmap("/home/lcom/labs/proj/bitmap/cromossoma1.bmp"); //local onde esta
   Bitmap * cromossoma2 = loadBitmap("/home/lcom/labs/proj/bitmap/cromossoma2.bmp"); //local onde esta
   drawBitmap(cromossoma1, 412, 50, ALIGN_LEFT);
-  //drawBitmap(arrow1, 430, 500, ALIGN_LEFT);
-sleep(2);
 
-  if (kbd_subscribe_int(&irq_set_keyboard) != OK)
+  uint8_t bit_no_kb, bit_no_timer;
+
+  if (kbd_subscribe_int(&bit_no_kb) != OK)
   {
     return 1;
   }
 
-  if (timer_subscribe_int(&irq_set_timer) != OK)
+  if (timer_subscribe_int(&bit_no_timer) != OK)
   {
     return 1;
   }
+
+  uint32_t irq_set_keyboard = BIT(bit_no_kb);
+  uint32_t irq_set_timer = BIT(bit_no_timer);
+
+  uint8_t byte1[1], byte2[2];
+  int ipc_status, r, size = 1;
+  bool esc = true, make = true, wait = false;
+  message msg;
+
   drawBitmap(pad, 430, 358, ALIGN_LEFT);
-
   drawBitmap(arrow1, 430, 768, ALIGN_LEFT);
+
   while(esc)
   { 
-   /* Get a request message. */ 
+    /* Get a request message. */ 
     if ( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 )
     {
       printf("driver_receive failed with: %d", r); 
@@ -86,35 +89,35 @@ sleep(2);
       switch (_ENDPOINT_P(msg.m_source))
       {
         case HARDWARE: /* hardware interrupt notification */ 
-          if (msg.m_notify.interrupts & BIT(irq_set_timer)) 
+          if (msg.m_notify.interrupts & irq_set_timer) 
           {
-              timer_int_handler();
+            timer_int_handler();
           }
 
-          if (msg.m_notify.interrupts & BIT(irq_set_keyboard)) 
+          if (msg.m_notify.interrupts & irq_set_keyboard) 
           { /* subscribed interrupt */ 
 
             kbc_ih();
           
-            if(status == MSB)
+            if (status == MSB)
             {
               wait = true;
               continue;
             } 
 
-            if(wait == true)
+            if (wait == true)
             {
               wait = false;
               size = 2;
             }
 
-            if(status == ESC_BK)
+            if (status == ESC_BK)
             {
               esc = false;
               make = false;
             }
 
-            if(status == 0x1c)
+            if (status == 0x1c)
             {
               keep = false;
               drawBitmap(background, 0, 0, ALIGN_LEFT);
@@ -124,13 +127,12 @@ sleep(2);
               drawBitmap(cromossoma1, 412, 50, ALIGN_LEFT);
             }
 
-            
-            if((status >> 7) == BIT(0))
+            if ((status >> 7) == BIT(0))
             {
               make = false;
             }
 
-            if(size == 1)
+            if (size == 1)
             {
               byte1[0] = status;
             } 
@@ -154,16 +156,14 @@ sleep(2);
     size = 1;
     make = true;
 
-     if(!keep)
-      {
-     
-        continue;
-      }
-      else
-      {
-        pix_map_move_pos(pad, background, arrow1, cromossoma1, 358, 5, 30);
-      }
-
+    if(!keep)
+    {
+      continue;
+    }
+    else
+    {
+      pix_map_move_pos(pad, background, arrow1, cromossoma1, 358, 5, 30);
+    }
   }
 
   if (kbd_unsubscribe_int() != OK)
@@ -176,11 +176,10 @@ sleep(2);
     return 1;
   }
 
-  if(vg_exit())
+  if (vg_exit())
   {
     return 1;
   }
  
   return 0;
-
 }

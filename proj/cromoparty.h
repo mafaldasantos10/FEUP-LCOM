@@ -1,10 +1,13 @@
 #pragma once
 
-
+//GLOBAL VARIABLES
  extern uint16_t x;
  extern uint16_t y;
  extern bool keep;
 
+
+//STRUCTS
+//////////////////////////////////////////////////////////////////
 
 /** @defgroup Bitmap Bitmap
  * @{
@@ -40,6 +43,10 @@ typedef struct {
     BitmapInfoHeader bitmapInfoHeader;
     unsigned char* bitmapData;
 } Bitmap;
+
+
+//PROTOTYPES
+//////////////////////////////////////////////////////////////////
 
 int get_mode_info(uint16_t mode, vbe_mode_info_t * vmi_p);
 
