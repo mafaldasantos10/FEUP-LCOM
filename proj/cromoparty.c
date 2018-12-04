@@ -266,7 +266,7 @@ int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap *
           {
              drawBitmap(background, 0, 0, ALIGN_LEFT);
              drawBitmap(pad, 438, 358, ALIGN_LEFT);
-             drawBitmap(cromossoma1, 412, 134, ALIGN_LEFT);
+             drawBitmap(cromossoma1, 412, 50, ALIGN_LEFT);
             y = yf;
              drawBitmap(arrow, 438, y, ALIGN_LEFT);
             keep = false;
@@ -275,7 +275,8 @@ int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap *
           {
             y -= speed;
              drawBitmap(background, 0, 0, ALIGN_LEFT);  
-             drawBitmap(pad, 438, 358, ALIGN_LEFT);          
+             drawBitmap(pad, 438, 358, ALIGN_LEFT); 
+             drawBitmap(cromossoma1, 412, 50, ALIGN_LEFT);         
              drawBitmap(arrow, 438, y, ALIGN_LEFT);
             if(y<=yf)
             {
