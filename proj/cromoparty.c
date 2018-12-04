@@ -256,7 +256,7 @@ void deleteBitmap(Bitmap* bmp) {
     free(bmp);
 }
 
-int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, uint16_t yf, int16_t speed, uint8_t fr_rate)
+int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap * cromossoma1, uint16_t yf, int16_t speed, uint8_t fr_rate)
 {
      if(timer_counter % (sys_hz() / fr_rate)== 0)
     { 
@@ -266,6 +266,7 @@ int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, uint16_t
           {
              drawBitmap(background, 0, 0, ALIGN_LEFT);
              drawBitmap(pad, 438, 358, ALIGN_LEFT);
+             drawBitmap(cromossoma1, 412, 134, ALIGN_LEFT);
             y = yf;
              drawBitmap(arrow, 438, y, ALIGN_LEFT);
             keep = false;

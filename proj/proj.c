@@ -55,6 +55,8 @@ int (proj_main_loop)(int argc, char *argv[]) {
   Bitmap * pad = loadBitmap("/home/lcom/labs/proj/bitmap/pad.bmp"); //local onde esta
   drawBitmap(pad, 430, 358, ALIGN_LEFT);
   Bitmap * arrow1 = loadBitmap("/home/lcom/labs/proj/bitmap/arrow.bmp"); //local onde esta
+  Bitmap * cromossoma1 = loadBitmap("/home/lcom/labs/proj/bitmap/cromossoma1.bmp"); //local onde esta
+  drawBitmap(cromossoma1, 412, 134, ALIGN_LEFT);
   //drawBitmap(arrow1, 430, 500, ALIGN_LEFT);
 sleep(2);
 
@@ -146,7 +148,7 @@ sleep(2);
       }
       else
       {
-        pix_map_move_pos(pad, background, arrow1, 358, 5, 30);
+        pix_map_move_pos(pad, background, arrow1 ,cromossoma1, 358, 5, 30);
       }
 
   }
