@@ -1,6 +1,8 @@
 #include <machine/int86.h>
 #include <lcom/lcf.h>
 #include "cromoparty.h"
+#include "i8042.h"
+#include "i8254.h"
 
 #include <math.h>
 #include <stdint.h>
@@ -10,6 +12,7 @@ static int res_y, res_x;
 static unsigned bits_pixel;
 static char* video_mem;
 uint8_t blueMask, greenMask, redMask;
+bool keep = true;
 
 void *(vg_init)(uint16_t mode)
 {
@@ -251,4 +254,35 @@ void deleteBitmap(Bitmap* bmp) {
 
     free(bmp->bitmapData);
     free(bmp);
+}
+
+int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, uint16_t yf, int16_t speed, uint8_t fr_rate)
+{
+     if(timer_counter % (sys_hz() / fr_rate)== 0)
+    { 
+        if(y > yf)
+        {
+          if(y-speed < yf)
+          {
+             drawBitmap(background, 0, 0, ALIGN_LEFT);
+             drawBitmap(pad, 438, 358, ALIGN_LEFT);
+            y = yf;
+             drawBitmap(arrow, 438, y, ALIGN_LEFT);
+            keep = false;
+          }
+          else
+          {
+            y -= speed;
+             drawBitmap(background, 0, 0, ALIGN_LEFT);  
+             drawBitmap(pad, 438, 358, ALIGN_LEFT);          
+             drawBitmap(arrow, 438, y, ALIGN_LEFT);
+            if(y<=yf)
+            {
+              keep = false;
+            }
+          }
+        }
+    }
+   
+    return 0;
 }
