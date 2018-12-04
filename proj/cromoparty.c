@@ -7,6 +7,7 @@
 #include "i8042.h"
 #include "i8254.h"
 #include "cromoparty.h"
+#include "keyboard.h"
 #include <math.h>
 
 //VARIABLES
@@ -15,10 +16,13 @@ static unsigned bits_pixel;
 static char* video_mem;
 uint8_t blueMask, greenMask, redMask;
 bool keep = true;
+int pontuationCounter = 0;
+
 
 
 //FUNCTIONS
 //////////////////////////////////////////////////////////////////
+
 
 void *(vg_init)(uint16_t mode)
 {
@@ -283,36 +287,131 @@ int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap *
     return 0;
 }
 
-// void setPixel(int color, uint16_t x_ant, uint16_t y_ant)
-// {
-//   video_mem[(y_ant * bits_pixel * res_x) / 8 + (x_ant * bits_pixel) / 8] = color;
-// }
+int arrowRate()
+{
+ //int random = rand() % 3;
+ speed = 3 + rand() % 15;
+ int rate = rand() % 3;
+ arrow = rand() % 3;
 
-// void drawBitmap(Bitmap* bmp, int x, int y) {
-//     if (bmp == NULL)
-//         return;
+ switch(rate)
+        {
+           case 0:
+          {
+            fr_rate = 15;
+            break;
+          }
+          case 1:
+          {
+            fr_rate = 20;
+            break;
+          }
+          case 2:
+          {
+             fr_rate = 30;
+             break;
+          }
+          case 3:
+          {
+             fr_rate = 60;
+             break;
+          }
+       }
+return 0;
+}
 
-//     uint16_t x_ant = x;
-//     uint16_t y_ant = y;
-//     int colorCounter = 0;
+void keyboarArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  Bitmap * cromossoma1, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great)
+{
+  if (status == 0x48)
+  {
+     if(up)
+     {
+       keep = false;
+       drawBitmap(background, 0, 0, ALIGN_LEFT);
+       drawBitmap(pad, 438, 358, ALIGN_LEFT);
+       drawBitmap(cromossomaup, 412, 50, ALIGN_LEFT); 
+       pontuation(okay, miss, perfect, great); 
+       sleep(1);
+       drawBitmap(background, 0, 0, ALIGN_LEFT);
+       drawBitmap(cromossoma1, 412, 50, ALIGN_LEFT);
+       up = false;
+     }
+  }
 
-//      for(int i = 0; i < y; i++, y_ant++)
-//       {
-//          if((y + i) >= res_y)
-//           {
-//             continue;
-//           }
-//          for(int j = 0; j < x; j++, x_ant++, colorCounter += 4)
-//           {
-//              if((x + j) >= res_x)
-//              {
-//                  continue;
-//              }
+  if (status == 0x4d)
+  {
+      if(right)
+      {
+         keep = false;
+         drawBitmap(background, 0, 0, ALIGN_LEFT);
+         drawBitmap(pad, 438, 358, ALIGN_LEFT);
+         drawBitmap(cromossomaup, 412, 50, ALIGN_LEFT); 
+         pontuation(okay, miss, perfect, great);  
+         sleep(1);
+         drawBitmap(background, 0, 0, ALIGN_LEFT);
+         drawBitmap(cromossoma1, 412, 50, ALIGN_LEFT);
+         right = false;
+       }
 
-//               setPixel(bmp->bitmapData[colorCounter], x_ant, y_ant);
-//           }
+  }
 
-//        x_ant = x;
-         
-//     }
-// }
+  if (status == 0x50)
+  {
+      if(down)
+      {
+         keep = false;
+         drawBitmap(background, 0, 0, ALIGN_LEFT);
+         drawBitmap(pad, 438, 358, ALIGN_LEFT);
+         drawBitmap(cromossomaup, 412, 50, ALIGN_LEFT);
+         pontuation(okay, miss, perfect, great);  
+         sleep(1);
+         drawBitmap(background, 0, 0, ALIGN_LEFT);
+         drawBitmap(cromossoma1, 412, 50, ALIGN_LEFT);
+         down = false;
+      }
+  } 
+
+  if (status == 0x4b)
+  {
+      if(left)
+      {
+         keep = false;
+         drawBitmap(background, 0, 0, ALIGN_LEFT);
+         drawBitmap(pad, 438, 358, ALIGN_LEFT);
+         drawBitmap(cromossomaup, 412, 50, ALIGN_LEFT); 
+         pontuation(okay, miss, perfect, great); 
+         sleep(1);
+         drawBitmap(background, 0, 0, ALIGN_LEFT);
+         drawBitmap(cromossoma1, 412, 50, ALIGN_LEFT);
+         left = false;
+      }
+  }
+
+}
+
+void pontuation(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great)
+{
+  if(abs(358 - y) < 10)
+  {
+    drawBitmap(perfect, 360, 200, ALIGN_LEFT);
+    pontuationCounter +=20;
+    return;
+  }
+  else if(abs(358 - y) < 40)
+  {
+    drawBitmap(great, 360, 200, ALIGN_LEFT);
+    pontuationCounter +=10;
+    return;
+  }
+   else if(abs(358 - y) < 100)
+  {
+    drawBitmap(okay, 360, 200, ALIGN_LEFT);
+    pontuationCounter +=5;
+    return;
+  }
+  else
+  {
+    drawBitmap(miss, 360, 200, ALIGN_LEFT);
+    return;
+  }
+}
