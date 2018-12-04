@@ -70,4 +70,4 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment);
  */
 void deleteBitmap(Bitmap* bmp);
 
-int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, uint16_t yf, int16_t speed, uint8_t fr_rate);
+int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap * cromossoma1, uint16_t yf, int16_t speed, uint8_t fr_rate);
