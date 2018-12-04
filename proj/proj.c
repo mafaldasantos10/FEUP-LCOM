@@ -31,17 +31,19 @@ int main(int argc, char *argv[]) {
 
 int (proj_main_loop)(int argc, char *argv[]) {
   	/* To be completed */
-  	if(vg_init(mode) == NULL)
+  	if(vg_init(0x144) == NULL)
   	{
   		return 1;
   	}
 
-  	BITMAPV5HEADER bitmapv5header;
-	unsigned char *bitmapData;
-	bitmapData = LoadBitmapFile("mypic.bmp", &bitmapv5header);
+   printf("(%d, %p): under construction\n", argc, argv);
+
+
+	Bitmap * background = loadBitmap("/home/lcom/labs/proj/bitmap/discof.bmp"); //local onde esta
+  drawBitmap(background, 0, 0, ALIGN_LEFT);
 
 	
-	
+	sleep(25);
   	if(vg_exit())
   	{
     	return 1;
