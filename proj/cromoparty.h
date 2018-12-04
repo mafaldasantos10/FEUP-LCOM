@@ -1,9 +1,15 @@
 #pragma once
 
 //GLOBAL VARIABLES
- extern uint16_t x;
  extern uint16_t y;
  extern bool keep;
+ extern uint8_t fr_rate;
+ extern uint16_t speed;
+ extern int arrow;
+ extern bool down;
+ extern bool up;
+ extern bool left;
+ extern bool right;
 
 
 //STRUCTS
@@ -78,3 +84,9 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment);
 void deleteBitmap(Bitmap* bmp);
 
 int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap * cromossoma1, uint16_t yf, int16_t speed, uint8_t fr_rate);
+
+int arrowRate();
+
+void keyboarArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  Bitmap * cromossoma1, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great);
+
+void pontuation(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great);

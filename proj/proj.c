@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "i8042.h"
 #include "i8254.h"
@@ -10,6 +11,15 @@
 #include "keyboard.h"
 
 uint16_t y = 768;
+uint8_t fr_rate = 30;
+uint16_t speed = 5;
+int arrow = 0;
+bool up = false;
+bool down = false;
+bool left = false;
+bool right = false;
+
+
 
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
@@ -37,6 +47,7 @@ int main(int argc, char *argv[]) {
 
 int (proj_main_loop)(int argc, char *argv[]) 
 {
+  srand(time(NULL));
   printf("(%d, %p): under construction\n", argc, argv);
 
   if(vg_init(0x144) == NULL)
@@ -44,14 +55,21 @@ int (proj_main_loop)(int argc, char *argv[])
   	return 1;
   }
 
-	Bitmap * background = loadBitmap("/home/lcom/labs/proj/bitmap/discof.bmp"); //local onde esta
+	Bitmap * background = loadBitmap("/home/lcom/labs/proj/bitmap/discof.bmp"); 
   drawBitmap(background, 0, 0, ALIGN_LEFT);
-  Bitmap * pad = loadBitmap("/home/lcom/labs/proj/bitmap/pad.bmp"); //local onde esta
+  Bitmap * pad = loadBitmap("/home/lcom/labs/proj/bitmap/pad.bmp"); 
   drawBitmap(pad, 430, 358, ALIGN_LEFT);
-  Bitmap * arrow1 = loadBitmap("/home/lcom/labs/proj/bitmap/arrow.bmp"); //local onde esta
-  Bitmap * cromossoma1 = loadBitmap("/home/lcom/labs/proj/bitmap/cromossoma1.bmp"); //local onde esta
-  Bitmap * cromossoma2 = loadBitmap("/home/lcom/labs/proj/bitmap/cromossoma2.bmp"); //local onde esta
+  Bitmap * arrowup = loadBitmap("/home/lcom/labs/proj/bitmap/arrowup.bmp"); 
+  Bitmap * arrowright = loadBitmap("/home/lcom/labs/proj/bitmap/arrowright.bmp"); 
+  Bitmap * arrowdown = loadBitmap("/home/lcom/labs/proj/bitmap/arrowdown.bmp"); 
+  Bitmap * arrowleft = loadBitmap("/home/lcom/labs/proj/bitmap/arrowleft.bmp"); 
+  Bitmap * cromossoma1 = loadBitmap("/home/lcom/labs/proj/bitmap/cromossoma1.bmp"); 
+  Bitmap * cromossomaup = loadBitmap("/home/lcom/labs/proj/bitmap/cromossomaup.bmp"); 
   drawBitmap(cromossoma1, 412, 50, ALIGN_LEFT);
+  Bitmap * perfect = loadBitmap("/home/lcom/labs/proj/bitmap/perfect.bmp"); 
+  Bitmap * great = loadBitmap("/home/lcom/labs/proj/bitmap/great.bmp"); 
+  Bitmap * okay = loadBitmap("/home/lcom/labs/proj/bitmap/okay.bmp"); 
+  Bitmap * miss = loadBitmap("/home/lcom/labs/proj/bitmap/miss.bmp"); 
 
   uint8_t bit_no_kb, bit_no_timer;
 
@@ -73,11 +91,13 @@ int (proj_main_loop)(int argc, char *argv[])
   bool esc = true, make = true, wait = false;
   message msg;
 
-  drawBitmap(pad, 430, 358, ALIGN_LEFT);
-  drawBitmap(arrow1, 430, 768, ALIGN_LEFT);
+ // drawBitmap(pad, 430, 358, ALIGN_LEFT);
+ // drawBitmap(arrow1, 430, 768, ALIGN_LEFT);
+
 
   while(esc)
   { 
+    
     /* Get a request message. */ 
     if ( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 )
     {
@@ -117,15 +137,7 @@ int (proj_main_loop)(int argc, char *argv[])
               make = false;
             }
 
-            if (status == 0x1c)
-            {
-              keep = false;
-              drawBitmap(background, 0, 0, ALIGN_LEFT);
-              drawBitmap(pad, 438, 358, ALIGN_LEFT);
-              drawBitmap(cromossoma2, 412, 50, ALIGN_LEFT);  
-              sleep(1);
-              drawBitmap(cromossoma1, 412, 50, ALIGN_LEFT);
-            }
+            keyboarArrows(cromossomaup, pad, background, cromossoma1, okay, miss, perfect, great);
 
             if ((status >> 7) == BIT(0))
             {
@@ -158,13 +170,44 @@ int (proj_main_loop)(int argc, char *argv[])
 
     if(!keep)
     {
+      sleep(1);
+      int arrowRate();     
+      y = 768;
+      keep = true;
       continue;
     }
     else
     {
-      pix_map_move_pos(pad, background, arrow1, cromossoma1, 358, 5, 30);
+      switch(arrow)
+      {
+        case 0:
+        {
+          right = true;
+          pix_map_move_pos(pad, background, arrowright, cromossoma1, 358, speed, fr_rate);
+          break;
+        }
+         case 1:
+        {
+          up = true;
+          pix_map_move_pos(pad, background, arrowup, cromossoma1, 358, speed, fr_rate);
+          break;
+        }
+         case 2:
+        {
+          down = true;
+          pix_map_move_pos(pad, background, arrowdown, cromossoma1, 358, speed, fr_rate);
+          break;
+        }
+         case 3:
+        {
+          left = true;
+          pix_map_move_pos(pad, background, arrowleft, cromossoma1, 358, speed, fr_rate);
+          break;
+        }
+      }
+      //pix_map_move_pos(pad, background, arrow, cromossoma1, 358, speed, fr_rate);
     }
-  }
+  } 
 
   if (kbd_unsubscribe_int() != OK)
   {  
