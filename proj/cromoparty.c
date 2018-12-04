@@ -1,18 +1,24 @@
 #include <machine/int86.h>
 #include <lcom/lcf.h>
-#include "cromoparty.h"
-#include "i8042.h"
-#include "i8254.h"
 
-#include <math.h>
 #include <stdint.h>
 #include <minix/sysutil.h> 
 
+#include "i8042.h"
+#include "i8254.h"
+#include "cromoparty.h"
+#include <math.h>
+
+//VARIABLES
 static int res_y, res_x;
 static unsigned bits_pixel;
 static char* video_mem;
 uint8_t blueMask, greenMask, redMask;
 bool keep = true;
+
+
+//FUNCTIONS
+//////////////////////////////////////////////////////////////////
 
 void *(vg_init)(uint16_t mode)
 {
@@ -37,12 +43,12 @@ void *(vg_init)(uint16_t mode)
   mr.mr_base = (phys_bytes) vram_base;
   mr.mr_limit = mr.mr_base + vram_size;
 
-  if( OK != (r = sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr)))
+  if ( OK != (r = sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr)))
   panic("sys_privctl (ADD_MEM) failed: %d\n", r);
   /* Map memory */
     
   video_mem = vm_map_phys(SELF, (void *)mr.mr_base, vram_size);
-  if(video_mem == MAP_FAILED)
+  if (video_mem == MAP_FAILED)
     panic("couldn’t map video memory");
 
   //VARIABLES
@@ -53,7 +59,7 @@ void *(vg_init)(uint16_t mode)
   reg.u.w.bx = (1 << 14) | mode; // set bit 14: linear framebuffer
   reg.u.b.intno = 0x10;
         
-  if(sys_int86(&reg) != OK ) 
+  if (sys_int86(&reg) != OK ) 
   {
     printf("set_vbe_mode: sys_int86() failed \n");
     return NULL;
@@ -62,6 +68,7 @@ void *(vg_init)(uint16_t mode)
   return video_mem;
 }
 
+//////////////////////////////////////////////////////////////////
 
 int get_mode_info(uint16_t mode, vbe_mode_info_t * vmi_p) 
 {
@@ -69,7 +76,8 @@ int get_mode_info(uint16_t mode, vbe_mode_info_t * vmi_p)
   memset(&reg, 0, sizeof(reg));
   mmap_t m;
   lm_init(true);
-  if(lm_alloc(sizeof(vbe_mode_info_t), &m) == NULL)
+
+  if (lm_alloc(sizeof(vbe_mode_info_t), &m) == NULL)
   {
     return 1;
   }
@@ -79,23 +87,30 @@ int get_mode_info(uint16_t mode, vbe_mode_info_t * vmi_p)
   reg.u.b.intno = 0x10;
   reg.u.w.es = PB2BASE(m.phys);
   reg.u.w.di = PB2OFF(m.phys);
-  if(sys_int86(&reg) != OK )
+
+  if (sys_int86(&reg) != OK )
   {
     printf("set_vbe_mode: sys_int86() failed \n");
     lm_free(&m);
     return 1;
   }
-  if(reg.u.b.ah != 0)
+
+  if (reg.u.b.ah != 0)
   {
     lm_free(&m);
     return 1;
   }
+
   *vmi_p = *((vbe_mode_info_t*) m.virt);
   lm_free(&m);
+
   return 0;
 }
 
-Bitmap* loadBitmap(const char* filename) {
+//////////////////////////////////////////////////////////////////
+
+Bitmap* loadBitmap(const char* filename) 
+{
     // allocating necessary size
     Bitmap* bmp = (Bitmap*) malloc(sizeof(Bitmap));
 
@@ -110,7 +125,8 @@ Bitmap* loadBitmap(const char* filename) {
     fread(&bitmapFileHeader, 2, 1, filePtr);
 
     // verify that this is a bmp file by check bitmap id
-    if (bitmapFileHeader.type != 0x4D42) {
+    if (bitmapFileHeader.type != 0x4D42) 
+    {
         fclose(filePtr);
         return NULL;
     }
@@ -125,7 +141,8 @@ Bitmap* loadBitmap(const char* filename) {
             break;
     } while (0);
 
-    if (rd != 1) {
+    if (rd != 1) 
+    {
         fprintf(stderr, "Error reading file\n");
         exit(-1);
     }
@@ -138,11 +155,11 @@ Bitmap* loadBitmap(const char* filename) {
     fseek(filePtr, bitmapFileHeader.offset, SEEK_SET);
 
     // allocate enough memory for the bitmap image data
-    unsigned char* bitmapImage = (unsigned char*) malloc(
-            bitmapInfoHeader.imageSize);
+    unsigned char* bitmapImage = (unsigned char*) malloc(bitmapInfoHeader.imageSize);
 
     // verify memory allocation
-    if (!bitmapImage) {
+    if (!bitmapImage) 
+    {
         free(bitmapImage);
         fclose(filePtr);
         return NULL;
@@ -152,7 +169,8 @@ Bitmap* loadBitmap(const char* filename) {
     fread(bitmapImage, bitmapInfoHeader.imageSize, 1, filePtr);
 
     // make sure bitmap image data was read
-    if (bitmapImage == NULL) {
+    if (bitmapImage == NULL) 
+    {
         fclose(filePtr);
         return NULL;
     }
@@ -166,12 +184,10 @@ Bitmap* loadBitmap(const char* filename) {
     return bmp;
 }
 
-void setPixel(int color, uint16_t x_ant, uint16_t y_ant)
-{
-  video_mem[(y_ant * bits_pixel * res_x) / 8 + (x_ant * bits_pixel) / 8] = color;
-}
+//////////////////////////////////////////////////////////////////
 
-void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment) {
+void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment) 
+{
     if (bmp == NULL)
         return;
 
@@ -184,19 +200,21 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment) {
     else if (alignment == ALIGN_RIGHT)
         x -= width;
 
-    if (x + width < 0 || x > res_x || y + height < 0
-            || y > res_y)
+    if (x + width < 0 || x > res_x || y + height < 0 || y > res_y)
         return;
 
     int xCorrection = 0;
-    if (x < 0) {
+    if (x < 0) 
+    {
         xCorrection = -x;
         drawWidth -= xCorrection;
         x = 0;
 
         if (drawWidth > res_x)
             drawWidth = res_x;
-    } else if (x + drawWidth >= res_x) {
+    } 
+    else if (x + drawWidth >= res_x) 
+    {
         drawWidth = res_x - x;
     }
 
@@ -204,7 +222,8 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment) {
     char* imgStartPos;
 
     int i;
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++) 
+    {
         int pos = y + height - 1 - i;
 
         if (pos < 0 || pos >= res_y)
@@ -218,6 +237,56 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment) {
         memcpy(bufferStartPos, imgStartPos, drawWidth * 4);
     }
 }
+
+//////////////////////////////////////////////////////////////////
+
+void deleteBitmap(Bitmap* bmp) {
+    if (bmp == NULL)
+        return;
+
+    free(bmp->bitmapData);
+    free(bmp);
+}
+
+//////////////////////////////////////////////////////////////////
+
+int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap * cromossoma1, uint16_t yf, int16_t speed, uint8_t fr_rate)
+{
+    if (timer_counter % (sys_hz() / fr_rate) == 0)
+    { 
+        if (y > yf)
+        {
+            if (y - speed < yf)
+            {
+                drawBitmap(background, 0, 0, ALIGN_LEFT);
+                drawBitmap(pad, 438, 358, ALIGN_LEFT);
+                drawBitmap(cromossoma1, 412, 50, ALIGN_LEFT);
+                y = yf;
+                drawBitmap(arrow, 438, y, ALIGN_LEFT);
+                keep = false;
+            }
+            else
+            {
+                y -= speed;
+                drawBitmap(background, 0, 0, ALIGN_LEFT);  
+                drawBitmap(pad, 438, 358, ALIGN_LEFT); 
+                drawBitmap(cromossoma1, 412, 50, ALIGN_LEFT);     
+                drawBitmap(arrow, 438, y, ALIGN_LEFT);
+                if (y <= yf)
+                {
+                    keep = false;
+                }
+            }
+        }
+    }
+   
+    return 0;
+}
+
+// void setPixel(int color, uint16_t x_ant, uint16_t y_ant)
+// {
+//   video_mem[(y_ant * bits_pixel * res_x) / 8 + (x_ant * bits_pixel) / 8] = color;
+// }
 
 // void drawBitmap(Bitmap* bmp, int x, int y) {
 //     if (bmp == NULL)
@@ -247,44 +316,3 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment) {
          
 //     }
 // }
-
-void deleteBitmap(Bitmap* bmp) {
-    if (bmp == NULL)
-        return;
-
-    free(bmp->bitmapData);
-    free(bmp);
-}
-
-int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap * cromossoma1, uint16_t yf, int16_t speed, uint8_t fr_rate)
-{
-     if(timer_counter % (sys_hz() / fr_rate)== 0)
-    { 
-        if(y > yf)
-        {
-          if(y-speed < yf)
-          {
-             drawBitmap(background, 0, 0, ALIGN_LEFT);
-             drawBitmap(pad, 438, 358, ALIGN_LEFT);
-             drawBitmap(cromossoma1, 412, 50, ALIGN_LEFT);
-            y = yf;
-             drawBitmap(arrow, 438, y, ALIGN_LEFT);
-            keep = false;
-          }
-          else
-          {
-            y -= speed;
-             drawBitmap(background, 0, 0, ALIGN_LEFT);  
-             drawBitmap(pad, 438, 358, ALIGN_LEFT); 
-             drawBitmap(cromossoma1, 412, 50, ALIGN_LEFT);         
-             drawBitmap(arrow, 438, y, ALIGN_LEFT);
-            if(y<=yf)
-            {
-              keep = false;
-            }
-          }
-        }
-    }
-   
-    return 0;
-}

@@ -4,7 +4,6 @@
 #define HOOK_ID_TMP 2
 #define IRQ_KEYBOARD 1    /**< @brief kbd IRQ line */
 
-
 #define STAT_REG 0x64
 #define KBC_CMD_REG 0x64
 #define OUT_BUF 0x60

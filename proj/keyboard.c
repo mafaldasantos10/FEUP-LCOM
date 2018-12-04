@@ -1,10 +1,10 @@
 #include <lcom/lcf.h>
-#include "keyboard.h"
 
 #include <stdint.h>
 #include <minix/sysutil.h> 
 
 #include "i8042.h"
+#include "keyboard.h"
 
 //VARIABLE INITIALIZATION
 static int hook_id = 2;
@@ -56,7 +56,7 @@ void (kbc_ih)(void)
 		{
 			sys_inb(OUT_BUF, &status); /* assuming it returns OK */
 
-			if ( (stat &(PAR_ERR | TO_ERR)) == 0 )
+			if ( (stat & (PAR_ERR | TO_ERR)) == 0 )
 			{
 				error = false;
 				return;
