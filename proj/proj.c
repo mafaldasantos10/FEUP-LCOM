@@ -39,7 +39,7 @@ int (proj_main_loop)(int argc, char *argv[]) {
    printf("(%d, %p): under construction\n", argc, argv);
 
 
-	Bitmap * background = loadBitmap("/home/lcom/labs/proj/bitmap/field.bmp"); //local onde esta
+	Bitmap * background = loadBitmap("/home/lcom/labs/proj/bitmap/discof.bmp"); //local onde esta
   drawBitmap(background, 0, 0, ALIGN_LEFT);
 
 	
