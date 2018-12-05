@@ -87,6 +87,6 @@ int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap *
 
 int arrowRate();
 
-void keyboarArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  Bitmap * cromossoma1, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great);
+void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  Bitmap * cromossoma1, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great);
 
-void pontuation(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great);
+void score(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great);

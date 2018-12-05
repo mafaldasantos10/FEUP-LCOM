@@ -19,9 +19,8 @@ bool down = false;
 bool left = false;
 bool right = false;
 
-
-
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) 
+{
   // sets the language of LCF messages (can be either EN-US or PT-PT)
   lcf_set_language("EN-US");
 
@@ -47,7 +46,9 @@ int main(int argc, char *argv[]) {
 
 int (proj_main_loop)(int argc, char *argv[]) 
 {
-  srand(time(NULL));
+  //Uses current time as a seed for random number generation
+  srand((unsigned) time(NULL));
+
   printf("(%d, %p): under construction\n", argc, argv);
 
   if(vg_init(0x144) == NULL)
@@ -91,9 +92,8 @@ int (proj_main_loop)(int argc, char *argv[])
   bool esc = true, make = true, wait = false;
   message msg;
 
- // drawBitmap(pad, 430, 358, ALIGN_LEFT);
- // drawBitmap(arrow1, 430, 768, ALIGN_LEFT);
-
+  //drawBitmap(pad, 430, 358, ALIGN_LEFT);
+  //drawBitmap(arrow1, 430, 768, ALIGN_LEFT);
 
   while(esc)
   { 
@@ -137,7 +137,7 @@ int (proj_main_loop)(int argc, char *argv[])
               make = false;
             }
 
-            keyboarArrows(cromossomaup, pad, background, cromossoma1, okay, miss, perfect, great);
+            keyboardArrows(cromossomaup, pad, background, cromossoma1, okay, miss, perfect, great);
 
             if ((status >> 7) == BIT(0))
             {
@@ -171,7 +171,7 @@ int (proj_main_loop)(int argc, char *argv[])
     if(!keep)
     {
       sleep(1);
-      int arrowRate();     
+      arrowRate();     
       y = 768;
       keep = true;
       continue;
