@@ -9,7 +9,6 @@
 #include "cromoparty.h"
 #include "keyboard.h"
 #include <math.h>
-#include <time.h>
 
 //VARIABLES
 static int res_y, res_x;
