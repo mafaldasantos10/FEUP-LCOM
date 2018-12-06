@@ -1,7 +1,6 @@
 #pragma once
 
 //GLOBAL VARIABLES
- extern uint16_t y;
  extern bool keep;
  extern uint8_t fr_rate;
  extern uint16_t speed;
@@ -54,8 +53,6 @@ typedef struct {
 //PROTOTYPES
 //////////////////////////////////////////////////////////////////
 
-int get_mode_info(uint16_t mode, vbe_mode_info_t * vmi_p);
-
 /**
  * @brief Loads a bmp image
  *
@@ -63,8 +60,6 @@ int get_mode_info(uint16_t mode, vbe_mode_info_t * vmi_p);
  * @return Non NULL pointer to the image buffer
  */
 Bitmap* loadBitmap(const char* filename);
-
-void setPixel(int color, uint16_t x_ant, uint16_t y_ant);
 
 /**
  * @brief Draws an unscaled, unrotated bitmap at the given position
@@ -75,8 +70,6 @@ void setPixel(int color, uint16_t x_ant, uint16_t y_ant);
  * @param alignment image alignment
  */
 void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment);
-
-void double_buffer_to_video_mem();
 
 /**
  * @brief Destroys the given bitmap, freeing all resources used by it.
@@ -89,7 +82,7 @@ int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap *
 
 int arrowRate();
 
-void VSync();
+//void VSync();
 
 void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  Bitmap * cromossoma1, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great);
 

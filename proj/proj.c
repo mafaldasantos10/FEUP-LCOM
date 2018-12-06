@@ -10,6 +10,7 @@
 #include "cromoparty.h"
 #include "keyboard.h"
 
+//VARIABLE INITIALIZATION
 uint16_t y = 768;
 uint8_t fr_rate = 30;
 uint16_t speed = 5;
@@ -18,6 +19,10 @@ bool up = false;
 bool down = false;
 bool left = false;
 bool right = false;
+
+
+//FUNCTIONS
+//////////////////////////////////////////////////////////////////
 
 int main(int argc, char *argv[]) 
 {
@@ -43,6 +48,8 @@ int main(int argc, char *argv[])
 
   return 0;
 }
+
+//////////////////////////////////////////////////////////////////
 
 int (proj_main_loop)(int argc, char *argv[]) 
 {
@@ -92,12 +99,8 @@ int (proj_main_loop)(int argc, char *argv[])
   bool esc = true, make = true, wait = false;
   message msg;
 
-  //drawBitmap(pad, 430, 393, ALIGN_LEFT);
-  //drawBitmap(arrow1, 430, 768, ALIGN_LEFT);
-
   while(esc)
-  { 
-    
+  {  
     /* Get a request message. */ 
     if ( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 )
     {

@@ -5,7 +5,7 @@
 
 #include "i8254.h"
 
-//VARIABLES
+//VARIABLE INITIALIZATION
 int timer_counter = 0;
 static int hook_id_timer = 0;
 
