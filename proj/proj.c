@@ -58,7 +58,7 @@ int (proj_main_loop)(int argc, char *argv[])
 
 	Bitmap * background = loadBitmap("/home/lcom/labs/proj/bitmap/discof.bmp"); 
   drawBitmap(background, 0, 0, ALIGN_LEFT);
-  Bitmap * pad = loadBitmap("/home/lcom/labs/proj/bitmap/pad.bmp"); 
+  Bitmap * pad = loadBitmap("/home/lcom/labs/proj/bitmap/pad5.bmp"); 
   drawBitmap(pad, 430, 358, ALIGN_LEFT);
   Bitmap * arrowup = loadBitmap("/home/lcom/labs/proj/bitmap/arrowup.bmp"); 
   Bitmap * arrowright = loadBitmap("/home/lcom/labs/proj/bitmap/arrowright.bmp"); 
@@ -223,6 +223,6 @@ int (proj_main_loop)(int argc, char *argv[])
   {
     return 1;
   }
- 
+  
   return 0;
 }
