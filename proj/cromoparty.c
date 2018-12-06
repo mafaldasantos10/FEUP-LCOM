@@ -10,13 +10,16 @@
 #include "keyboard.h"
 #include <math.h>
 
-//VARIABLES
+//VARIABLES // oi
 static int res_y, res_x;
 static unsigned bits_pixel;
-static char* video_mem;
+
 uint8_t blueMask, greenMask, redMask;
 bool keep = true;
 int scoreCounter = 0;
+
+static char* video_mem;
+static char* double_buffer;
 
 
 //FUNCTIONS
@@ -47,11 +50,18 @@ void *(vg_init)(uint16_t mode)
 
   if ( OK != (r = sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr)))
   panic("sys_privctl (ADD_MEM) failed: %d\n", r);
+  
   /* Map memory */
-    
   video_mem = vm_map_phys(SELF, (void *)mr.mr_base, vram_size);
+
   if (video_mem == MAP_FAILED)
     panic("couldn’t map video memory");
+
+  double_buffer = (char *) malloc(vram_size);
+  
+  if (double_buffer == NULL)
+    panic("not enough memory");
+  
 
   //VARIABLES
   struct reg86u reg;
@@ -231,13 +241,48 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment)
         if (pos < 0 || pos >= res_y)
             continue;
 
-        bufferStartPos = video_mem;
+        bufferStartPos = double_buffer;
         bufferStartPos += x * 4 + pos * res_x * 4;
 
         imgStartPos = (char*)(bmp->bitmapData) + xCorrection * 4 + i * width * 4;
+        
+        int j;
 
-        memcpy(bufferStartPos, imgStartPos, drawWidth * 4);
+        for (j = 0; j < drawWidth * 4; j += 4)
+        {
+            //if (imgStartPos[j] != 0xFF && imgStartPos[j + 1] != 0x00 && imgStartPos[j + 2] != 0xFF &&   imgStartPos[j + 3] != 0x0)
+            {
+                bufferStartPos[j] = imgStartPos[j];
+                bufferStartPos[j + 1] = imgStartPos[j + 1];
+                bufferStartPos[j + 2] = imgStartPos[j + 2];
+                bufferStartPos[j + 3] = imgStartPos[j + 3]; 
+            }
+        }
     }
+
+    //if( 
+    double_buffer_to_video_mem();
+    //!= OK)
+    //{
+    //    return 1;
+    //}
+}
+
+//////////////////////////////////////////////////////////////////
+
+void double_buffer_to_video_mem() 
+{
+    //if (double_buffer != NULL) 
+    //{
+	//	memcpy(video_mem, double_buffer, res_y * res_x * ceil(bits_pixel / 8));
+		//return 0;
+    //}
+
+    while ((inp(INPUT_STATUS_1) & VRETRACE));
+    while (!(inp(INPUT_STATUS_1) & VRETRACE));
+    memcpy(video_mem, double_buffer, res_y * res_x * ceil(bits_pixel / 8));
+
+	//return 1;
 }
 
 //////////////////////////////////////////////////////////////////
