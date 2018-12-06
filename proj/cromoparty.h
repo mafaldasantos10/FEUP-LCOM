@@ -76,6 +76,8 @@ void setPixel(int color, uint16_t x_ant, uint16_t y_ant);
  */
 void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment);
 
+void double_buffer_to_video_mem();
+
 /**
  * @brief Destroys the given bitmap, freeing all resources used by it.
  *
@@ -86,6 +88,8 @@ void deleteBitmap(Bitmap* bmp);
 int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap * cromossoma1, uint16_t yf, int16_t speed, uint8_t fr_rate);
 
 int arrowRate();
+
+void VSync();
 
 void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  Bitmap * cromossoma1, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great);
 

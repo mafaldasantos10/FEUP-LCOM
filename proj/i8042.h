@@ -26,7 +26,7 @@
 
 /**@}*/
 
-#define INPUT_STATUS        0x03da
+#define INPUT_STATUS        0x03DA
 #define VRETRACE            0x08
 
 #endif /* _LCOM_I8042_H */
