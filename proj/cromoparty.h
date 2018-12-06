@@ -90,5 +90,3 @@ int arrowRate();
 void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  Bitmap * cromossoma1, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great);
 
 void score(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great);
-
-void double_buffer_to_video_mem();

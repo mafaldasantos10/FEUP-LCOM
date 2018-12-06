@@ -10,16 +10,13 @@
 #include "keyboard.h"
 #include <math.h>
 
-//VARIABLES // oi
+//VARIABLES
 static int res_y, res_x;
 static unsigned bits_pixel;
-
+static char* video_mem;
 uint8_t blueMask, greenMask, redMask;
 bool keep = true;
 int scoreCounter = 0;
-
-static char* video_mem;
-static char* double_buffer;
 
 
 //FUNCTIONS
@@ -50,18 +47,11 @@ void *(vg_init)(uint16_t mode)
 
   if ( OK != (r = sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr)))
   panic("sys_privctl (ADD_MEM) failed: %d\n", r);
-  
   /* Map memory */
+    
   video_mem = vm_map_phys(SELF, (void *)mr.mr_base, vram_size);
-
   if (video_mem == MAP_FAILED)
     panic("couldn’t map video memory");
-
-  double_buffer = (char *) malloc(vram_size);
-  
-  if (double_buffer == NULL)
-    panic("not enough memory");
-  
 
   //VARIABLES
   struct reg86u reg;
@@ -231,7 +221,7 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment)
     }
 
     char* bufferStartPos;
-    char* imgStartPos;
+   unsigned char* imgStartPos;
 
     int i;
     for (i = 0; i < height; i++) 
@@ -241,48 +231,24 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment)
         if (pos < 0 || pos >= res_y)
             continue;
 
-        bufferStartPos = double_buffer;
+        bufferStartPos = video_mem;
         bufferStartPos += x * 4 + pos * res_x * 4;
 
-        imgStartPos = (char*)(bmp->bitmapData) + xCorrection * 4 + i * width * 4;
+        imgStartPos = (unsigned char*)(bmp->bitmapData) + xCorrection * 4 + i * width * 4;
+
+    for(int j = 0; j < drawWidth * 4; j += 4)
+    {
+      if(imgStartPos[j]!=0xF8 && imgStartPos[j+1] != 0x0F && imgStartPos[j+2]!=0x1F && imgStartPos[j+3] != 0xFF)
+      {
+        bufferStartPos[j] = imgStartPos[j];
+        bufferStartPos[j+1] = imgStartPos[j+1];
+        bufferStartPos[j+2] = imgStartPos[j+2];
+        bufferStartPos[j+3] = imgStartPos[j+3];
         
-        int j;
+      }
 
-        for (j = 0; j < drawWidth * 4; j += 4)
-        {
-            //if (imgStartPos[j] != 0xFF && imgStartPos[j + 1] != 0x00 && imgStartPos[j + 2] != 0xFF &&   imgStartPos[j + 3] != 0x0)
-            {
-                bufferStartPos[j] = imgStartPos[j];
-                bufferStartPos[j + 1] = imgStartPos[j + 1];
-                bufferStartPos[j + 2] = imgStartPos[j + 2];
-                bufferStartPos[j + 3] = imgStartPos[j + 3]; 
-            }
-        }
     }
-
-    //if( 
-    double_buffer_to_video_mem();
-    //!= OK)
-    //{
-    //    return 1;
-    //}
-}
-
-//////////////////////////////////////////////////////////////////
-
-void double_buffer_to_video_mem() 
-{
-    //if (double_buffer != NULL) 
-    //{
-	//	memcpy(video_mem, double_buffer, res_y * res_x * ceil(bits_pixel / 8));
-		//return 0;
-    //}
-
-    while ((inp(INPUT_STATUS_1) & VRETRACE));
-    while (!(inp(INPUT_STATUS_1) & VRETRACE));
-    memcpy(video_mem, double_buffer, res_y * res_x * ceil(bits_pixel / 8));
-
-	//return 1;
+    }
 }
 
 //////////////////////////////////////////////////////////////////
@@ -307,8 +273,8 @@ int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap *
             if (y - speed < yf)
             {
                 drawBitmap(background, 0, 0, ALIGN_LEFT);
-                drawBitmap(pad, 438, 358, ALIGN_LEFT);
-                drawBitmap(cromossoma1, 412, 50, ALIGN_LEFT);
+                drawBitmap(pad, 438, 393, ALIGN_LEFT);
+                drawBitmap(cromossoma1, 412, 20, ALIGN_LEFT);
                 y = yf;
                 drawBitmap(arrow, 438, y, ALIGN_LEFT);
                 keep = false;
@@ -317,8 +283,8 @@ int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap *
             {
                 y -= speed;
                 drawBitmap(background, 0, 0, ALIGN_LEFT);  
-                drawBitmap(pad, 438, 358, ALIGN_LEFT); 
-                drawBitmap(cromossoma1, 412, 50, ALIGN_LEFT);     
+                drawBitmap(pad, 438, 393, ALIGN_LEFT); 
+                drawBitmap(cromossoma1, 412, 20, ALIGN_LEFT);     
                 drawBitmap(arrow, 438, y, ALIGN_LEFT);
                 if (y <= yf)
                 {
@@ -368,13 +334,13 @@ void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  B
         {
             keep = false;
             drawBitmap(background, 0, 0, ALIGN_LEFT);
-            drawBitmap(pad, 438, 358, ALIGN_LEFT);
-            drawBitmap(cromossomaup, 412, 50, ALIGN_LEFT); 
+            drawBitmap(pad, 438, 393, ALIGN_LEFT);
+            drawBitmap(cromossomaup, 412, 20, ALIGN_LEFT); 
             score(okay, miss, perfect, great); 
             sleep(1);
             drawBitmap(background, 0, 0, ALIGN_LEFT);
-            drawBitmap(pad, 438, 358, ALIGN_LEFT);
-            drawBitmap(cromossoma1, 412, 50, ALIGN_LEFT);
+            drawBitmap(pad, 438, 393, ALIGN_LEFT);
+            drawBitmap(cromossoma1, 412, 20, ALIGN_LEFT);
             up = false;
         }
     }
@@ -385,13 +351,13 @@ void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  B
         {
             keep = false;
             drawBitmap(background, 0, 0, ALIGN_LEFT);
-            drawBitmap(pad, 438, 358, ALIGN_LEFT);
-            drawBitmap(cromossomaup, 412, 50, ALIGN_LEFT);
+            drawBitmap(pad, 438, 393, ALIGN_LEFT);
+            drawBitmap(cromossomaup, 412, 20, ALIGN_LEFT);
             score(okay, miss, perfect, great);  
             sleep(1);
             drawBitmap(background, 0, 0, ALIGN_LEFT);
-            drawBitmap(pad, 438, 358, ALIGN_LEFT);
-            drawBitmap(cromossoma1, 412, 50, ALIGN_LEFT);
+            drawBitmap(pad, 438, 393, ALIGN_LEFT);
+            drawBitmap(cromossoma1, 412, 20, ALIGN_LEFT);
             right = false;
         }
     }
@@ -402,13 +368,13 @@ void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  B
         {
             keep = false;
             drawBitmap(background, 0, 0, ALIGN_LEFT);
-            drawBitmap(pad, 438, 358, ALIGN_LEFT);
-            drawBitmap(cromossomaup, 412, 50, ALIGN_LEFT);
+            drawBitmap(pad, 438, 393, ALIGN_LEFT);
+            drawBitmap(cromossomaup, 412, 20, ALIGN_LEFT);
             score(okay, miss, perfect, great);  
             sleep(1);
             drawBitmap(background, 0, 0, ALIGN_LEFT);
-            drawBitmap(pad, 438, 358, ALIGN_LEFT);
-            drawBitmap(cromossoma1, 412, 50, ALIGN_LEFT);
+            drawBitmap(pad, 438, 393, ALIGN_LEFT);
+            drawBitmap(cromossoma1, 412, 20, ALIGN_LEFT);
             down = false;
         }
     } 
@@ -419,13 +385,13 @@ void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  B
         {
             keep = false;
             drawBitmap(background, 0, 0, ALIGN_LEFT);
-            drawBitmap(pad, 438, 358, ALIGN_LEFT);
-            drawBitmap(cromossomaup, 412, 50, ALIGN_LEFT); 
+            drawBitmap(pad, 438, 393, ALIGN_LEFT);
+            drawBitmap(cromossomaup, 412, 20, ALIGN_LEFT); 
             score(okay, miss, perfect, great); 
             sleep(1);
             drawBitmap(background, 0, 0, ALIGN_LEFT);
-            drawBitmap(pad, 438, 358, ALIGN_LEFT);
-            drawBitmap(cromossoma1, 412, 50, ALIGN_LEFT);
+            drawBitmap(pad, 438, 393, ALIGN_LEFT);
+            drawBitmap(cromossoma1, 412, 20, ALIGN_LEFT);
             left = false;
         }
     }
@@ -435,27 +401,27 @@ void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  B
 
 void score(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great)
 {
-    if (abs(358 - y) < 10)
+    if (abs(393 - y) < 10)
     {
-        drawBitmap(perfect, 360, 200, ALIGN_LEFT);
+        drawBitmap(perfect, 360, 298, ALIGN_LEFT);
         scoreCounter += 20;
         return;
     }
-    else if (abs(358 - y) < 40)
+    else if (abs(393 - y) < 40)
     {
-        drawBitmap(great, 360, 200, ALIGN_LEFT);
+        drawBitmap(great, 360, 298, ALIGN_LEFT);
         scoreCounter += 10;
         return;
     }
-    else if (abs(358 - y) < 100)
+    else if (abs(393 - y) < 100)
     {
-        drawBitmap(okay, 360, 200, ALIGN_LEFT);
+        drawBitmap(okay, 360, 298, ALIGN_LEFT);
         scoreCounter += 5;
         return;
     }
     else
     {
-        drawBitmap(miss, 360, 200, ALIGN_LEFT);
+        drawBitmap(miss, 360, 298, ALIGN_LEFT);
         return;
     }
 }
