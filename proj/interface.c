@@ -57,7 +57,6 @@ void *(vg_init)(uint16_t mode)
     if (double_buffer == NULL)
         panic("not enough memory");
 
-
     //VARIABLES
     struct reg86u reg;
     memset(&reg, 0, sizeof(reg));
@@ -118,14 +117,5 @@ int get_mode_info(uint16_t mode, vbe_mode_info_t * vmi_p)
 
 void double_buffer_to_video_mem() 
 {
-    //printf("cmd:\n");
-    //uint32_t cmd;
-    //sys_inb(INPUT_STATUS, &cmd);
-    //while (cmd & VRETRACE);
-    //while (!(cmd & VRETRACE));
     memcpy(video_mem, double_buffer, res_y * res_x * ceil(bits_pixel / 8));
-
-    
-    //VSync();
-    //printf("cmd2:\n");
 }
