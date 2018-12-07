@@ -156,8 +156,6 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment)
             }
         }
     }
-
-    double_buffer_to_video_mem();
 }
 
 //////////////////////////////////////////////////////////////////
@@ -176,31 +174,29 @@ void deleteBitmap(Bitmap* bmp)
 int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap * cromossoma1, uint16_t yf, int16_t speed, uint8_t fr_rate)
 {
     if (timer_counter % (sys_hz() / fr_rate) == 0)
-    { 
-        if (y > yf)
+    {
+        drawBitmap(background, 0, 0, ALIGN_LEFT);
+        drawBitmap(pad, 438, 393, ALIGN_LEFT);
+        drawBitmap(cromossoma1, 412, 20, ALIGN_LEFT);
+
+        if (y - speed < yf)
         {
-            if (y - speed < yf)
-            {
-                drawBitmap(background, 0, 0, ALIGN_LEFT);
-                drawBitmap(pad, 438, 393, ALIGN_LEFT);
-                drawBitmap(cromossoma1, 412, 20, ALIGN_LEFT);
-                y = yf;
-                drawBitmap(arrow, 438, y, ALIGN_LEFT);
-                keep = false;
-            }
-            else
-            {
-                y -= speed;
-                drawBitmap(background, 0, 0, ALIGN_LEFT);  
-                drawBitmap(pad, 438, 393, ALIGN_LEFT); 
-                drawBitmap(cromossoma1, 412, 20, ALIGN_LEFT);     
-                drawBitmap(arrow, 438, y, ALIGN_LEFT);
-                if (y <= yf)
-                {
-                    keep = false;
-                }
-            }
+            y = yf;
+            keep = false;
         }
+        else
+        {
+            y -= speed;
+        }
+        
+        if (y <= yf)
+        {
+            keep = false;
+        }
+
+        drawBitmap(arrow, 438, y, ALIGN_LEFT);
+
+        double_buffer_to_video_mem();
     }
    
     return 0;
@@ -237,19 +233,19 @@ int arrowRate()
 
 void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  Bitmap * cromossoma1, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great)
 {
+    drawBitmap(background, 0, 0, ALIGN_LEFT);
+    drawBitmap(pad, 438, 393, ALIGN_LEFT);
+    drawBitmap(cromossomaup, 412, 20, ALIGN_LEFT);
+    double_buffer_to_video_mem();
+
     if (status == 0x48)
     {
         if (up)
         {
             keep = false;
-            drawBitmap(background, 0, 0, ALIGN_LEFT);
-            drawBitmap(pad, 438, 393, ALIGN_LEFT);
-            drawBitmap(cromossomaup, 412, 20, ALIGN_LEFT); 
-            score(okay, miss, perfect, great); 
-            sleep(1);
-            drawBitmap(background, 0, 0, ALIGN_LEFT);
-            drawBitmap(pad, 438, 393, ALIGN_LEFT);
-            drawBitmap(cromossoma1, 412, 20, ALIGN_LEFT);
+            score(okay, miss, perfect, great);
+            double_buffer_to_video_mem();
+            sleep(1);          
             up = false;
         }
     }
@@ -259,14 +255,9 @@ void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  B
         if (right)
         {
             keep = false;
-            drawBitmap(background, 0, 0, ALIGN_LEFT);
-            drawBitmap(pad, 438, 393, ALIGN_LEFT);
-            drawBitmap(cromossomaup, 412, 20, ALIGN_LEFT);
-            score(okay, miss, perfect, great);  
+            score(okay, miss, perfect, great);
+            double_buffer_to_video_mem();
             sleep(1);
-            drawBitmap(background, 0, 0, ALIGN_LEFT);
-            drawBitmap(pad, 438, 393, ALIGN_LEFT);
-            drawBitmap(cromossoma1, 412, 20, ALIGN_LEFT);
             right = false;
         }
     }
@@ -276,14 +267,9 @@ void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  B
         if (down)
         {
             keep = false;
-            drawBitmap(background, 0, 0, ALIGN_LEFT);
-            drawBitmap(pad, 438, 393, ALIGN_LEFT);
-            drawBitmap(cromossomaup, 412, 20, ALIGN_LEFT);
-            score(okay, miss, perfect, great);  
+            score(okay, miss, perfect, great);
+            double_buffer_to_video_mem();
             sleep(1);
-            drawBitmap(background, 0, 0, ALIGN_LEFT);
-            drawBitmap(pad, 438, 393, ALIGN_LEFT);
-            drawBitmap(cromossoma1, 412, 20, ALIGN_LEFT);
             down = false;
         }
     } 
@@ -293,17 +279,17 @@ void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  B
         if (left)
         {
             keep = false;
-            drawBitmap(background, 0, 0, ALIGN_LEFT);
-            drawBitmap(pad, 438, 393, ALIGN_LEFT);
-            drawBitmap(cromossomaup, 412, 20, ALIGN_LEFT); 
-            score(okay, miss, perfect, great); 
+            score(okay, miss, perfect, great);
+            double_buffer_to_video_mem();
             sleep(1);
-            drawBitmap(background, 0, 0, ALIGN_LEFT);
-            drawBitmap(pad, 438, 393, ALIGN_LEFT);
-            drawBitmap(cromossoma1, 412, 20, ALIGN_LEFT);
             left = false;
         }
     }
+
+    drawBitmap(background, 0, 0, ALIGN_LEFT);
+    drawBitmap(pad, 438, 393, ALIGN_LEFT);
+    drawBitmap(cromossoma1, 412, 20, ALIGN_LEFT);
+    double_buffer_to_video_mem();
 }
 
 //////////////////////////////////////////////////////////////////

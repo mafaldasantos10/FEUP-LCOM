@@ -9,6 +9,7 @@
 #include "i8254.h"
 #include "cromoparty.h"
 #include "keyboard.h"
+#include "interface.h"
 
 //VARIABLE INITIALIZATION
 uint16_t y = 768;
@@ -76,7 +77,7 @@ int (proj_main_loop)(int argc, char *argv[])
   drawBitmap(cromossoma1, 412, 20, ALIGN_LEFT);
   Bitmap * perfect = loadBitmap("/home/lcom/labs/proj/bitmap/perfect.bmp"); 
   Bitmap * great = loadBitmap("/home/lcom/labs/proj/bitmap/great.bmp"); 
-  Bitmap * okay = loadBitmap("/home/lcom/labs/proj/bitmap/okay.bmp"); 
+  Bitmap * okay = loadBitmap("/home/lcom/labs/proj/bitmap/okay.bmp");
   Bitmap * miss = loadBitmap("/home/lcom/labs/proj/bitmap/miss.bmp"); 
 
   uint8_t bit_no_kb, bit_no_timer;
@@ -141,6 +142,7 @@ int (proj_main_loop)(int argc, char *argv[])
             }
 
             keyboardArrows(cromossomaup, pad, background, cromossoma1, okay, miss, perfect, great);
+            //double_buffer_to_video_mem();
 
             if ((status >> 7) == BIT(0))
             {
