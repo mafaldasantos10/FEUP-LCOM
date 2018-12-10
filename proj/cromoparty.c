@@ -145,15 +145,15 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment)
 
         imgStartPos = (unsigned char*)(bmp->bitmapData) + xCorrection * 4 + i * width * 4;
 
-        for(int j = 0; j < drawWidth * 4; j += 4)
+        uint32_t *ptr =(uint32_t*) imgStartPos;
+        uint32_t *buff =(uint32_t*) bufferStartPos;
+
+        for(int j = 0; j < drawWidth; j ++)
         {
-            if(imgStartPos[j] != 0xF8 && imgStartPos[j + 1] != 0x0F && imgStartPos[j + 2] != 0x1F && imgStartPos[j + 3] != 0xFF)
+            if(ptr[j] != 0x1f0ff8)
             {
-                bufferStartPos[j] = imgStartPos[j];
-                bufferStartPos[j + 1] = imgStartPos[j + 1];
-                bufferStartPos[j + 2] = imgStartPos[j + 2];
-                bufferStartPos[j + 3] = imgStartPos[j + 3];
-            }
+                buff[j] = ptr[j];
+            }         
         }
     }
 }
