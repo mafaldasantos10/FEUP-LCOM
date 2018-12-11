@@ -1,6 +1,6 @@
 PROG=proj
 
-SRCS = proj.c cromoparty.c assembly.S keyboard.c timer.c interface.c
+SRCS = proj.c cromoparty.c assembly.S keyboard.c timer.c interface.c menu.c
 
 CPPFLAGS += -pedantic #-D __LCOM_OPTIMIZED__
 
