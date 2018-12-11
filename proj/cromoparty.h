@@ -1,7 +1,7 @@
 #pragma once
 
 //GLOBAL VARIABLES
- extern bool keep;
+// extern bool keep;
  extern uint8_t fr_rate;
  extern uint16_t speed;
  extern int arrow;
@@ -87,3 +87,5 @@ int arrowRate();
 void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  Bitmap * cromossoma1, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great);
 
 void score(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great);
+
+int game();
