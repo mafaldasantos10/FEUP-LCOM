@@ -217,7 +217,7 @@ int arrowRate()
 {
     int rate = rand() % 3;
     speed = 3 + rand() % 15;
-    arrow = rand() % 3;
+    arrow = rand() % 4;
 
     switch (rate) 
     {
@@ -455,10 +455,6 @@ int game(uint8_t bit_no_kb)
       }
     }
   }
-
-  //if (kbd_unsubscribe_int() != OK) {
-  //  return 1;
-  //}
 
   if (timer_unsubscribe_int() != OK) {
     return 1;

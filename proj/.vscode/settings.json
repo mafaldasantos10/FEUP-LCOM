@@ -7,5 +7,6 @@
   "editor.wordWrap": "bounded",
   // Controls the wrapping column of the editor when `editor.wordWrap` is 'wordWrapColumn' or 'bounded'.
   "editor.wordWrapColumn": 100,
-  "files.associations": { },
+  "files.associations": {},
+  "C_Cpp.errorSquiggles": "Disabled",
 }
