@@ -1,5 +1,5 @@
-#include <machine/int86.h>
 #include <lcom/lcf.h>
+#include <lcom/timer.h>
 
 #include <stdint.h>
 #include <minix/sysutil.h> 
@@ -8,6 +8,7 @@
 #include "i8254.h"
 #include "cromoparty.h"
 #include "keyboard.h"
+
 #include "interface.h"
 
 
@@ -330,7 +331,7 @@ void score(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great)
 }
 
 
-int game()
+int game(uint8_t bit_no_kb)
 {
     Bitmap * background = loadBitmap("/home/lcom/labs/proj/bitmap/discof.bmp"); 
     drawBitmap(background, 0, 0, ALIGN_LEFT);
@@ -348,12 +349,7 @@ int game()
     Bitmap * okay = loadBitmap("/home/lcom/labs/proj/bitmap/okay.bmp");
     Bitmap * miss = loadBitmap("/home/lcom/labs/proj/bitmap/miss.bmp"); 
 
-    uint8_t bit_no_kb, bit_no_timer;
-
-    if (kbd_subscribe_int(&bit_no_kb) != OK)
-    {
-        return 1;
-    }
+    uint8_t bit_no_timer;
 
     if (timer_subscribe_int(&bit_no_timer) != OK)
     {
@@ -428,11 +424,8 @@ int game()
                 byte2[1] = status;
                 }
             }
-            break;void double_buffer_to_video_mem() 
-{
-    memcpy(video_mem, double_buffer, res_y * res_x * ceil(bits_pixel / 8));
-}
-            default:
+                break;
+                default:
             break; /* no other notifications expected: do nothing */ 
         } 
         } 
@@ -458,30 +451,29 @@ int game()
         {
             case 0:
             {
-            right = true;
-            pix_map_move_pos(pad, background, arrowright, cromossoma1, 393, speed, fr_rate);
-            break;
+                right = true;
+                pix_map_move_pos(pad, background, arrowright, cromossoma1, 393, speed, fr_rate);
+                break;
             }
             case 1:
             {
-            up = true;
-            pix_map_move_pos(pad, background, arrowup, cromossoma1, 393, speed, fr_rate);
-            break;
+                up = true;
+                pix_map_move_pos(pad, background, arrowup, cromossoma1, 393, speed, fr_rate);
+                break;
             }
             case 2:
             {
-            down = true;
-            pix_map_move_pos(pad, background, arrowdown, cromossoma1, 393, speed, fr_rate);
-            break;
+                down = true;
+                pix_map_move_pos(pad, background, arrowdown,    cromossoma1, 393, speed, fr_rate);
+                break;
             }
             case 3:
             {
-            left = true;
-            pix_map_move_pos(pad, background, arrowleft, cromossoma1, 393, speed, fr_rate);
-            break;
+                left = true;
+                pix_map_move_pos(pad, background, arrowleft, cromossoma1, 393, speed, fr_rate);
+                break;
             }
         }
-        //pix_map_move_pos(pad, background, arrow, cromossoma1, 393, speed, fr_rate);
         }
     } 
 
