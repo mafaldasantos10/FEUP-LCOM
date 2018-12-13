@@ -247,7 +247,7 @@ void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  B
     drawBitmap(cromossomaup, 412, 20, ALIGN_LEFT);
     double_buffer_to_video_mem();
 
-    if (status == 0x48)
+    if (status == W_KEY)
     {
         if (up)
         {
@@ -259,7 +259,7 @@ void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  B
         }
     }
 
-    if (status == 0x4d)
+    if (status == D_KEY)
     {
         if (right)
         {
@@ -271,7 +271,7 @@ void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  B
         }
     }
 
-    if (status == 0x50)
+    if (status == S_KEY)
     {
         if (down)
         {
@@ -283,7 +283,7 @@ void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  B
         }
     } 
 
-    if (status == 0x4b)
+    if (status == A_KEY)
     {
         if (left)
         {
@@ -330,162 +330,139 @@ void score(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great)
     }
 }
 
-
 int game(uint8_t bit_no_kb)
 {
-    Bitmap * background = loadBitmap("/home/lcom/labs/proj/bitmap/discof.bmp"); 
-    drawBitmap(background, 0, 0, ALIGN_LEFT);
-    Bitmap * pad = loadBitmap("/home/lcom/labs/proj/bitmap/pad.bmp"); 
-    drawBitmap(pad, 430, 393, ALIGN_LEFT);
-    Bitmap * arrowup = loadBitmap("/home/lcom/labs/proj/bitmap/arrowup.bmp"); 
-    Bitmap * arrowright = loadBitmap("/home/lcom/labs/proj/bitmap/arrowright.bmp"); 
-    Bitmap * arrowdown = loadBitmap("/home/lcom/labs/proj/bitmap/arrowdown.bmp"); 
-    Bitmap * arrowleft = loadBitmap("/home/lcom/labs/proj/bitmap/arrowleft.bmp"); 
-    Bitmap * cromossoma1 = loadBitmap("/home/lcom/labs/proj/bitmap/cromossoma1.bmp"); 
-    Bitmap * cromossomaup = loadBitmap("/home/lcom/labs/proj/bitmap/cromossomaup.bmp"); 
-    drawBitmap(cromossoma1, 412, 20, ALIGN_LEFT);
-    Bitmap * perfect = loadBitmap("/home/lcom/labs/proj/bitmap/perfect.bmp"); 
-    Bitmap * great = loadBitmap("/home/lcom/labs/proj/bitmap/great.bmp"); 
-    Bitmap * okay = loadBitmap("/home/lcom/labs/proj/bitmap/okay.bmp");
-    Bitmap * miss = loadBitmap("/home/lcom/labs/proj/bitmap/miss.bmp"); 
+  Bitmap *background = loadBitmap("/home/lcom/labs/proj/bitmap/discof.bmp");
+  drawBitmap(background, 0, 0, ALIGN_LEFT);
+  Bitmap *pad = loadBitmap("/home/lcom/labs/proj/bitmap/pad.bmp");
+  drawBitmap(pad, 430, 393, ALIGN_LEFT);
+  Bitmap *arrowup = loadBitmap("/home/lcom/labs/proj/bitmap/arrowup.bmp");
+  Bitmap *arrowright = loadBitmap("/home/lcom/labs/proj/bitmap/arrowright.bmp");
+  Bitmap *arrowdown = loadBitmap("/home/lcom/labs/proj/bitmap/arrowdown.bmp");
+  Bitmap *arrowleft = loadBitmap("/home/lcom/labs/proj/bitmap/arrowleft.bmp");
+  Bitmap *cromossoma1 = loadBitmap("/home/lcom/labs/proj/bitmap/cromossoma1.bmp");
+  Bitmap *cromossomaup = loadBitmap("/home/lcom/labs/proj/bitmap/cromossomaup.bmp");
+  drawBitmap(cromossoma1, 412, 20, ALIGN_LEFT);
+  Bitmap *perfect = loadBitmap("/home/lcom/labs/proj/bitmap/perfect.bmp");
+  Bitmap *great = loadBitmap("/home/lcom/labs/proj/bitmap/great.bmp");
+  Bitmap *okay = loadBitmap("/home/lcom/labs/proj/bitmap/okay.bmp");
+  Bitmap *miss = loadBitmap("/home/lcom/labs/proj/bitmap/miss.bmp");
 
-    uint8_t bit_no_timer;
+  uint8_t bit_no_timer;
 
-    if (timer_subscribe_int(&bit_no_timer) != OK)
-    {
-        return 1;
+  if (timer_subscribe_int(&bit_no_timer) != OK) {
+    return 1;
+  }
+
+  uint32_t irq_set_keyboard = BIT(bit_no_kb);
+  uint32_t irq_set_timer = BIT(bit_no_timer);
+
+  uint8_t byte1[1], byte2[2];
+  int ipc_status, r, size = 1;
+  bool esc = true, make = true, wait = false;
+  message msg;
+
+  while (esc)
+  {
+    /* Get a request message. */
+    if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
+      printf("driver_receive failed with: %d", r);
+      continue;
+    }
+    if (is_ipc_notify(ipc_status)) { /* received notification */
+      switch (_ENDPOINT_P(msg.m_source)) {
+        case HARDWARE: /* hardware interrupt notification */
+          if (msg.m_notify.interrupts & irq_set_timer) {
+            timer_int_handler();
+          }
+
+          if (msg.m_notify.interrupts & irq_set_keyboard) { /* subscribed interrupt */
+
+            kbc_ih();
+
+            if (status == MSB) {
+              wait = true;
+              continue;
+            }
+
+            if (wait == true) {
+              wait = false;
+              size = 2;
+            }
+
+            if (status == ESC_BK) {
+              esc = false;
+              make = false;
+            }
+
+            keyboardArrows(cromossomaup, pad, background, cromossoma1, okay, miss, perfect, great);
+            //double_buffer_to_video_mem();
+
+            if ((status >> 7) == BIT(0)) {
+              make = false;
+            }
+
+            if (size == 1) {
+              byte1[0] = status;
+            }
+
+            if (size == 2) {
+              byte2[0] = MSB;
+              byte2[1] = status;
+            }
+          }
+          break;
+        default:
+          break; /* no other notifications expected: do nothing */
+      }
+    }
+    else { /* received a standard message, not a notification */
+      /* no standard messages expected: do nothing */
     }
 
-    uint32_t irq_set_keyboard = BIT(bit_no_kb);
-    uint32_t irq_set_timer = BIT(bit_no_timer);
+    size = 1;
+    make = true;
 
-    uint8_t byte1[1], byte2[2];
-    int ipc_status, r, size = 1;
-    bool esc = true, make = true, wait = false;
-    message msg;
-
-    while(esc)
-    {  
-        /* Get a request message. */ 
-        if ( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 )
-        {
-        printf("driver_receive failed with: %d", r); 
-        continue;
-        }
-        if (is_ipc_notify(ipc_status))
-        { /* received notification */ 
-        switch (_ENDPOINT_P(msg.m_source))
-        {
-            case HARDWARE: /* hardware interrupt notification */ 
-            if (msg.m_notify.interrupts & irq_set_timer) 
-            {
-                timer_int_handler();
-            }
-
-            if (msg.m_notify.interrupts & irq_set_keyboard) 
-            { /* subscribed interrupt */ 
-
-                kbc_ih();
-            
-                if (status == MSB)
-                {
-                wait = true;
-                continue;
-                } 
-
-                if (wait == true)
-                {
-                wait = false;
-                size = 2;
-                }
-
-                if (status == ESC_BK)
-                {
-                esc = false;
-                make = false;
-                }
-
-                keyboardArrows(cromossomaup, pad, background, cromossoma1, okay, miss, perfect, great);
-                //double_buffer_to_video_mem();
-
-                if ((status >> 7) == BIT(0))
-                {
-                make = false;
-                }
-
-                if (size == 1)
-                {
-                byte1[0] = status;
-                } 
-
-                if (size == 2)
-                {
-                byte2[0] = MSB;
-                byte2[1] = status;
-                }
-            }
-                break;
-                default:
-            break; /* no other notifications expected: do nothing */ 
-        } 
-        } 
-        else
-        { /* received a standard message, not a notification */ 
-        /* no standard messages expected: do nothing */ 
-        }
-
-        size = 1;
-        make = true;
-
-        if(!keep)
-        {
-        sleep(1);
-        arrowRate();     
-        y = 768;
-        keep = true;
-        continue;
-        }
-        else
-        {
-        switch(arrow)
-        {
-            case 0:
-            {
-                right = true;
-                pix_map_move_pos(pad, background, arrowright, cromossoma1, 393, speed, fr_rate);
-                break;
-            }
-            case 1:
-            {
-                up = true;
-                pix_map_move_pos(pad, background, arrowup, cromossoma1, 393, speed, fr_rate);
-                break;
-            }
-            case 2:
-            {
-                down = true;
-                pix_map_move_pos(pad, background, arrowdown,    cromossoma1, 393, speed, fr_rate);
-                break;
-            }
-            case 3:
-            {
-                left = true;
-                pix_map_move_pos(pad, background, arrowleft, cromossoma1, 393, speed, fr_rate);
-                break;
-            }
-        }
-        }
-    } 
-
-    if (kbd_unsubscribe_int() != OK)
-    {  
-        return 1;
+    if (!keep) {
+      sleep(1);
+      arrowRate();
+      y = 768;
+      keep = true;
+      continue;
     }
-
-    if (timer_unsubscribe_int() != OK)
-    {
-        return 1;
+    else {
+      switch (arrow) {
+        case 0: {
+          right = true;
+          pix_map_move_pos(pad, background, arrowright, cromossoma1, 393, speed, fr_rate);
+          break;
+        }
+        case 1: {
+          up = true;
+          pix_map_move_pos(pad, background, arrowup, cromossoma1, 393, speed, fr_rate);
+          break;
+        }
+        case 2: {
+          down = true;
+          pix_map_move_pos(pad, background, arrowdown, cromossoma1, 393, speed, fr_rate);
+          break;
+        }
+        case 3: {
+          left = true;
+          pix_map_move_pos(pad, background, arrowleft, cromossoma1, 393, speed, fr_rate);
+          break;
+        }
+      }
     }
+  }
 
-    return 0;
+  //if (kbd_unsubscribe_int() != OK) {
+  //  return 1;
+  //}
+
+  if (timer_unsubscribe_int() != OK) {
+    return 1;
+  }
+
+  return 0;
 }
