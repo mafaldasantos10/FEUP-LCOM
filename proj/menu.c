@@ -101,9 +101,11 @@ int menu()
 
   if (kbd_unsubscribe_int() != OK)
   {
+    printf("not OK \n");
     return 1;
   }
 
+  printf("OK \n");
   return 0;
 }
 
@@ -139,7 +141,7 @@ void change_buttons()
   Bitmap * instructions_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/instructions1.bmp"); 
   Bitmap * highscore_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/highscores1.bmp");  Bitmap * exit_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/exit1.bmp");
 
-  printf("state -> %d\n", state);
+  //printf("state -> %d\n", state);
 
   switch(state % 4)
   {

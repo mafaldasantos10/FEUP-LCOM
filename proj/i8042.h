@@ -25,8 +25,8 @@
 #define DELAY_US 20000 //wait ms
 
 /**@}*/
-//BUTTONS
 
+//BUTTONS
 #define W_KEY 0x11
 #define A_KEY 0x1E
 #define S_KEY 0x1F
