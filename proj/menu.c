@@ -11,9 +11,25 @@
 #include "interface.h"
 #include "menu.h"
 
-state_t state = START;
+static state_t state = START;
 
-uint8_t bit_no_kb, bit_no_timer;
+int menu()
+{
+  Bitmap * menu = loadBitmap("/home/lcom/labs/proj/bitmap/menu.bmp");
+  drawBitmap(menu, 0, 0, ALIGN_LEFT);
+  Bitmap * start_selected = loadBitmap("/home/lcom/labs/proj/bitmap/start2.bmp"); 
+  drawBitmap(start_selected, 342, 305, ALIGN_LEFT);
+  Bitmap * instructions_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/instructions1.bmp"); 
+  drawBitmap(instructions_not_selected, 342, 425, ALIGN_LEFT);
+
+  Bitmap * exit_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/exit1.bmp"); 
+   drawBitmap(exit_not_selected, 342, 665, ALIGN_LEFT);
+  Bitmap * highscore_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/highscores1.bmp"); 
+  drawBitmap(highscore_not_selected, 342, 545, ALIGN_LEFT);
+
+  double_buffer_to_video_mem();
+
+  uint8_t bit_no_kb;
 
     if (kbd_subscribe_int(&bit_no_kb) != OK)
     {
@@ -21,14 +37,13 @@ uint8_t bit_no_kb, bit_no_timer;
     }
 
     uint32_t irq_set_keyboard = BIT(bit_no_kb);
-    uint32_t irq_set_timer = BIT(bit_no_timer);
 
     uint8_t byte1[1], byte2[2];
     int ipc_status, r, size = 1;
     bool wait = false;
     message msg;
 
-    while(esc)
+    while(1)
     {  
       /* Get a request message. */ 
       if ( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 )
@@ -68,6 +83,9 @@ uint8_t bit_no_kb, bit_no_timer;
                 byte2[0] = MSB;
                 byte2[1] = status;
               }
+
+              change_state(bit_no_kb);
+              change_buttons();   
             }
             break;
           default:
@@ -79,10 +97,85 @@ uint8_t bit_no_kb, bit_no_timer;
           /* no standard messages expected: do nothing */ 
         }
 
+      
       size = 1;
     } 
 
     if (kbd_unsubscribe_int() != OK)
     {  
-        return 1;
+      return 1;
     }
+
+  return 0;
+}
+
+void change_state(uint8_t bit_no_kb)
+{
+  switch(status)
+  {
+    case W_KEY:
+      state = (state - 1) % 4;
+      printf("hello\n");
+      break;
+    case S_KEY:
+      state = (state + 1) % 4;
+      break;
+    case ENTER_KEY:
+      if (state == EXIT)
+        return;
+      if (state == START)
+        game(bit_no_kb);
+      break;
+  }
+}
+
+void change_buttons()
+{
+  Bitmap * menu = loadBitmap("/home/lcom/labs/proj/bitmap/menu.bmp");
+  drawBitmap(menu, 0, 0, ALIGN_LEFT);
+  Bitmap * start_selected = loadBitmap("/home/lcom/labs/proj/bitmap/start2.bmp");
+  Bitmap * instructions_selected = loadBitmap("/home/lcom/labs/proj/bitmap/instructions2.bmp");
+  Bitmap * instructions_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/instructions1.bmp"); 
+  Bitmap * start_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/start1.bmp");
+
+  Bitmap * exit_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/exit1.bmp");  
+  Bitmap * highscore_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/highscores1.bmp"); 
+  Bitmap * exit_selected = loadBitmap("/home/lcom/labs/proj/bitmap/exit2.bmp");  
+  Bitmap * highscore_selected = loadBitmap("/home/lcom/labs/proj/bitmap/highscores2.bmp");
+  
+
+  printf("state -> %d\n", state);
+
+  switch(state % 4)
+  {
+    case 0:
+      drawBitmap(start_selected, 342, 305, ALIGN_LEFT);   
+      drawBitmap(instructions_not_selected, 342, 425, ALIGN_LEFT);
+      drawBitmap(highscore_not_selected, 342, 545, ALIGN_LEFT);
+      drawBitmap(exit_not_selected, 342, 665, ALIGN_LEFT);
+      break;
+      
+    case 1:
+      drawBitmap(start_not_selected, 342, 305, ALIGN_LEFT);
+      drawBitmap(highscore_not_selected, 342, 545, ALIGN_LEFT);
+      drawBitmap(exit_not_selected, 342, 665, ALIGN_LEFT);
+      drawBitmap(instructions_selected, 342, 425, ALIGN_LEFT);
+      break;
+    case 2:
+      drawBitmap(start_not_selected, 342, 305, ALIGN_LEFT);
+      drawBitmap(exit_not_selected, 342, 665, ALIGN_LEFT);
+      drawBitmap(instructions_not_selected, 342, 425, ALIGN_LEFT);
+      drawBitmap(highscore_selected, 342, 545, ALIGN_LEFT);
+      //highscores
+      break;
+      case 3:
+      drawBitmap(instructions_not_selected, 342, 425, ALIGN_LEFT);
+      drawBitmap(start_not_selected, 342, 305, ALIGN_LEFT);
+      drawBitmap(highscore_not_selected, 342, 545, ALIGN_LEFT);
+      drawBitmap(exit_selected, 342, 665, ALIGN_LEFT);
+      //exit
+      break;
+  } 
+
+  double_buffer_to_video_mem();
+}

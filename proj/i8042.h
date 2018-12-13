@@ -25,8 +25,12 @@
 #define DELAY_US 20000 //wait ms
 
 /**@}*/
+//BUTTONS
 
-#define INPUT_STATUS        0x03DA
-#define VRETRACE            0x08
+#define W_KEY 0x11
+#define A_KEY 0x1E
+#define S_KEY 0x1F
+#define D_KEY 0x20
+#define ENTER_KEY 0x1C
 
 #endif /* _LCOM_I8042_H */

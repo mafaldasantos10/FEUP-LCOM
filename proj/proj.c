@@ -5,15 +5,9 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "i8042.h"
-#include "i8254.h"
-#include "cromoparty.h"
-#include "keyboard.h"
 #include "interface.h"
+#include "cromoparty.h"
 #include "menu.h"
-
-//VARIABLE INITIALIZATION
-
 
 
 //FUNCTIONS
@@ -57,8 +51,8 @@ int (proj_main_loop)(int argc, char *argv[])
   {
   	return 1;
   }
-
-	game();
+  
+  menu();
 
   if (vg_exit())
   {

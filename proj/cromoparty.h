@@ -82,10 +82,8 @@ int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap *
 
 int arrowRate();
 
-//void VSync();
-
 void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  Bitmap * cromossoma1, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great);
 
 void score(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great);
 
-int game();
+int game(uint8_t bit_no_kb);
