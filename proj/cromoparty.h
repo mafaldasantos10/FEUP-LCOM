@@ -78,11 +78,11 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment);
  */
 void deleteBitmap(Bitmap* bmp);
 
-int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap * cromossoma1, uint16_t yf, int16_t speed, uint8_t fr_rate);
+int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap * cromossoma1, uint16_t yf, int16_t speed);
 
 int arrowRate();
 
-void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  Bitmap * cromossoma1, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great);
+void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  Bitmap * cromossoma1, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great, Bitmap * cromossomadown, Bitmap * cromossomaright, Bitmap * cromossomaleft);
 
 void score(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great);
 
