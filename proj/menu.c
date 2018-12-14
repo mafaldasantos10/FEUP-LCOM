@@ -16,17 +16,23 @@ bool exit_game = false;
 
 int menu()
 {
-  Bitmap * menu = loadBitmap("/home/lcom/labs/proj/bitmap/menu.bmp");
-  drawBitmap(menu, 0, 0, ALIGN_LEFT);
-  Bitmap * start_selected = loadBitmap("/home/lcom/labs/proj/bitmap/start2.bmp"); 
-  drawBitmap(start_selected, 342, 305, ALIGN_LEFT);
-  Bitmap * instructions_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/instructions1.bmp"); 
-  drawBitmap(instructions_not_selected, 342, 425, ALIGN_LEFT);
+  Bitmap * start_selected = loadBitmap("/home/lcom/labs/proj/bitmap/start2.bmp");
+  Bitmap * instructions_selected = loadBitmap("/home/lcom/labs/proj/bitmap/instructions2.bmp"); 
+  Bitmap * highscores_selected = loadBitmap("/home/lcom/labs/proj/bitmap/highscores2.bmp");
+  Bitmap * exit_selected = loadBitmap("/home/lcom/labs/proj/bitmap/exit2.bmp"); 
 
-  Bitmap * exit_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/exit1.bmp"); 
-   drawBitmap(exit_not_selected, 342, 665, ALIGN_LEFT);
-  Bitmap * highscore_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/highscores1.bmp"); 
-  drawBitmap(highscore_not_selected, 342, 545, ALIGN_LEFT);
+  Bitmap * start_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/start1.bmp");
+  Bitmap * instructions_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/instructions1.bmp"); 
+  Bitmap * highscores_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/highscores1.bmp");  
+  Bitmap * exit_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/exit1.bmp");
+
+  Bitmap * menu = loadBitmap("/home/lcom/labs/proj/bitmap/menu.bmp");
+
+  drawBitmap(menu, 0, 0, ALIGN_LEFT); 
+  drawBitmap(start_selected, 342, 305, ALIGN_LEFT);
+  drawBitmap(instructions_not_selected, 342, 545, ALIGN_LEFT);
+  drawBitmap(exit_not_selected, 342, 665, ALIGN_LEFT);
+  drawBitmap(highscores_not_selected, 342, 425, ALIGN_LEFT);
 
   double_buffer_to_video_mem();
 
@@ -85,7 +91,7 @@ int menu()
             }
 
             change_state(bit_no_kb);
-            change_buttons();
+            change_buttons(start_selected,start_not_selected,highscores_not_selected,  highscores_selected,  instructions_not_selected, instructions_selected,  exit_not_selected, exit_selected, menu);
           }
           break;
         default:
@@ -101,11 +107,17 @@ int menu()
 
   if (kbd_unsubscribe_int() != OK)
   {
-    printf("not OK \n");
     return 1;
   }
 
-  printf("OK \n");
+  uint32_t stat;
+	sys_inb(STAT_REG, &stat); 
+		
+		if( stat & OBF ) 
+		{
+			sys_inb(OUT_BUF, &status);
+    }
+
   return 0;
 }
 
@@ -128,46 +140,34 @@ void change_state(uint8_t bit_no_kb)
   }
 }
 
-void change_buttons()
+void change_buttons(Bitmap * start_selected,Bitmap * start_not_selected, Bitmap * highscores_not_selected, Bitmap * highscores_selected, Bitmap * instructions_not_selected, Bitmap * instructions_selected, Bitmap * exit_not_selected, Bitmap * exit_selected, Bitmap * menu)
 {
-  Bitmap * menu = loadBitmap("/home/lcom/labs/proj/bitmap/menu.bmp");
-  drawBitmap(menu, 0, 0, ALIGN_LEFT);
-  Bitmap * start_selected = loadBitmap("/home/lcom/labs/proj/bitmap/start2.bmp");
-  Bitmap * instructions_selected = loadBitmap("/home/lcom/labs/proj/bitmap/instructions2.bmp"); 
-  Bitmap * highscore_selected = loadBitmap("/home/lcom/labs/proj/bitmap/highscores2.bmp");
-  Bitmap * exit_selected = loadBitmap("/home/lcom/labs/proj/bitmap/exit2.bmp"); 
-
-  Bitmap * start_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/start1.bmp");
-  Bitmap * instructions_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/instructions1.bmp"); 
-  Bitmap * highscore_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/highscores1.bmp");  Bitmap * exit_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/exit1.bmp");
-
-  //printf("state -> %d\n", state);
+  drawBitmap(menu, 0, 0, ALIGN_LEFT); 
 
   switch(state % 4)
   {
     case 0:
       drawBitmap(start_selected, 342, 305, ALIGN_LEFT);   
-      drawBitmap(instructions_not_selected, 342, 425, ALIGN_LEFT);
-      drawBitmap(highscore_not_selected, 342, 545, ALIGN_LEFT);
+      drawBitmap(highscores_not_selected, 342, 425, ALIGN_LEFT);
+      drawBitmap(instructions_not_selected, 342, 545, ALIGN_LEFT);
       drawBitmap(exit_not_selected, 342, 665, ALIGN_LEFT);
       break;
-      
     case 1:
       drawBitmap(start_not_selected, 342, 305, ALIGN_LEFT);
-      drawBitmap(highscore_not_selected, 342, 545, ALIGN_LEFT);
+      drawBitmap(highscores_selected, 342, 425, ALIGN_LEFT);
+      drawBitmap(instructions_not_selected, 342, 545, ALIGN_LEFT);
       drawBitmap(exit_not_selected, 342, 665, ALIGN_LEFT);
-      drawBitmap(instructions_selected, 342, 425, ALIGN_LEFT);
       break;
     case 2:
       drawBitmap(start_not_selected, 342, 305, ALIGN_LEFT);
+      drawBitmap(highscores_not_selected, 342, 425, ALIGN_LEFT);
+      drawBitmap(instructions_selected, 342, 545, ALIGN_LEFT);
       drawBitmap(exit_not_selected, 342, 665, ALIGN_LEFT);
-      drawBitmap(instructions_not_selected, 342, 425, ALIGN_LEFT);
-      drawBitmap(highscore_selected, 342, 545, ALIGN_LEFT);
       break;
       case 3:
-      drawBitmap(instructions_not_selected, 342, 425, ALIGN_LEFT);
       drawBitmap(start_not_selected, 342, 305, ALIGN_LEFT);
-      drawBitmap(highscore_not_selected, 342, 545, ALIGN_LEFT);
+      drawBitmap(highscores_not_selected, 342, 425, ALIGN_LEFT);
+      drawBitmap(instructions_not_selected, 342, 545, ALIGN_LEFT);
       drawBitmap(exit_selected, 342, 665, ALIGN_LEFT);
       break;
   } 
