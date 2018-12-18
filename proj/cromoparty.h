@@ -1,16 +1,5 @@
 #pragma once
 
-//GLOBAL VARIABLES
-// extern bool keep;
- extern uint8_t fr_rate;
- extern uint16_t speed;
- extern int arrow;
- extern bool down;
- extern bool up;
- extern bool left;
- extern bool right;
-
-
 //STRUCTS
 //////////////////////////////////////////////////////////////////
 
@@ -49,6 +38,14 @@ typedef struct {
     unsigned char* bitmapData;
 } Bitmap;
 
+//arrow
+typedef struct {
+    int currentX;
+    int speed;
+    bool active;
+    int direction;
+} Arrow;
+
 
 //PROTOTYPES
 //////////////////////////////////////////////////////////////////
@@ -78,12 +75,16 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment);
  */
 void deleteBitmap(Bitmap* bmp);
 
-int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap * cromossoma1, uint16_t yf, int16_t speed);
+void init_arrows();
+
+int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap * cromossoma1, Bitmap * miss, uint16_t xf, int i);
 
 int arrowRate();
 
 void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  Bitmap * cromossoma1, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great, Bitmap * cromossomadown, Bitmap * cromossomaright, Bitmap * cromossomaleft);
 
-void score(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great);
+void score(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great, int i);
 
 int game(uint8_t bit_no_kb);
+
+void arrowProcessing(Bitmap * cromossoma1, Bitmap * pad, Bitmap * background, Bitmap * arrowdown, Bitmap * arrowup, Bitmap * arrowleft, Bitmap * arrowright, Bitmap * miss);
