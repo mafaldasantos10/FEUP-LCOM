@@ -185,8 +185,7 @@ int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap *
     if (timer_counter % (sys_hz() / fr_rate) == 0)
     {
         drawBitmap(background, 0, 0, ALIGN_LEFT);
-        drawBitmap(pad, 462, 450, ALIGN_LEFT);
-        
+        drawBitmap(pad, 462, 450, ALIGN_LEFT);  
        
         if (x >= xf)
         {
@@ -201,8 +200,6 @@ int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow, Bitmap *
         drawBitmap(cromossoma1, 650, 300, ALIGN_LEFT);
         double_buffer_to_video_mem();
     }
-    
-   // double_buffer_to_video_mem();
    
     return 0;
 }
@@ -224,56 +221,56 @@ void keyboardArrows(Bitmap * cromossomaup, Bitmap * pad, Bitmap * background,  B
     drawBitmap(pad, 462, 450, ALIGN_LEFT);
     double_buffer_to_video_mem();
 
-    if (status == W_KEY)
+    if (status == W_KEY && up)
     {
-        if (up)
-        {
             keep = false;
             drawBitmap(cromossomaup, 650, 300, ALIGN_LEFT);
             score(okay, miss, perfect, great);
             double_buffer_to_video_mem();
             sleep(1);          
-            up = false;
-        }
+            up = false;   
     }
 
-    if (status == D_KEY)
+    else if (status == D_KEY && right)
     {
-        if (right)
-        {
             keep = false;
             drawBitmap(cromossomaright, 650, 300, ALIGN_LEFT);
             score(okay, miss, perfect, great);
             double_buffer_to_video_mem();
             sleep(1);
-            right = false;
-        }
     }
 
-    if (status == S_KEY)
+    else if (status == S_KEY && down)
     {
-        if (down)
-        {
             keep = false;
             drawBitmap(cromossomadown, 650, 300, ALIGN_LEFT);
             score(okay, miss, perfect, great);
             double_buffer_to_video_mem();
             sleep(1);
             down = false;
-        }
     } 
 
-    if (status == A_KEY)
+    else if (status == A_KEY && left)
     {
-        if (left)
-        {
             keep = false;
             drawBitmap(cromossomaleft, 650, 300, ALIGN_LEFT);
             score(okay, miss, perfect, great);
             double_buffer_to_video_mem();
             sleep(1);
             left = false;
-        }
+    }
+
+    else
+    {
+        keep = false;
+        drawBitmap(cromossoma1, 650, 300, ALIGN_LEFT);
+        drawBitmap(miss, 362, 330, ALIGN_LEFT);
+        double_buffer_to_video_mem();
+        sleep(1);
+        left = false;
+        up = false;
+        down = false;
+        right = false;
     }
 
     drawBitmap(background, 0, 0, ALIGN_LEFT);
@@ -288,25 +285,25 @@ void score(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great)
 {
     if (abs(462 - x) < 10)
     {
-        drawBitmap(perfect, 360, 298, ALIGN_LEFT);
-        scoreCounter += 300;
+        drawBitmap(perfect, 362, 330, ALIGN_LEFT);
+        scoreCounter += 30;
         return;
     }
     else if (abs(462 - x) < 35)
     {
-        drawBitmap(great, 360, 298, ALIGN_LEFT);
+        drawBitmap(great, 362, 330, ALIGN_LEFT);
         scoreCounter += 10;
         return;
     }
     else if (abs(462 - x) < 70)
     {
-        drawBitmap(okay, 360, 298, ALIGN_LEFT);
+        drawBitmap(okay, 362, 330, ALIGN_LEFT);
         scoreCounter += 5;
         return;
     }
     else
     {
-        drawBitmap(miss, 360, 298, ALIGN_LEFT);
+        drawBitmap(miss, 362, 330, ALIGN_LEFT);
         return;
     }
 }
@@ -334,7 +331,8 @@ int game(uint8_t bit_no_kb)
 
   uint8_t bit_no_timer;
 
-  if (timer_subscribe_int(&bit_no_timer) != OK) {
+  if (timer_subscribe_int(&bit_no_timer) != OK)
+  {
     return 1;
   }
 
@@ -378,8 +376,10 @@ int game(uint8_t bit_no_kb)
               esc = false;
             }
 
-            keyboardArrows(cromossomaup, pad, background, cromossoma1, okay, miss, perfect, great, cromossomadown, cromossomaright, cromossomaleft);
-            //double_buffer_to_video_mem();
+            if (status == W_KEY || status == A_KEY || status == S_KEY || status == D_KEY)
+            {
+                keyboardArrows(cromossomaup, pad, background, cromossoma1, okay, miss, perfect, great, cromossomadown, cromossomaright, cromossomaleft);
+            }
 
             if (size == 1) {
               byte1[0] = status;
@@ -395,10 +395,9 @@ int game(uint8_t bit_no_kb)
           break; /* no other notifications expected: do nothing */
       }
     }
-    else { /* received a standard message, not a notification */
-      /* no standard messages expected: do nothing */
+    else{   /* received a standard message, not a notification */
+            /* no standard messages expected: do nothing */
     }
-
     size = 1;
 
     if (!keep) {
@@ -431,12 +430,12 @@ int game(uint8_t bit_no_kb)
           break;
         }
       }
+        }
     }
-  }
 
-  if (timer_unsubscribe_int() != OK) {
-    return 1;
-  }
+    if (timer_unsubscribe_int() != OK) {
+     return 1;
+    }
 
   return 0;
 }

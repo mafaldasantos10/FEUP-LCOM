@@ -11,8 +11,14 @@
 #include "interface.h"
 #include "menu.h"
 
+
+//VARIABLE INITIALIZATION
 static state_t state = START;
 bool exit_game = false;
+
+
+//FUNCTIONS
+//////////////////////////////////////////////////////////////////
 
 int menu()
 {
@@ -98,7 +104,8 @@ int menu()
           break; /* no other notifications expected: do nothing */
       }
     }
-    else { /* received a standard message, not a notification */
+    else
+    { /* received a standard message, not a notification */
       /* no standard messages expected: do nothing */
     }
 
@@ -121,6 +128,8 @@ int menu()
   return 0;
 }
 
+//////////////////////////////////////////////////////////////////
+
 void change_state(uint8_t bit_no_kb)
 {
   switch(status)
@@ -139,6 +148,8 @@ void change_state(uint8_t bit_no_kb)
       break;
   }
 }
+
+//////////////////////////////////////////////////////////////////
 
 void change_buttons(Bitmap * start_selected,Bitmap * start_not_selected, Bitmap * highscores_not_selected, Bitmap * highscores_selected, Bitmap * instructions_not_selected, Bitmap * instructions_selected, Bitmap * exit_not_selected, Bitmap * exit_selected, Bitmap * menu)
 {
