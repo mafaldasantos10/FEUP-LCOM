@@ -152,7 +152,7 @@ void change_state(uint8_t bit_no_kb)
 //////////////////////////////////////////////////////////////////
 
 void change_buttons(Bitmap * start_selected,Bitmap * start_not_selected, Bitmap * highscores_not_selected, Bitmap * highscores_selected, Bitmap * instructions_not_selected, Bitmap * instructions_selected, Bitmap * exit_not_selected, Bitmap * exit_selected, Bitmap * menu)
-{
+{ 
   drawBitmap(menu, 0, 0, ALIGN_LEFT); 
 
   switch(state % 4)
@@ -175,7 +175,7 @@ void change_buttons(Bitmap * start_selected,Bitmap * start_not_selected, Bitmap 
       drawBitmap(instructions_selected, 342, 545, ALIGN_LEFT);
       drawBitmap(exit_not_selected, 342, 665, ALIGN_LEFT);
       break;
-      case 3:
+    case 3:
       drawBitmap(start_not_selected, 342, 305, ALIGN_LEFT);
       drawBitmap(highscores_not_selected, 342, 425, ALIGN_LEFT);
       drawBitmap(instructions_not_selected, 342, 545, ALIGN_LEFT);
