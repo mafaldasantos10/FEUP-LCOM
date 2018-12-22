@@ -85,7 +85,7 @@ void keyboardArrows(Bitmap * pad, Bitmap * background);
 
 void score(int i);
 
-int game(uint8_t bit_no_kb);
+int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse);
 
 void arrowProcessing(Bitmap * cromossoma1, Bitmap * pad, Bitmap * background, Bitmap * arrowdown, Bitmap * arrowup, Bitmap * arrowleft, Bitmap * arrowright, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great, Bitmap * cromossomaup, Bitmap * cromossomadown, Bitmap * cromossomaright, Bitmap * cromossomaleft);
 
