@@ -7,7 +7,7 @@
 #include "keyboard.h"
 
 //VARIABLE INITIALIZATION
-static int hook_id = 2;
+static int hook_id = 1;
 uint32_t status = 0;
 bool error = false;
 

@@ -10,6 +10,7 @@
 #include "keyboard.h"
 #include "interface.h"
 #include "menu.h"
+#include "PS2mouse.h"
 
 
 //VARIABLE INITIALIZATION
@@ -42,17 +43,34 @@ int menu()
 
   double_buffer_to_video_mem();
 
+  uint8_t bit_no_timer;
   uint8_t bit_no_kb;
+  uint8_t bit_no_mouse;
+  
+  if (timer_subscribe_int(&bit_no_timer) != OK)
+  {
+    return 1;
+  }
 
   if (kbd_subscribe_int(&bit_no_kb) != OK)
   {
     return 1;
   }
 
+  if (mouse_write_int() != OK)
+  {
+      return 1;
+  }
+  if (mouse_subscribe_int(&bit_no_mouse) != OK)
+  {
+      return 1;
+  }
+
   uint32_t irq_set_keyboard = BIT(bit_no_kb);
+  uint32_t irq_set_mouse = BIT(bit_no_mouse);
 
   uint8_t byte1[1], byte2[2];
-  int ipc_status, r, size = 1;
+  int ipc_status, r, size = 1, s = 1;
   bool wait = false;
   message msg;
 
@@ -96,8 +114,39 @@ int menu()
               byte2[1] = status;
             }
 
-            change_state(bit_no_kb);
-            change_buttons(start_selected,start_not_selected,highscores_not_selected,  highscores_selected,  instructions_not_selected, instructions_selected,  exit_not_selected, exit_selected, menu);
+            change_state(bit_no_timer, bit_no_kb, bit_no_mouse);
+            change_buttons(start_selected, start_not_selected, highscores_not_selected,  highscores_selected, instructions_not_selected, instructions_selected,  exit_not_selected, exit_selected, menu);
+          }
+
+          if (msg.m_notify.interrupts & irq_set_mouse)
+          { /* subscribed interrupt */
+
+              mouse_ih();
+              //if (error_mouse == true)
+              //{
+              //    continue;
+              //}
+              if (s == 1)
+              {
+                if (status_mouse & BIT(3))
+                {
+                    pp.bytes[0] = status_mouse;
+                    s++;
+                }
+                continue;
+              } 
+              if (s == 2)
+              {
+                pp.bytes[1] = status_mouse;
+                s++;
+                continue;
+              }
+              if (s == 3)
+              {
+                pp.bytes[2] = status_mouse;
+                packet_create();
+                s = 1;
+              }
           }
           break;
         default:
@@ -117,20 +166,35 @@ int menu()
     return 1;
   }
 
+  if (mouse_unsubscribe_int() != OK)
+  {  
+      return 1;
+  }
+  
+  if (disable_int() != OK)
+  {
+      return 1;
+  }
+
+  if (timer_unsubscribe_int() != OK)
+  {
+    return 1;
+  }
+
   uint32_t stat;
 	sys_inb(STAT_REG, &stat); 
 		
-		if( stat & OBF ) 
-		{
-			sys_inb(OUT_BUF, &status);
-    }
+	if( stat & OBF ) 
+	{
+		sys_inb(OUT_BUF, &status);
+  }
 
   return 0;
 }
 
 //////////////////////////////////////////////////////////////////
 
-void change_state(uint8_t bit_no_kb)
+void change_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
 {
   switch(status)
   {
@@ -144,7 +208,7 @@ void change_state(uint8_t bit_no_kb)
       if (state == EXIT)
         exit_game = true;
       if (state == START)
-        game(bit_no_kb);
+        game(bit_no_timer, bit_no_kb, bit_no_mouse);
       break;
   }
 }

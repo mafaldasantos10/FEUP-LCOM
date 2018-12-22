@@ -8,8 +8,8 @@
 #include "i8254.h"
 #include "cromoparty.h"
 #include "keyboard.h"
-
 #include "interface.h"
+#include "PS2mouse.h"
 
 
 //VARIABLE INITIALIZATION
@@ -19,7 +19,7 @@ Arrow **arrows;
 size_t arrowsSize = 2;
 int scoreprint = 0;
 int cromossomaDance = 4;
-int count =0;
+int count = 0;
 
 
 //FUNCTIONS
@@ -202,15 +202,16 @@ int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrowright, Bit
     if (timer_counter % (sys_hz() / fr_rate) == 0)
     {
         drawBitmap(background, 0, 0, ALIGN_LEFT);
-        drawBitmap(pad, 462, 450, ALIGN_LEFT);  
+        drawBitmap(pad, 462, 450, ALIGN_LEFT);
+        drawBitmap(arrowleft, mouseX, mouseY, ALIGN_LEFT);
 
         for (unsigned int i = 0; i < arrowsSize; i++)
         {
             if (arrows[i]->currentX >= xf)
             {
-               scoreprint = 4;
-                drawBitmap(cromossoma1, 650, 300, ALIGN_LEFT);
-                double_buffer_to_video_mem();
+                scoreprint = 4;
+                //drawBitmap(cromossoma1, 650, 300, ALIGN_LEFT);
+                //double_buffer_to_video_mem();
                 arrows[i]->active = false;
             }
             else
@@ -243,9 +244,10 @@ int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrowright, Bit
             }
         }  
     }
-
-    printScore(okay,  miss, perfect, great);
-    printDance(cromossoma1, cromossomaup, cromossomadown, cromossomaright,  cromossomaleft);
+    
+    printScore(okay, miss, perfect, great);
+    printDance(cromossoma1, cromossomaup, cromossomadown, cromossomaright,
+    cromossomaleft);
     double_buffer_to_video_mem();
    
     return 0;
@@ -264,12 +266,12 @@ int arrowRate(int i)
 
 //////////////////////////////////////////////////////////////////
 
-void keyboardArrows(Bitmap * pad, Bitmap * background)
+void keyboardArrows(Bitmap * UNUSED(pad), Bitmap * UNUSED(background))
 {
     int i;
-    drawBitmap(background, 0, 0, ALIGN_LEFT);
-    drawBitmap(pad, 462, 450, ALIGN_LEFT);
-    double_buffer_to_video_mem();
+    //drawBitmap(background, 0, 0, ALIGN_LEFT);
+    //drawBitmap(pad, 462, 450, ALIGN_LEFT);
+    //double_buffer_to_video_mem();
 
     if (abs(arrows[0]->currentX - 462) < abs(arrows[1]->currentX - 462))
     {
@@ -369,6 +371,8 @@ void printScore(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great)
     }
 }
 
+//////////////////////////////////////////////////////////////////
+
 void printDance(Bitmap * cromossoma1, Bitmap * cromossomaup, Bitmap * cromossomadown, Bitmap * cromossomaright, Bitmap * cromossomaleft)
 {
     switch (cromossomaDance)
@@ -404,7 +408,7 @@ void printDance(Bitmap * cromossoma1, Bitmap * cromossomaup, Bitmap * cromossoma
 
 //////////////////////////////////////////////////////////////////
 
-int game(uint8_t bit_no_kb)
+int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
 {
     init_arrows();
 
@@ -427,18 +431,12 @@ int game(uint8_t bit_no_kb)
     Bitmap *okay = loadBitmap("/home/lcom/labs/proj/bitmap/okay.bmp");
     Bitmap *miss = loadBitmap("/home/lcom/labs/proj/bitmap/miss.bmp");
 
-    uint8_t bit_no_timer;
-
-    if (timer_subscribe_int(&bit_no_timer) != OK)
-    {
-        return 1;
-    }
-
-    uint32_t irq_set_keyboard = BIT(bit_no_kb);
     uint32_t irq_set_timer = BIT(bit_no_timer);
-
+    uint32_t irq_set_keyboard = BIT(bit_no_kb);
+    uint32_t irq_set_mouse = BIT(bit_no_mouse);
+    
     uint8_t byte1[1], byte2[2];
-    int ipc_status, r, size = 1;
+    int ipc_status, r, size = 1, s = 1;
     bool esc = true, wait = false;
     message msg;
 
@@ -496,6 +494,40 @@ int game(uint8_t bit_no_kb)
                             byte2[1] = status;
                         }
                     }
+
+                    if (msg.m_notify.interrupts & irq_set_mouse)
+                    { /* subscribed interrupt */
+
+                        mouse_ih();
+                        //if (error_mouse == true)
+                        //{
+                        //    continue;
+                        //}
+                        if (s == 1)
+                        {
+                            if (status_mouse & BIT(3))
+                            {
+                                pp.bytes[0] = status_mouse;
+                                s++;
+                            }
+                            continue;
+                        } 
+
+                        if (s == 2)
+                        {
+                            pp.bytes[1] = status_mouse;
+                            s++;
+                            continue;
+                        }
+                        
+                        if (s == 3)
+                        {
+                            pp.bytes[2] = status_mouse;
+                            packet_create();
+                            currentMousePosition();
+                            s = 1;
+                        }
+                    }
                     break;
                 default:
                     break; /* no other notifications expected: do nothing */
@@ -508,11 +540,6 @@ int game(uint8_t bit_no_kb)
 
         size = 1;
         arrowProcessing(cromossoma1, pad, background, arrowdown, arrowup, arrowleft, arrowright, okay, miss, perfect, great, cromossomaup, cromossomadown, cromossomaright,  cromossomaleft);
-    }
-
-    if (timer_unsubscribe_int() != OK)
-    {
-        return 1;
     }
 
     return 0;
@@ -529,7 +556,7 @@ void arrowProcessing(Bitmap * cromossoma1, Bitmap * pad, Bitmap * background, Bi
         arrows[0]->active = true;
         return;
     }
-    else if(!arrows[1]->active)
+    else if (!arrows[1]->active)
     {
         arrowRate(1);
         arrows[1]->currentX = 0;
