@@ -77,7 +77,7 @@ void deleteBitmap(Bitmap* bmp);
 
 void init_arrows();
 
-int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrowright, Bitmap * arrowleft, Bitmap * arrowup, Bitmap * arrowdown,  uint16_t xf, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great,Bitmap * cromossoma1, Bitmap * cromossomaup, Bitmap * cromossomadown, Bitmap * cromossomaright, Bitmap * cromossomaleft);
+int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrowright, Bitmap * arrowleft, Bitmap * arrowup, Bitmap * arrowdown,  uint16_t xf, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great,Bitmap * cromossoma1, Bitmap * cromossomaup, Bitmap * cromossomadown, Bitmap * cromossomaright, Bitmap * cromossomaleft,  Bitmap * pointer, Bitmap *power);
 
 int arrowRate(int i);
 
@@ -87,8 +87,14 @@ void score(int i);
 
 int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse);
 
-void arrowProcessing(Bitmap * cromossoma1, Bitmap * pad, Bitmap * background, Bitmap * arrowdown, Bitmap * arrowup, Bitmap * arrowleft, Bitmap * arrowright, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great, Bitmap * cromossomaup, Bitmap * cromossomadown, Bitmap * cromossomaright, Bitmap * cromossomaleft);
+void arrowProcessing(Bitmap * cromossoma1, Bitmap * pad, Bitmap * background, Bitmap * arrowdown, Bitmap * arrowup, Bitmap * arrowleft, Bitmap * arrowright, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great, Bitmap * cromossomaup, Bitmap * cromossomadown, Bitmap * cromossomaright, Bitmap * cromossomaleft, Bitmap * pointer, Bitmap *power);
 
 void printScore(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great);
 
 void printDance(Bitmap * cromossoma1, Bitmap * cromossomaup, Bitmap * cromossomadown, Bitmap * cromossomaright, Bitmap * cromossomaleft);
+
+void powerUps(Bitmap *power, int xi, int yi, int yf);
+
+int powerSpeed(int xi, int xf);
+
+void changeDirect(Bitmap *power);
