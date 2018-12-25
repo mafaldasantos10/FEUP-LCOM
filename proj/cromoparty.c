@@ -15,7 +15,7 @@
 int scoreCounter = 0;
 Arrow **arrows;
 size_t number_of_arrows = 2;
-int scoreprint = 0;
+int score_to_print = 0;
 int cromossomaDance = 4;
 int count = 0;
 int colision = 0;
@@ -215,7 +215,7 @@ int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow_right, Bi
         {
             if (arrows[i]->currentX >= get_horizontal_resolution())
             {
-                scoreprint = 4;
+                score_to_print = 4;
                 arrows[i]->active = false;
             }
             else
@@ -309,7 +309,7 @@ void keyboardArrows()
     }
     else
     {  
-        scoreprint = 4;
+        score_to_print = 4;
         cromossomaDance = 4;
         arrows[i]->active = false;
     }
@@ -322,24 +322,24 @@ void score(int i)
     if (abs(462 - arrows[i]->currentX) < 10)
     {
         scoreCounter += 30;
-        scoreprint = 1;
+        score_to_print = 1;
         return;
     }
     else if (abs(462 - arrows[i]->currentX) < 35)
     {
         scoreCounter += 10;
-        scoreprint = 2;
+        score_to_print = 2;
         return;
     }
     else if (abs(462 - arrows[i]->currentX) < 70)
     {
         scoreCounter += 5;
-        scoreprint = 3;
+        score_to_print = 3;
         return;
     }
     else
     {
-        scoreprint = 4;
+        score_to_print = 4;
         cromossomaDance = 4;
         return;
     }
@@ -349,7 +349,7 @@ void score(int i)
 
 void printScore(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great)
 {   
-    switch (scoreprint)
+    switch (score_to_print)
     {
         case 1:
         {
@@ -622,7 +622,7 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
     }
 
     /* to reset global variables for a new game */
-    scoreprint = 0;
+    score_to_print = 0;
 
     return 0;
 }
