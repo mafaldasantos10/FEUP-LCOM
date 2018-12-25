@@ -208,16 +208,14 @@ int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow_right, Bi
     {
         drawBitmap(background, 0, 0, ALIGN_LEFT);
         drawBitmap(pad, 462, 450, ALIGN_LEFT);
-        changeDirect(power);
         drawBitmap(pointer, get_mouseX(), get_mouseY(), ALIGN_LEFT);
+        changeDirect(power);
 
         for (unsigned int i = 0; i < number_of_arrows; i++)
         {
             if (arrows[i]->currentX >= get_horizontal_resolution())
             {
                 scoreprint = 4;
-                //drawBitmap(cromossoma_idle, 650, 300, ALIGN_LEFT);
-                //double_buffer_to_video_mem();
                 arrows[i]->active = false;
             }
             else
@@ -310,7 +308,8 @@ void keyboardArrows()
         score(i);
     }
     else
-    {
+    {  
+        scoreprint = 4;
         cromossomaDance = 4;
         arrows[i]->active = false;
     }
@@ -341,6 +340,7 @@ void score(int i)
     else
     {
         scoreprint = 4;
+        cromossomaDance = 4;
         return;
     }
 }
@@ -422,7 +422,6 @@ void changeDirect(Bitmap *power)
     if(powerup)
     {
         powerUps(power, xi, yi, yf);
-
     }
     else
     {
@@ -430,7 +429,7 @@ void changeDirect(Bitmap *power)
         xi = powerx;
         yi = powery;
         colision++;
-        powerup=true;
+        powerup = true;
     }
 }
 
@@ -446,15 +445,15 @@ void powerUps(Bitmap *power, int xi, int yi, int yf)
         xf = 0;
     }
 
-    int speedx = powerSpeed(xi,xf);
-    int speedy = powerSpeed(yi,yf);
+    int speedx = powerSpeed(xi, xf);
+    int speedy = powerSpeed(yi, yf);
 
     if(xi > xf)
     {
         speedx *= -1;
     }
 
-    if(yi> yf)
+    if(yi > yf)
     {
         speedy *= -1;
     }
@@ -490,9 +489,7 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
     init_arrows();
 
     Bitmap *background = loadBitmap("/home/lcom/labs/proj/bitmap/discof.bmp");
-    drawBitmap(background, 0, 0, ALIGN_LEFT);
     Bitmap *pad = loadBitmap("/home/lcom/labs/proj/bitmap/pad.bmp");
-    drawBitmap(pad, 462, 450, ALIGN_LEFT);
     Bitmap *arrow_up = loadBitmap("/home/lcom/labs/proj/bitmap/arrowup.bmp");
     Bitmap *arrow_right = loadBitmap("/home/lcom/labs/proj/bitmap/arrowright.bmp");
     Bitmap *arrow_down = loadBitmap("/home/lcom/labs/proj/bitmap/arrowdown.bmp");
@@ -504,11 +501,15 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
     Bitmap *cromossoma_left = loadBitmap("/home/lcom/labs/proj/bitmap/cromossomaleft.bmp");
     Bitmap *cromossoma_right = loadBitmap("/home/lcom/labs/proj/bitmap/cromossomaright.bmp");
     Bitmap *cromossoma_up = loadBitmap("/home/lcom/labs/proj/bitmap/cromossomaup.bmp");
-    drawBitmap(cromossoma_idle, 650, 300, ALIGN_LEFT);
     Bitmap *perfect = loadBitmap("/home/lcom/labs/proj/bitmap/perfect.bmp");
     Bitmap *great = loadBitmap("/home/lcom/labs/proj/bitmap/great.bmp");
     Bitmap *okay = loadBitmap("/home/lcom/labs/proj/bitmap/okay.bmp");
     Bitmap *miss = loadBitmap("/home/lcom/labs/proj/bitmap/miss.bmp");
+
+    drawBitmap(background, 0, 0, ALIGN_LEFT);
+    drawBitmap(cromossoma_idle, 650, 300, ALIGN_LEFT);
+    drawBitmap(pad, 462, 450, ALIGN_LEFT);
+    double_buffer_to_video_mem();
 
     uint32_t irq_set_timer = BIT(bit_no_timer);
     uint32_t irq_set_keyboard = BIT(bit_no_kb);
@@ -617,7 +618,11 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
         }
 
         size = 1;
+        
     }
+
+    /* to reset global variables for a new game */
+    scoreprint = 0;
 
     return 0;
 }
