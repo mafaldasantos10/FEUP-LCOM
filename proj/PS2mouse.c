@@ -23,7 +23,7 @@ int (mouse_subscribe_int)(uint8_t *bit_no)
 	*bit_no = hook_id_mouse;
 
 	//checks if the sys call was valid
-	if (sys_irqsetpolicy(IRQMOUSE, (IRQ_REENABLE | IRQ_EXCLUSIVE), &hook_id_mouse) != OK)
+	if (sys_irqsetpolicy(IRQ_MOUSE, (IRQ_REENABLE | IRQ_EXCLUSIVE), &hook_id_mouse) != OK)
 	{
 		return 1;
 	}
@@ -177,13 +177,27 @@ void currentMousePosition()
 		mouseY = 0;
 	}
 
-	if (mouseX > 1024) 
+	if (mouseX > get_horizontal_resolution()) 
 	{
-		mouseX = 1024;
+		mouseX = get_horizontal_resolution();
 	}
 
-  if (mouseY > 768)
+  if (mouseY > get_vertical_resolution())
 	{
-		mouseY = 768;
+		mouseY = get_vertical_resolution();
 	}
+}
+
+//////////////////////////////////////////////////////////////////
+
+int get_mouseX()
+{
+	return mouseX;
+}
+
+//////////////////////////////////////////////////////////////////
+
+int get_mouseY()
+{
+	return mouseY;
 }

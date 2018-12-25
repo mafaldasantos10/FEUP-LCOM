@@ -9,7 +9,7 @@
 #include "interface.h"
 
 //VARIABLES
-int res_y, res_x;
+int res_x, res_y;
 unsigned bits_pixel;
 
 uint8_t blueMask, greenMask, redMask;
@@ -57,7 +57,6 @@ void *(vg_init)(uint16_t mode)
     if (double_buffer == NULL)
         panic("not enough memory");
 
-    //VARIABLES
     struct reg86u reg;
     memset(&reg, 0, sizeof(reg));
 
@@ -118,4 +117,18 @@ int get_mode_info(uint16_t mode, vbe_mode_info_t * vmi_p)
 void double_buffer_to_video_mem() 
 {
     memcpy(video_mem, double_buffer, res_y * res_x * ceil(bits_pixel / 8));
+}
+
+//////////////////////////////////////////////////////////////////
+
+int get_horizontal_resolution()
+{
+	return res_x;
+}
+
+//////////////////////////////////////////////////////////////////
+
+int get_vertical_resolution()
+{
+	return res_y;
 }

@@ -9,7 +9,7 @@
 //VARIABLE INITIALIZATION
 static int hook_id = 1;
 uint32_t status = 0;
-bool error = false;
+bool error_kbd = false;
 
 
 //FUNCTIONS
@@ -59,12 +59,12 @@ void (kbc_ih)(void)
 
 			if ( (stat & (PAR_ERR | TO_ERR)) == 0 )
 			{
-				error = false;
+				error_kbd = false;
 				return;
 			}
 			else
 			{
-				error = true;
+				error_kbd = true;
 				return;
 			}
 		}
@@ -72,6 +72,6 @@ void (kbc_ih)(void)
 		i++;
 	}
 
-	error = true;
+	error_kbd = true;
 	return;
 }
