@@ -32,7 +32,7 @@ typedef struct {
     unsigned int importantColors; // number of colors that are important
 } BitmapInfoHeader;
 
-/// Represents a Bitmap
+// Represents a Bitmap
 typedef struct {
     BitmapInfoHeader bitmapInfoHeader;
     unsigned char* bitmapData;
@@ -77,23 +77,23 @@ void deleteBitmap(Bitmap* bmp);
 
 void init_arrows();
 
-int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrowright, Bitmap * arrowleft, Bitmap * arrowup, Bitmap * arrowdown,  uint16_t xf, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great,Bitmap * cromossoma1, Bitmap * cromossomaup, Bitmap * cromossomadown, Bitmap * cromossomaright, Bitmap * cromossomaleft,  Bitmap * pointer, Bitmap *power);
+int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow_right, Bitmap * arrow_left, Bitmap * arrow_up, Bitmap * arrow_down, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great,Bitmap * cromossoma_idle, Bitmap * cromossoma_up, Bitmap * cromossoma_down, Bitmap * cromossoma_right, Bitmap * cromossoma_left,  Bitmap * pointer, Bitmap *power);
 
 int arrowRate(int i);
 
-void keyboardArrows(Bitmap * pad, Bitmap * background);
+void keyboardArrows();
 
 void score(int i);
 
 int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse);
 
-void arrowProcessing(Bitmap * cromossoma1, Bitmap * pad, Bitmap * background, Bitmap * arrowdown, Bitmap * arrowup, Bitmap * arrowleft, Bitmap * arrowright, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great, Bitmap * cromossomaup, Bitmap * cromossomadown, Bitmap * cromossomaright, Bitmap * cromossomaleft, Bitmap * pointer, Bitmap *power);
+void arrowProcessing(Bitmap * cromossoma_idle, Bitmap * pad, Bitmap * background, Bitmap * arrow_down, Bitmap * arrow_up, Bitmap * arrow_left, Bitmap * arrow_right, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great, Bitmap * cromossoma_up, Bitmap * cromossoma_down, Bitmap * cromossoma_right, Bitmap * cromossoma_left, Bitmap * pointer, Bitmap *power);
 
 void printScore(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great);
 
-void printDance(Bitmap * cromossoma1, Bitmap * cromossomaup, Bitmap * cromossomadown, Bitmap * cromossomaright, Bitmap * cromossomaleft);
+void printDance(Bitmap * cromossoma_idle, Bitmap * cromossoma_up, Bitmap * cromossoma_down, Bitmap * cromossoma_right, Bitmap * cromossoma_left);
 
-void powerUps(Bitmap *power, int xi, int yi, int yf);
+void powerUps(Bitmap * power, int xi, int yi, int yf);
 
 int powerSpeed(int xi, int xf);
 

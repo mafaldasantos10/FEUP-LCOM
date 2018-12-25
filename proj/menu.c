@@ -59,11 +59,11 @@ int menu()
 
   if (mouse_write_int() != OK)
   {
-      return 1;
+    return 1;
   }
   if (mouse_subscribe_int(&bit_no_mouse) != OK)
   {
-      return 1;
+    return 1;
   }
 
   uint32_t irq_set_keyboard = BIT(bit_no_kb);
@@ -121,32 +121,33 @@ int menu()
           if (msg.m_notify.interrupts & irq_set_mouse)
           { /* subscribed interrupt */
 
-              mouse_ih();
-              //if (error_mouse == true)
-              //{
-              //    continue;
-              //}
-              if (s == 1)
+            mouse_ih();
+            //if (error_mouse == true)
+            //{
+            //    continue;
+            //}
+            if (s == 1)
+            {
+              if (status_mouse & BIT(3))
               {
-                if (status_mouse & BIT(3))
-                {
-                    pp.bytes[0] = status_mouse;
-                    s++;
-                }
-                continue;
-              } 
-              if (s == 2)
-              {
-                pp.bytes[1] = status_mouse;
-                s++;
-                continue;
+                  pp.bytes[0] = status_mouse;
+                  s++;
               }
-              if (s == 3)
-              {
-                pp.bytes[2] = status_mouse;
-                packet_create();
-                s = 1;
-              }
+              continue;
+            } 
+            if (s == 2)
+            {
+              pp.bytes[1] = status_mouse;
+              s++;
+              continue;
+            }
+            
+            if (s == 3)
+            {
+              pp.bytes[2] = status_mouse;
+              packet_create();
+              s = 1;
+            }
           }
           break;
         default:
@@ -168,12 +169,12 @@ int menu()
 
   if (mouse_unsubscribe_int() != OK)
   {  
-      return 1;
+    return 1;
   }
   
   if (disable_int() != OK)
   {
-      return 1;
+    return 1;
   }
 
   if (timer_unsubscribe_int() != OK)
@@ -181,6 +182,7 @@ int menu()
     return 1;
   }
 
+  /* to clear the buffer when exiting */
   uint32_t stat;
 	sys_inb(STAT_REG, &stat); 
 		
@@ -215,7 +217,7 @@ void change_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
 
 //////////////////////////////////////////////////////////////////
 
-void change_buttons(Bitmap * start_selected,Bitmap * start_not_selected, Bitmap * highscores_not_selected, Bitmap * highscores_selected, Bitmap * instructions_not_selected, Bitmap * instructions_selected, Bitmap * exit_not_selected, Bitmap * exit_selected, Bitmap * menu)
+void change_buttons(Bitmap * start_selected, Bitmap * start_not_selected, Bitmap * highscores_not_selected, Bitmap * highscores_selected, Bitmap * instructions_not_selected, Bitmap * instructions_selected, Bitmap * exit_not_selected, Bitmap * exit_selected, Bitmap * menu)
 { 
   drawBitmap(menu, 0, 0, ALIGN_LEFT); 
 

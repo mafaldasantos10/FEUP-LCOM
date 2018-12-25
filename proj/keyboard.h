@@ -2,7 +2,7 @@
 
 //GLOBAL VARIABLES
 extern uint32_t status; //global variable that contains the scan of the buffer
-extern bool error;
+extern bool error_kbd;
 
 
 //PROTOTYPES
