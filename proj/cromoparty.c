@@ -336,7 +336,7 @@ void printDance(Bitmap * cromossoma_idle, Bitmap * cromossoma_up, Bitmap * cromo
         }
         case 2:
         {
-            drawBitmap(cromossoma_down , 650, 300, ALIGN_LEFT);
+            drawBitmap(cromossoma_down, 650, 300, ALIGN_LEFT);
             break;
         }
         case 3:
@@ -381,7 +381,7 @@ void changeDirect(Bitmap *power)
     {
         if(timer_counter % 1600)
         {
-            colision =0;
+            colision = 0;
         }
     }
 }
@@ -403,20 +403,20 @@ void powerUps(Bitmap *power, int xi, int yi, int yf)
 
     if(xi !=0 )
     {
-        speedx *=-1;
+        speedx *= -1;
     }
-    if(yi>yf)
+    if(yi > yf)
     {
-        speedy*=-1;
+        speedy *= -1;
     }
-    if(xi>=xf)
+    if(xi >= xf)
     {
          if ((powerx + speedx) <= xf)
         {
             powerx = xf;    
-            printf("xi = 899  %d ",colision);
+            printf("xi = 899  %d ", colision);
             powerup = false; 
-            colision ++;
+            colision++;
         }
         else
         {
@@ -424,14 +424,14 @@ void powerUps(Bitmap *power, int xi, int yi, int yf)
         }
     }
 
-    if(xi<=xf)
+    if(xi <= xf)
     {
          if ((powerx + speedx) >= xf)
         {
             powerx = xf;    
-            printf("xi = 899 e %d",colision);
+            printf("xi = 899 e %d", colision);
             powerup = false;
-            colision ++; 
+            colision++; 
         }
         else
         {
@@ -439,7 +439,7 @@ void powerUps(Bitmap *power, int xi, int yi, int yf)
         }
     }
 
-    if(yi>=yf)
+    if(yi >= yf)
     {
         if(powery + speedy < yf) 
         {
@@ -452,7 +452,7 @@ void powerUps(Bitmap *power, int xi, int yi, int yf)
         }
     }
 
-     if(yi<=yf)
+     if(yi <= yf)
     {
         if(powery + speedy > yf) 
         {
@@ -504,10 +504,10 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
     
     uint8_t byte1[1], byte2[2];
     int ipc_status, r, size = 1, s = 1;
-    bool esc = true, wait = false;
+    bool esc = true, p_key = true, wait = false;
     message msg;
 
-    while (esc)
+    while (esc && p_key)
     {
         /* Get a request message. */
         if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0)
@@ -543,9 +543,15 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
                             wait = false;
                             size = 2;
                         }
+
                         if (status == ESC_BK)
                         {
                             esc = false;
+                        }
+
+                        if (status == P_KEY_BK)
+                        {
+                            p_key = false;
                         }
 
                         if (status == W_KEY || status == A_KEY || status == S_KEY ||status  == D_KEY)
@@ -610,8 +616,12 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
     }
 
     /* to reset global variables for a new game */
-    score_to_print = 0;
-
+    if (p_key)
+    {
+        score_to_print = 0;
+        reset_score_counter();
+    }
+    
     return 0;
 }
 

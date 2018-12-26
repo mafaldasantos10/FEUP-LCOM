@@ -168,3 +168,10 @@ int number_of_digits(int number)
 
   return digits;
 }
+
+//////////////////////////////////////////////////////////////////
+
+void reset_score_counter()
+{
+  score_counter = 0;
+}

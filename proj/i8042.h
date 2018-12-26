@@ -14,7 +14,7 @@
 #define RD_CMD_B 0x20
 #define WRT_CMD_B 0x60
 #define KBC_CMD 0xD4
-#define ESC_BK 0x81
+
 #define MSB 0xE0
 #define BIT(n) (0x01<<(n))
 #define OBF BIT(0)
@@ -51,6 +51,8 @@
 #define S_KEY 0x1F
 #define D_KEY 0x20
 #define ENTER_KEY 0x1C
+#define ESC_BK 0x81
+#define P_KEY_BK 0x99
 
 /* Interface */
 #define FRAME_RATE 60
