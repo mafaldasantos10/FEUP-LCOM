@@ -16,7 +16,6 @@
 Arrow **arrows;
 size_t number_of_arrows = 2;
 int cromossomaDance = 4;
-int count = 0;
 int colision = 0;
 bool powerup = true;
 int powerx = 0;
@@ -207,10 +206,10 @@ int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow_right, Bi
     {
         drawBitmap(background, 0, 0, ALIGN_LEFT);
         drawBitmap(pad, 462, 450, ALIGN_LEFT);
+        changeDirect(power);
         drawBitmap(pointer, get_mouseX(), get_mouseY(), ALIGN_LEFT);
         show_score(arrow_up, arrow_left, arrow_down, arrow_right, cromossoma_up, cromossoma_left, cromossoma_down, cromossoma_right, cromossoma_idle, pad);
-        changeDirect(power);
-
+        
         for (unsigned int i = 0; i < number_of_arrows; i++)
         {
             if (arrows[i]->currentX >= get_horizontal_resolution())
@@ -364,17 +363,26 @@ int powerSpeed(int xi, int xf)
 
 void changeDirect(Bitmap *power)
 {
-    if(powerup)
+    if(colision <= 2)
     {
-        powerUps(power, xi, yi, yf);
+        if(powerup)
+        {
+            powerUps(power, xi, yi, yf);
+        }
+        else
+        {
+            yf = rand() % 668;
+            xi = powerx;
+            yi = powery;
+            powerup = true;
+        }
     }
     else
     {
-        yf = rand() % 668;
-        xi = powerx;
-        yi = powery;
-        colision++;
-        powerup = true;
+        if(timer_counter % 1600)
+        {
+            colision =0;
+        }
     }
 }
 
@@ -383,7 +391,7 @@ void powerUps(Bitmap *power, int xi, int yi, int yf)
     int xf;
     if(xi == 0)
     {
-        xf = 924;
+        xf = 954;
     }
     else
     {
@@ -393,36 +401,70 @@ void powerUps(Bitmap *power, int xi, int yi, int yf)
     int speedx = powerSpeed(xi, xf);
     int speedy = powerSpeed(yi, yf);
 
-    if(xi > xf)
+    if(xi !=0 )
     {
-        speedx *= -1;
+        speedx *=-1;
+    }
+    if(yi>yf)
+    {
+        speedy*=-1;
+    }
+    if(xi>=xf)
+    {
+         if ((powerx + speedx) <= xf)
+        {
+            powerx = xf;    
+            printf("xi = 899  %d ",colision);
+            powerup = false; 
+            colision ++;
+        }
+        else
+        {
+            powerx += speedx;
+        }
     }
 
-    if(yi > yf)
+    if(xi<=xf)
     {
-        speedy *= -1;
+         if ((powerx + speedx) >= xf)
+        {
+            powerx = xf;    
+            printf("xi = 899 e %d",colision);
+            powerup = false;
+            colision ++; 
+        }
+        else
+        {
+            powerx += speedx;
+        }
+    }
+
+    if(yi>=yf)
+    {
+        if(powery + speedy < yf) 
+        {
+            powery = yf;
+            colision++; 
+        }
+        else
+        {
+            powery += speedy;
+        }
+    }
+
+     if(yi<=yf)
+    {
+        if(powery + speedy > yf) 
+        {
+            powery = yf;
+            colision++; 
+        }
+        else
+        {
+            powery += speedy;
+        }
     }
    
-    
-    if ((powerx + speedx) >= xf)
-    {
-       powerx = xf;    
-       powerup = false; 
-    }
-    else
-    {
-        powerx += speedx;
-    }
-    if(powery + speedy > yf) 
-    {
-        powery = yf;
-        powerup = false; 
-    }
-    else
-    {
-        powery += speedy;
-    }
-    
     drawBitmap(power, powerx, powery, ALIGN_LEFT);
     
 }
