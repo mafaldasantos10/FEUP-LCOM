@@ -544,6 +544,7 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
                     { /* subscribed interrupt */
 
                         kbc_ih();
+                        //kbc_asm_ih();
 
                         if (status == MSB)
                         {
