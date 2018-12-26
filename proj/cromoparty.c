@@ -10,12 +10,11 @@
 #include "keyboard.h"
 #include "interface.h"
 #include "PS2mouse.h"
+#include "score.h"
 
 //VARIABLE INITIALIZATION
-int scoreCounter = 0;
 Arrow **arrows;
 size_t number_of_arrows = 2;
-int score_to_print = 0;
 int cromossomaDance = 4;
 int count = 0;
 int colision = 0;
@@ -209,6 +208,7 @@ int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow_right, Bi
         drawBitmap(background, 0, 0, ALIGN_LEFT);
         drawBitmap(pad, 462, 450, ALIGN_LEFT);
         drawBitmap(pointer, get_mouseX(), get_mouseY(), ALIGN_LEFT);
+        show_score(arrow_up, arrow_left, arrow_down, arrow_right, cromossoma_up, cromossoma_left, cromossoma_down, cromossoma_right, cromossoma_idle, pad);
         changeDirect(power);
 
         for (unsigned int i = 0; i < number_of_arrows; i++)
@@ -287,90 +287,35 @@ void keyboardArrows()
     {
         arrows[i]->active = false;
         cromossomaDance = 0;
-        score(i);       
+        score(arrows[i]->currentX, &cromossomaDance);
+        return;
     }
     else if (status == A_KEY && arrows[i]->direction == 1)
     {
         arrows[i]->active = false;
         cromossomaDance = 1;
-        score(i);
+        score(arrows[i]->currentX, &cromossomaDance);
+        return;
     }
     else if (status == S_KEY && arrows[i]->direction == 2)
     {
         arrows[i]->active = false;
         cromossomaDance = 2;
-        score(i);
+        score(arrows[i]->currentX, &cromossomaDance);
+        return;
     } 
     else if (status == D_KEY && arrows[i]->direction == 3)
     {
         arrows[i]->active = false;
         cromossomaDance = 3;
-        score(i);
+        score(arrows[i]->currentX, &cromossomaDance);
+        return;
     }
     else
     {  
         score_to_print = 4;
         cromossomaDance = 4;
         arrows[i]->active = false;
-    }
-}
-
-//////////////////////////////////////////////////////////////////
-
-void score(int i)
-{
-    if (abs(462 - arrows[i]->currentX) < 10)
-    {
-        scoreCounter += 30;
-        score_to_print = 1;
-        return;
-    }
-    else if (abs(462 - arrows[i]->currentX) < 35)
-    {
-        scoreCounter += 10;
-        score_to_print = 2;
-        return;
-    }
-    else if (abs(462 - arrows[i]->currentX) < 70)
-    {
-        scoreCounter += 5;
-        score_to_print = 3;
-        return;
-    }
-    else
-    {
-        score_to_print = 4;
-        cromossomaDance = 4;
-        return;
-    }
-}
-
-//////////////////////////////////////////////////////////////////
-
-void printScore(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great)
-{   
-    switch (score_to_print)
-    {
-        case 1:
-        {
-            drawBitmap(perfect, 362, 330, ALIGN_LEFT);
-            break;
-        }
-        case 2:
-        {
-            drawBitmap(great, 362, 330, ALIGN_LEFT);
-            break;
-        }
-        case 3:
-        {
-            drawBitmap(okay, 362, 330, ALIGN_LEFT);
-            break;
-        }
-        case 4:
-        {
-            drawBitmap(miss, 362, 330, ALIGN_LEFT);
-            break;
-        }
     }
 }
 
