@@ -1,9 +1,6 @@
 #ifndef _LCOM_I8254_H_
 #define _LCOM_I8254_H_
 
-//GLOBAL VARIABLE
-extern int timer_counter;
-
 /** @defgroup i8254 i8254
  * @{
  *
@@ -55,7 +52,8 @@ extern int timer_counter;
 #define TIMER_RB_STATUS_        BIT(4)
 #define TIMER_RB_SEL(n)         BIT((n)+1)
 
-
 /**@}*/
+
+extern int timer_counter;
 
 #endif /* _LCOM_I8254_H */
