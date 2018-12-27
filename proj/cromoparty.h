@@ -36,6 +36,7 @@ typedef struct {
 typedef struct {
     BitmapInfoHeader bitmapInfoHeader;
     unsigned char* bitmapData;
+    bool colided;
 } Bitmap;
 
 //arrow
@@ -89,8 +90,8 @@ void arrowProcessing(Bitmap * cromossoma_idle, Bitmap * pad, Bitmap * background
 
 void printDance(Bitmap * cromossoma_idle, Bitmap * cromossoma_up, Bitmap * cromossoma_down, Bitmap * cromossoma_right, Bitmap * cromossoma_left);
 
-void powerUps(Bitmap * power, int xi, int yi, int yf);
+void powerUps(Bitmap * power, Bitmap * pad, Bitmap * arrow_right, Bitmap * arrow_left, Bitmap * arrow_up, Bitmap * arrow_down, Bitmap * cromossoma_idle, Bitmap * cromossoma_up, Bitmap * cromossoma_down, Bitmap * cromossoma_right, Bitmap * cromossoma_left, int xi, int yi, int yf);
 
 int powerSpeed(int xi, int xf);
 
-void changeDirect(Bitmap *power);
+void changeDirect(Bitmap *power, Bitmap * pad, Bitmap * arrow_right, Bitmap * arrow_left, Bitmap * arrow_up, Bitmap * arrow_down, Bitmap * cromossoma_idle, Bitmap * cromossoma_up, Bitmap * cromossoma_down, Bitmap * cromossoma_right, Bitmap * cromossoma_left);
