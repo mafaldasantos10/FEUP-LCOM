@@ -7,6 +7,7 @@
 #include "i8042.h"
 #include "cromoparty.h"
 #include "interface.h"
+#include "PS2mouse.h"
 #include "score.h"
 
 //VARIABLE INITIALIZATION
@@ -182,4 +183,14 @@ void reset_score_counter()
 void reset_score_to_print()
 {
   score_to_print = 0;
+}
+
+//////////////////////////////////////////////////////////////////
+
+void get_powerup()
+{
+	if (pp.lb)
+	{
+		score_counter += 15;
+	}
 }

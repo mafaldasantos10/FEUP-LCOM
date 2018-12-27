@@ -168,12 +168,12 @@ void currentMousePosition()
 	mouseX += pp.delta_x;
   mouseY -= pp.delta_y;
 
-  if (mouseX < 0) 
+  if (mouseX < -10)
 	{
-		mouseX = 0;
+		mouseX = -10;
 	}
 
-  if (mouseY < 0) 
+  if (mouseY < 0)
 	{
 		mouseY = 0;
 	}

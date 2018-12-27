@@ -36,4 +36,3 @@ int powerSpeed(int xi, int xf);
 void changeDirect();
 
 void reset_powerup();
-

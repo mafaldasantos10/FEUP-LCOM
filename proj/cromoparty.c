@@ -201,17 +201,6 @@ void printDance()
 
 ///////////////////////////////////////////////////////////////////
 
-void reset_powerup()
-{
-    xi =0;
-    yf=0;
-    yi=0;
-    powerx=0;
-    colision = 4;
-    powery=0;
-    
-}
-
 int powerSpeed(int xi, int xf)
 {
     int speedx = abs(xf - xi) / 160;
@@ -363,9 +352,17 @@ void powerUps(int xi, int yi, int yf)
         }
     }
    
-   
     drawBitmap(images.power, powerx, powery, ALIGN_LEFT);
-    
+}
+
+void reset_powerup()
+{
+    xi = 0;
+    yf = 0;
+    yi = 0;
+    powerx = 0;
+    powery = 0;
+    colision = 4;
 }
 
 //////////////////////////////////////////////////////////////////
@@ -428,7 +425,6 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
                     if (msg.m_notify.interrupts & irq_set_timer)
                     {
                         timer_int_handler();
-
                         arrowProcessing();
                     }
 
@@ -503,6 +499,7 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
                             pp.bytes[2] = status_mouse;
                             packet_create();
                             currentMousePosition();
+                            get_powerup();
                             s = 1;
                         }
                     }
@@ -516,14 +513,13 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
             /* no standard messages expected: do nothing */
         }
 
-        size = 1;
-        
+        size = 1;   
     }
 
     /* to reset global variables for a new game */
     if (p_key)
     {
-        timer_counter =0;
+        timer_counter = 0;
         cromossomaDance = 4;
         reset_score_to_print();
         reset_score_counter();
