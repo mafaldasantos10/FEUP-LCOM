@@ -16,6 +16,7 @@
 //VARIABLE INITIALIZATION
 static state_t state = START;
 bool exit_game = false;
+bool do_not_change = false;
 
 
 //FUNCTIONS
@@ -23,16 +24,10 @@ bool exit_game = false;
 
 int menu()
 {
-  //iamges are loaded at the begining
+  //images are loaded at the begining
   loadImages();
 
-  drawBitmap(images.menu, 0, 0, ALIGN_LEFT); 
-  drawBitmap(images.start_selected, 342, 305, ALIGN_LEFT);
-  drawBitmap(images.instructions_not_selected, 342, 545, ALIGN_LEFT);
-  drawBitmap(images.exit_not_selected, 342, 665, ALIGN_LEFT);
-  drawBitmap(images.highscores_not_selected, 342, 425, ALIGN_LEFT);
-
-  double_buffer_to_video_mem();
+  default_menu();
 
   uint8_t bit_no_timer;
   uint8_t bit_no_kb;
@@ -121,8 +116,8 @@ int menu()
             {
               if (status_mouse & BIT(3))
               {
-                  pp.bytes[0] = status_mouse;
-                  s++;
+                pp.bytes[0] = status_mouse;
+                s++;
               }
               continue;
             } 
@@ -150,6 +145,7 @@ int menu()
       /* no standard messages expected: do nothing */
     }
 
+    do_not_change = false;
     size = 1;
   }
 
@@ -192,7 +188,7 @@ int menu()
 
 void change_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
 {
-  switch(status)
+  switch (status)
   {
     case W_KEY:
       state = (state - 1) % 4;
@@ -200,11 +196,17 @@ void change_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
     case S_KEY:
       state = (state + 1) % 4;
       break;
-    case ENTER_KEY:
+    case ENTER_KEY_BK:
       if (state == EXIT)
         exit_game = true;
-      if (state == START)
+      else if (state == START)
         game(bit_no_timer, bit_no_kb, bit_no_mouse);
+      else if (state == INSTRUCTIONS)
+      {
+        drawBitmap(images.instructions, 0, 0, ALIGN_LEFT);
+        double_buffer_to_video_mem();
+        do_not_change = true; //so that it doesn't print the menu over the instructions
+      }
       break;
   }
 }
@@ -215,10 +217,15 @@ void change_buttons()
 { 
   drawBitmap(images.menu, 0, 0, ALIGN_LEFT); 
 
+  if (do_not_change)
+  {
+    return;
+  }
+
   switch(state % 4)
   {
     case 0:
-      drawBitmap(images.start_selected, 342, 305, ALIGN_LEFT);   
+      drawBitmap(images.start_selected, 342, 305, ALIGN_LEFT); 
       drawBitmap(images.highscores_not_selected, 342, 425, ALIGN_LEFT);
       drawBitmap(images.instructions_not_selected, 342, 545, ALIGN_LEFT);
       drawBitmap(images.exit_not_selected, 342, 665, ALIGN_LEFT);
@@ -243,5 +250,17 @@ void change_buttons()
       break;
   } 
 
+  double_buffer_to_video_mem();
+}
+
+//////////////////////////////////////////////////////////////////
+
+void default_menu()
+{
+  drawBitmap(images.menu, 0, 0, ALIGN_LEFT);
+  drawBitmap(images.start_selected, 342, 305, ALIGN_LEFT);
+  drawBitmap(images.instructions_not_selected, 342, 545, ALIGN_LEFT);
+  drawBitmap(images.exit_not_selected, 342, 665, ALIGN_LEFT);
+  drawBitmap(images.highscores_not_selected, 342, 425, ALIGN_LEFT);
   double_buffer_to_video_mem();
 }

@@ -51,6 +51,9 @@
 #define S_KEY 0x1F
 #define D_KEY 0x20
 #define ENTER_KEY 0x1C
+#define ENTER_KEY_BK 0x9C
+#define SPACE_KEY 0x39
+#define SPACE_KEY_BK 0xB9
 #define ESC_BK 0x81
 #define P_KEY_BK 0x99
 

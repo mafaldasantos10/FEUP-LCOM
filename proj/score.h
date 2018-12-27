@@ -17,3 +17,5 @@ int number_of_digits(int number);
 void reset_score_counter();
 
 void reset_score_to_print();
+
+void get_powerup();

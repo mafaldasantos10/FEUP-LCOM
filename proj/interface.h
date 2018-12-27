@@ -78,6 +78,8 @@ typedef struct {
   Bitmap* highscores_not_selected;
   Bitmap* exit_not_selected;
   Bitmap* menu;
+  Bitmap* instructions;
+  Bitmap* pause;
 } Images;
 
 

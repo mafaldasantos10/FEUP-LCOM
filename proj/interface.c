@@ -178,6 +178,8 @@ void loadImages()
     images.highscores_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/highscores1.bmp");
     images.exit_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/exit1.bmp");
     images.menu = loadBitmap("/home/lcom/labs/proj/bitmap/menu.bmp");
+    images.instructions = loadBitmap("/home/lcom/labs/proj/bitmap/instructionmenu.bmp");
+    images.pause = loadBitmap("/home/lcom/labs/proj/bitmap/pause.bmp");
 }
 
 //////////////////////////////////////////////////////////////////
@@ -195,7 +197,7 @@ void deleteImages()
     deleteBitmap(images.seven);
     deleteBitmap(images.eight);
     deleteBitmap(images.nine);
-    deleteBitmap(images.zero);  
+    deleteBitmap(images.zero);
     deleteBitmap(images.background);
     deleteBitmap(images.pad);
     deleteBitmap(images.arrow_up);
@@ -222,6 +224,8 @@ void deleteImages()
     deleteBitmap(images.highscores_not_selected);
     deleteBitmap(images.exit_not_selected);
     deleteBitmap(images.menu);
+    deleteBitmap(images.instructions);
+    deleteBitmap(images.pause);
 }
 
 //////////////////////////////////////////////////////////////////
