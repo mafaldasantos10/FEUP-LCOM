@@ -16,14 +16,14 @@
 Arrow **arrows;
 size_t number_of_arrows = 2;
 int cromossomaDance = 4;
-int colision = 0;
+int colision = 4;
 bool powerup = true;
 int powerx = 0;
 int powery = 0;
 int xi = 0;
 int yi = 0;
-int yf = 300;
-
+int yf = 650;
+bool green = false;
 
 //FUNCTIONS
 //////////////////////////////////////////////////////////////////
@@ -119,7 +119,7 @@ Bitmap* loadBitmap(const char* filename)
 
     bmp->bitmapData = bitmapImage;
     bmp->bitmapInfoHeader = bitmapInfoHeader;
-
+    bmp->colided = false;
     return bmp;
 }
 
@@ -179,10 +179,24 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment)
 
         for(int j = 0; j < drawWidth; j ++)
         {
+            if(ptr[j] == 0x007c0d)
+            {
+                green = true;
+            }
             if(ptr[j] != 0x1f0ff8)
             {
+                if(!green)
+                {
+
+                    if(buff[j] == 0x007c0d || buff[j] == 0x00683f)   
+                    {
+                        
+                        bmp->colided = true;
+                    }  
+                }
+
                 buff[j] = ptr[j];
-            }         
+            } 
         }
     }
 }
@@ -206,7 +220,7 @@ int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow_right, Bi
     {
         drawBitmap(background, 0, 0, ALIGN_LEFT);
         drawBitmap(pad, 462, 450, ALIGN_LEFT);
-        changeDirect(power);
+        changeDirect(power, pad, arrow_right, arrow_left, arrow_up, arrow_down, cromossoma_idle, cromossoma_up, cromossoma_down, cromossoma_right, cromossoma_left);
         drawBitmap(pointer, get_mouseX(), get_mouseY(), ALIGN_LEFT);
         show_score(arrow_up, arrow_left, arrow_down, arrow_right, cromossoma_up, cromossoma_left, cromossoma_down, cromossoma_right, cromossoma_idle, pad);
         
@@ -356,40 +370,43 @@ void printDance(Bitmap * cromossoma_idle, Bitmap * cromossoma_up, Bitmap * cromo
 
 int powerSpeed(int xi, int xf)
 {
-    int speedx = abs(xf - xi) / 100;
+    int speedx = abs(xf - xi) / 150;
 
     return speedx;
 }
 
-void changeDirect(Bitmap *power)
+void changeDirect(Bitmap *power, Bitmap * pad, Bitmap * arrow_right, Bitmap * arrow_left, Bitmap * arrow_up, Bitmap * arrow_down, Bitmap * cromossoma_idle, Bitmap * cromossoma_up, Bitmap * cromossoma_down, Bitmap * cromossoma_right, Bitmap * cromossoma_left)
 {
     if(colision <= 2)
     {
         if(powerup)
         {
-            powerUps(power, xi, yi, yf);
+            powerUps(power, pad, arrow_right, arrow_left, arrow_up, arrow_down, cromossoma_idle, cromossoma_up, cromossoma_down, cromossoma_right, cromossoma_left, xi, yi, yf);
         }
         else
         {
-            yf = rand() % 668;
+            yf = rand() % 696;
             xi = powerx;
             yi = powery;
             powerup = true;
+            //printf("POSICAO X = %d  ", xi);
+            //printf("POSICAO Y = %d  ", yf);
         }
     }
     else
     {
-        if(timer_counter % 1600)
+        if((timer_counter % 1200) ==0)
         {
             colision = 0;
         }
     }
 }
 
-void powerUps(Bitmap *power, int xi, int yi, int yf)
+void powerUps(Bitmap *power, Bitmap * pad, Bitmap * arrow_right, Bitmap * arrow_left, Bitmap * arrow_up, Bitmap * arrow_down, Bitmap * cromossoma_idle, Bitmap * cromossoma_up, Bitmap * cromossoma_down, Bitmap * cromossoma_right, Bitmap * cromossoma_left, int xi, int yi, int yf)
 {
+    //printf("RECEBI o Y %d \n", yf);
     int xf;
-    if(xi == 0)
+    if(xi >= 0 && xi < 500)
     {
         xf = 954;
     }
@@ -401,69 +418,84 @@ void powerUps(Bitmap *power, int xi, int yi, int yf)
     int speedx = powerSpeed(xi, xf);
     int speedy = powerSpeed(yi, yf);
 
-    if(xi !=0 )
+    if(pad->colided || cromossoma_up->colided || cromossoma_right->colided || cromossoma_left->colided || cromossoma_down->colided || arrow_up->colided || arrow_right->colided || arrow_left->colided || arrow_down->colided || cromossoma_idle->colided)
     {
-        speedx *= -1;
+        printf("ENTREIII COLIDIII \n");
+        pad->colided = false;
+        cromossoma_up->colided = false;
+        cromossoma_right->colided = false;
+        cromossoma_left->colided = false;
+        cromossoma_down->colided = false;
+        arrow_up->colided = false;
+        arrow_right->colided = false;
+        arrow_left->colided = false;
+        arrow_down->colided = false;
+        cromossoma_idle->colided = false;
+        powerup = false;
+        colision ++;
+        return;
     }
-    if(yi > yf)
-    {
-        speedy *= -1;
-    }
+
     if(xi >= xf)
     {
-         if ((powerx + speedx) <= xf)
+         if ((powerx - speedx) <= xf)
         {
             powerx = xf;    
-            printf("xi = 899  %d ", colision);
+            //printf("xi = 899  %d ", colision);
             powerup = false; 
             colision++;
         }
         else
         {
-            powerx += speedx;
+           //printf("pisca 2 ?");
+            powerx -= speedx;
         }
     }
 
-    if(xi <= xf)
+    if(xi < xf)
     {
          if ((powerx + speedx) >= xf)
         {
             powerx = xf;    
-            printf("xi = 899 e %d", colision);
+            //printf("xi = 899 e %d", colision);
             powerup = false;
             colision++; 
         }
         else
         {
+            //printf("pisca 1?");
             powerx += speedx;
         }
     }
 
     if(yi >= yf)
     {
-        if(powery + speedy < yf) 
+        if(powery - speedy <= yf) 
         {
+            //printf("pisca 3 ?");
             powery = yf;
-            colision++; 
         }
         else
         {
-            powery += speedy;
+            //printf("para baixo %d \n", powery);
+            powery -= speedy;
         }
     }
 
-     if(yi <= yf)
+    if(yi < yf)
     {
-        if(powery + speedy > yf) 
+        if(powery + speedy >= yf) 
         {
+            //printf("pisca 4 ?");
             powery = yf;
-            colision++; 
         }
         else
         {
+            //printf("para cima %d \n", powery);
             powery += speedy;
         }
     }
+   
    
     drawBitmap(power, powerx, powery, ALIGN_LEFT);
     
