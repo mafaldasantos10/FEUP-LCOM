@@ -47,180 +47,22 @@ void init_arrows()
 
 //////////////////////////////////////////////////////////////////
 
-Bitmap* loadBitmap(const char* filename) 
-{
-    // allocating necessary size
-    Bitmap* bmp = (Bitmap*) malloc(sizeof(Bitmap));
-
-    // open filename in read binary mode
-    FILE *filePtr;
-    filePtr = fopen(filename, "rb");
-    if (filePtr == NULL)
-        return NULL;
-
-    // read the bitmap file header
-    BitmapFileHeader bitmapFileHeader;
-    fread(&bitmapFileHeader, 2, 1, filePtr);
-
-    // verify that this is a bmp file by check bitmap id
-    if (bitmapFileHeader.type != 0x4D42) 
-    {
-        fclose(filePtr);
-        return NULL;
-    }
-
-    int rd;
-    do {
-        if ((rd = fread(&bitmapFileHeader.size, 4, 1, filePtr)) != 1)
-            break;
-        if ((rd = fread(&bitmapFileHeader.reserved, 4, 1, filePtr)) != 1)
-            break;
-        if ((rd = fread(&bitmapFileHeader.offset, 4, 1, filePtr)) != 1)
-            break;
-    } while (0);
-
-    if (rd != 1) 
-    {
-        fprintf(stderr, "Error reading file\n");
-        exit(-1);
-    }
-
-    // read the bitmap info header
-    BitmapInfoHeader bitmapInfoHeader;
-    fread(&bitmapInfoHeader, sizeof(BitmapInfoHeader), 1, filePtr);
-
-    // move file pointer to the begining of bitmap data
-    fseek(filePtr, bitmapFileHeader.offset, SEEK_SET);
-
-    // allocate enough memory for the bitmap image data
-    unsigned char* bitmapImage = (unsigned char*) malloc(bitmapInfoHeader.imageSize);
-
-    // verify memory allocation
-    if (!bitmapImage) 
-    {
-        free(bitmapImage);
-        fclose(filePtr);
-        return NULL;
-    }
-
-    // read in the bitmap image data
-    fread(bitmapImage, bitmapInfoHeader.imageSize, 1, filePtr);
-
-    // make sure bitmap image data was read
-    if (bitmapImage == NULL) 
-    {
-        fclose(filePtr);
-        return NULL;
-    }
-
-    // close file and return bitmap image data
-    fclose(filePtr);
-
-    bmp->bitmapData = bitmapImage;
-    bmp->bitmapInfoHeader = bitmapInfoHeader;
-    bmp->colided = false;
-    return bmp;
-}
-
-//////////////////////////////////////////////////////////////////
-
-void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment) 
-{
-    if (bmp == NULL)
-        return;
-
-    int width = bmp->bitmapInfoHeader.width;
-    int drawWidth = width;
-    int height = bmp->bitmapInfoHeader.height;
-
-    if (alignment == ALIGN_CENTER)
-        x -= width / 2;
-    else if (alignment == ALIGN_RIGHT)
-        x -= width;
-
-    if (x + width < 0 || x > get_horizontal_resolution() || y + height < 0 || y > get_vertical_resolution())
-        return;
-
-    int xCorrection = 0;
-    if (x < 0) 
-    {
-        xCorrection = -x;
-        drawWidth -= xCorrection;
-        x = 0;
-
-        if (drawWidth > get_horizontal_resolution())
-            drawWidth = get_horizontal_resolution();
-    } 
-    else if (x + drawWidth >= get_horizontal_resolution()) 
-    {
-        drawWidth = get_horizontal_resolution() - x;
-    }
-
-    unsigned char* bufferStartPos;
-    unsigned char* imgStartPos;
-
-    int i;
-    for (i = 0; i < height; i++) 
-    {
-        int pos = y + height - 1 - i;
-
-        if (pos < 0 || pos >= get_vertical_resolution())
-            continue;
-
-        bufferStartPos = double_buffer;
-
-        bufferStartPos += x * 4 + pos * get_horizontal_resolution() * 4;
-
-        imgStartPos = (unsigned char*)(bmp->bitmapData) + xCorrection * 4 + i * width * 4;
-
-        uint32_t *ptr =(uint32_t*) imgStartPos;
-        uint32_t *buff =(uint32_t*) bufferStartPos;
-
-        for(int j = 0; j < drawWidth; j ++)
-        {
-
-            if(ptr[j] != 0x1f0ff8)
-            {
-                    if(buff[j] == 0x630000)
-                    {
-                        
-                        bmp->colided = true;
-                    }  
-
-                buff[j] = ptr[j];
-            } 
-        }
-    }
-}
-
-//////////////////////////////////////////////////////////////////
-
-void deleteBitmap(Bitmap* bmp)
-{
-    if (bmp == NULL)
-        return;
-
-    free(bmp->bitmapData);
-    free(bmp);
-}
-
-//////////////////////////////////////////////////////////////////
-
-int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow_right, Bitmap * arrow_left, Bitmap * arrow_up, Bitmap * arrow_down, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great, Bitmap * cromossoma_idle, Bitmap * cromossoma_up, Bitmap * cromossoma_down, Bitmap * cromossoma_right, Bitmap * cromossoma_left, Bitmap * pointer, Bitmap *power)
+int pix_map_move_pos()
 {
     if (timer_counter % (sys_hz() / FRAME_RATE) == 0)
     {
-        drawBitmap(background, 0, 0, ALIGN_LEFT);
-        changeDirect(power, pad, arrow_right, arrow_left, arrow_up, arrow_down, cromossoma_idle, cromossoma_up, cromossoma_down, cromossoma_right, cromossoma_left);
-        drawBitmap(pad, 462, 450, ALIGN_LEFT);
-        drawBitmap(pointer, get_mouseX(), get_mouseY(), ALIGN_LEFT);
-        show_score(arrow_up, arrow_left, arrow_down, arrow_right, cromossoma_up, cromossoma_left, cromossoma_down, cromossoma_right, cromossoma_idle, pad);
+        drawBitmap(images.background, 0, 0, ALIGN_LEFT);
+        changeDirect();
+        drawBitmap(images.pad, 462, 450, ALIGN_LEFT);
+        drawBitmap(images.pointer, get_mouseX(), get_mouseY(), ALIGN_LEFT);
+        show_score();
         
         for (unsigned int i = 0; i < number_of_arrows; i++)
         {
             if (arrows[i]->currentX >= get_horizontal_resolution())
             {
-                score_to_print = 4;
+                cromossomaDance = 4;
+                score(200, &cromossomaDance); //case that evaluates to fail
                 arrows[i]->active = false;
             }
             else
@@ -232,31 +74,30 @@ int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow_right, Bi
             {
                 case 0:
                 {
-                    drawBitmap(arrow_up, arrows[i]->currentX, 450, ALIGN_LEFT);
+                    drawBitmap(images.arrow_up, arrows[i]->currentX, 450, ALIGN_LEFT);
                     break;
                 }
                 case 1:
                 {
-                    drawBitmap(arrow_left, arrows[i]->currentX, 450, ALIGN_LEFT);
+                    drawBitmap(images.arrow_left, arrows[i]->currentX, 450, ALIGN_LEFT);
                     break;
                 }
                 case 2:
                 {
-                    drawBitmap(arrow_down, arrows[i]->currentX, 450, ALIGN_LEFT);
+                    drawBitmap(images.arrow_down, arrows[i]->currentX, 450, ALIGN_LEFT);
                     break;
                 }
                 case 3:
                 {
-                    drawBitmap(arrow_right, arrows[i]->currentX, 450, ALIGN_LEFT);
+                    drawBitmap(images.arrow_right, arrows[i]->currentX, 450, ALIGN_LEFT);
                     break;
                 }
             }
         }  
     }
     
-    printScore(okay, miss, perfect, great);
-    printDance(cromossoma_idle, cromossoma_up, cromossoma_down, cromossoma_right,
-    cromossoma_left);
+    printScore();
+    printDance();
     double_buffer_to_video_mem();
    
     return 0;
@@ -317,42 +158,42 @@ void keyboardArrows()
         return;
     }
     else
-    {  
-        score_to_print = 4;
+    {
         cromossomaDance = 4;
+        score(200, &cromossomaDance); //case that evaluates to fail
         arrows[i]->active = false;
     }
 }
 
 //////////////////////////////////////////////////////////////////
 
-void printDance(Bitmap * cromossoma_idle, Bitmap * cromossoma_up, Bitmap * cromossoma_down, Bitmap * cromossoma_right, Bitmap * cromossoma_left)
+void printDance()
 {
     switch (cromossomaDance)
     {
         case 0:
         {
-            drawBitmap(cromossoma_up, 650, 300, ALIGN_LEFT);
+            drawBitmap(images.cromossoma_up, 650, 300, ALIGN_LEFT);
             break;
         }
         case 1:
         {
-            drawBitmap(cromossoma_right, 650, 300, ALIGN_LEFT);
+            drawBitmap(images.cromossoma_right, 650, 300, ALIGN_LEFT);
             break;
         }
         case 2:
         {
-            drawBitmap(cromossoma_down, 650, 300, ALIGN_LEFT);
+            drawBitmap(images.cromossoma_down, 650, 300, ALIGN_LEFT);
             break;
         }
         case 3:
         {
-            drawBitmap(cromossoma_left, 650, 300, ALIGN_LEFT);
+            drawBitmap(images.cromossoma_left, 650, 300, ALIGN_LEFT);
             break;
         }
         case 4:
         {
-            drawBitmap(cromossoma_idle, 650, 300, ALIGN_LEFT);
+            drawBitmap(images.cromossoma_idle, 650, 300, ALIGN_LEFT);
             break;
         }
     }
@@ -367,21 +208,21 @@ int powerSpeed(int xi, int xf)
     return speedx;
 }
 
-void changeDirect(Bitmap *power, Bitmap * pad, Bitmap * arrow_right, Bitmap * arrow_left, Bitmap * arrow_up, Bitmap * arrow_down, Bitmap * cromossoma_idle, Bitmap * cromossoma_up, Bitmap * cromossoma_down, Bitmap * cromossoma_right, Bitmap * cromossoma_left)
+void changeDirect()
 {
-    if(colision <= 2)
+    if (colision <= 2)
     {
-        printf("colision %d \n",colision);
-        if(powerup)
+        printf("colision %d \n", colision);
+        if (powerup)
         {
-            powerUps(power, pad, arrow_right, arrow_left, arrow_up, arrow_down, cromossoma_idle, cromossoma_up, cromossoma_down, cromossoma_right, cromossoma_left, xi, yi, yf);
+            powerUps(xi, yi, yf);
         }
         else
         {
-            if(power->colided)
+            if (images.power->colided)
             {
                 printf("COLIDI \n");
-                 if(powery < 368)
+                 if (powery < 368)
                 {
                     yf = 468 +rand() % 250;
                 }
@@ -389,9 +230,9 @@ void changeDirect(Bitmap *power, Bitmap * pad, Bitmap * arrow_right, Bitmap * ar
                 {
                     yf = rand() % 250;
                 }
-                powerx =0;
+                powerx = 0;
                 printf("POSICAO Y = %d  ", yf);
-                power->colided = false;
+                images.power->colided = false;
             }
             else
             {
@@ -408,18 +249,18 @@ void changeDirect(Bitmap *power, Bitmap * pad, Bitmap * arrow_right, Bitmap * ar
     }
     else
     {
-        if((timer_counter % 1200) ==0)
+        if ((timer_counter % 1200) == 0)
         {
             colision = 0;
         }
     }
 }
 
-void powerUps(Bitmap *power, Bitmap * pad, Bitmap * arrow_right, Bitmap * arrow_left, Bitmap * arrow_up, Bitmap * arrow_down, Bitmap * cromossoma_idle, Bitmap * cromossoma_up, Bitmap * cromossoma_down, Bitmap * cromossoma_right, Bitmap * cromossoma_left, int xi, int yi, int yf)
+void powerUps(int xi, int yi, int yf)
 {
     //printf("RECEBI o Y %d \n", yf);
     int xf;
-    if(xi == 0)
+    if (xi == 0)
     {
         xf = 954;       
     }
@@ -431,27 +272,27 @@ void powerUps(Bitmap *power, Bitmap * pad, Bitmap * arrow_right, Bitmap * arrow_
     int speedx = powerSpeed(xi, xf);
     int speedy = powerSpeed(yi, yf);
 
-    if(pad->colided || cromossoma_up->colided || cromossoma_right->colided || cromossoma_left->colided || cromossoma_down->colided || arrow_up->colided || arrow_right->colided || arrow_left->colided || arrow_down->colided || cromossoma_idle->colided)
+    if (images.pad->colided || images.cromossoma_up->colided || images.cromossoma_right->colided || images.cromossoma_left->colided || images.cromossoma_down->colided || images.arrow_up->colided || images.arrow_right->colided 
+    || images.arrow_left->colided || images.arrow_down->colided || images.cromossoma_idle->colided)
     {
-
         printf("ENTREIII I \n");
-        pad->colided = false;
-        cromossoma_up->colided = false;
-        cromossoma_right->colided = false;
-        cromossoma_left->colided = false;
-        cromossoma_down->colided = false;
-        arrow_up->colided = false;
-        arrow_right->colided = false;
-        arrow_left->colided = false;
-        arrow_down->colided = false;
-        cromossoma_idle->colided = false;
+        images.pad->colided = false;
+        images.cromossoma_up->colided = false;
+        images.cromossoma_right->colided = false;
+        images.cromossoma_left->colided = false;
+        images.cromossoma_down->colided = false;
+        images.arrow_up->colided = false;
+        images.arrow_right->colided = false;
+        images.arrow_left->colided = false;
+        images.arrow_down->colided = false;
+        images.cromossoma_idle->colided = false;
         powerup = false;
-        power->colided = true;
+        images.power->colided = true;
         colision++;
         return;
     }
 
-    if(xi >= xf)
+    if (xi >= xf)
     {
          if ((powerx - speedx) <= xf)
         {
@@ -512,8 +353,32 @@ void powerUps(Bitmap *power, Bitmap * pad, Bitmap * arrow_right, Bitmap * arrow_
     }
    
    
-    drawBitmap(power, powerx, powery, ALIGN_LEFT);
+    drawBitmap(images.power, powerx, powery, ALIGN_LEFT);
     
+}
+
+//////////////////////////////////////////////////////////////////
+
+void arrowProcessing()
+{
+    if (!arrows[0]->active)
+    {
+        arrowRate(0);
+        arrows[0]->currentX = 0;
+        arrows[0]->active = true;
+        return;
+    }
+    else if (!arrows[1]->active)
+    {
+        arrowRate(1);
+        arrows[1]->currentX = 0;
+        arrows[1]->active = true;
+        return;
+    }
+    else
+    {
+        pix_map_move_pos();
+    }
 }
 
 //////////////////////////////////////////////////////////////////
@@ -522,27 +387,9 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
 {
     init_arrows();
 
-    Bitmap *background = loadBitmap("/home/lcom/labs/proj/bitmap/discof.bmp");
-    Bitmap *pad = loadBitmap("/home/lcom/labs/proj/bitmap/pad.bmp");
-    Bitmap *arrow_up = loadBitmap("/home/lcom/labs/proj/bitmap/arrowup.bmp");
-    Bitmap *arrow_right = loadBitmap("/home/lcom/labs/proj/bitmap/arrowright.bmp");
-    Bitmap *arrow_down = loadBitmap("/home/lcom/labs/proj/bitmap/arrowdown.bmp");
-    Bitmap *arrow_left = loadBitmap("/home/lcom/labs/proj/bitmap/arrowleft.bmp");
-    Bitmap *cromossoma_idle = loadBitmap("/home/lcom/labs/proj/bitmap/cromossoma1.bmp");
-    Bitmap *cromossoma_down = loadBitmap("/home/lcom/labs/proj/bitmap/cromossomadown.bmp");
-    Bitmap *power = loadBitmap("/home/lcom/labs/proj/bitmap/power.bmp");
-    Bitmap *pointer = loadBitmap("/home/lcom/labs/proj/bitmap/pointer.bmp");
-    Bitmap *cromossoma_left = loadBitmap("/home/lcom/labs/proj/bitmap/cromossomaleft.bmp");
-    Bitmap *cromossoma_right = loadBitmap("/home/lcom/labs/proj/bitmap/cromossomaright.bmp");
-    Bitmap *cromossoma_up = loadBitmap("/home/lcom/labs/proj/bitmap/cromossomaup.bmp");
-    Bitmap *perfect = loadBitmap("/home/lcom/labs/proj/bitmap/perfect.bmp");
-    Bitmap *great = loadBitmap("/home/lcom/labs/proj/bitmap/great.bmp");
-    Bitmap *okay = loadBitmap("/home/lcom/labs/proj/bitmap/okay.bmp");
-    Bitmap *miss = loadBitmap("/home/lcom/labs/proj/bitmap/miss.bmp");
-
-    drawBitmap(background, 0, 0, ALIGN_LEFT);
-    drawBitmap(cromossoma_idle, 650, 300, ALIGN_LEFT);
-    drawBitmap(pad, 462, 450, ALIGN_LEFT);
+    drawBitmap(images.background, 0, 0, ALIGN_LEFT);
+    drawBitmap(images.cromossoma_idle, 650, 300, ALIGN_LEFT);
+    drawBitmap(images.pad, 462, 450, ALIGN_LEFT);
     double_buffer_to_video_mem();
 
     uint32_t irq_set_timer = BIT(bit_no_timer);
@@ -571,7 +418,7 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
                     {
                         timer_int_handler();
 
-                        arrowProcessing(cromossoma_idle, pad, background, arrow_down, arrow_up, arrow_left, arrow_right, okay, miss, perfect, great, cromossoma_up, cromossoma_down, cromossoma_right,  cromossoma_left, pointer, power);
+                        arrowProcessing();
                     }
 
                     if (msg.m_notify.interrupts & irq_set_keyboard)
@@ -665,33 +512,10 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
     /* to reset global variables for a new game */
     if (p_key)
     {
-        score_to_print = 0;
+        cromossomaDance = 4;
+        reset_score_to_print();
         reset_score_counter();
     }
     
     return 0;
-}
-
-//////////////////////////////////////////////////////////////////
-
-void arrowProcessing(Bitmap * cromossoma_idle, Bitmap * pad, Bitmap * background, Bitmap * arrow_down, Bitmap * arrow_up, Bitmap * arrow_left, Bitmap * arrow_right, Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great, Bitmap * cromossoma_up, Bitmap * cromossoma_down, Bitmap * cromossoma_right, Bitmap * cromossoma_left,  Bitmap * pointer, Bitmap *power)
-{
-    if (!arrows[0]->active)
-    {
-        arrowRate(0);
-        arrows[0]->currentX = 0;
-        arrows[0]->active = true;
-        return;
-    }
-    else if (!arrows[1]->active)
-    {
-        arrowRate(1);
-        arrows[1]->currentX = 0;
-        arrows[1]->active = true;
-        return;
-    }
-    else
-    {
-        pix_map_move_pos(pad, background, arrow_right, arrow_left, arrow_up, arrow_down, okay, miss, perfect, great, cromossoma_idle, cromossoma_up, cromossoma_down, cromossoma_right, cromossoma_left, pointer,power);
-    }
 }

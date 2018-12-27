@@ -6,6 +6,7 @@
 
 #include "i8042.h"
 #include "cromoparty.h"
+#include "interface.h"
 #include "score.h"
 
 //VARIABLE INITIALIZATION
@@ -52,7 +53,7 @@ void score(int distance, int *cdance)
 
 //////////////////////////////////////////////////////////////////
 
-void printScore(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great)
+void printScore()
 { 
   switch (score_to_print)
   {
@@ -61,22 +62,22 @@ void printScore(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great)
       break;
     case 1:
     {
-      drawBitmap(perfect, 362, 330, ALIGN_LEFT);
+      drawBitmap(images.perfect, 362, 330, ALIGN_LEFT);
       break;
     }
     case 2:
     {
-      drawBitmap(great, 362, 330, ALIGN_LEFT);
+      drawBitmap(images.great, 362, 330, ALIGN_LEFT);
       break;
     }
     case 3:
     {
-      drawBitmap(okay, 362, 330, ALIGN_LEFT);
+      drawBitmap(images.okay, 362, 330, ALIGN_LEFT);
       break;
     }
     case 4:
     {
-      drawBitmap(miss, 362, 330, ALIGN_LEFT);
+      drawBitmap(images.miss, 362, 330, ALIGN_LEFT);
       break;
     }
   }
@@ -84,74 +85,74 @@ void printScore(Bitmap * okay, Bitmap * miss, Bitmap * perfect, Bitmap * great)
 
 //////////////////////////////////////////////////////////////////
 
-void show_score(Bitmap * one, Bitmap * two, Bitmap * three, Bitmap * four, Bitmap * five, Bitmap * six, Bitmap * seven, Bitmap * eight, Bitmap * nine, Bitmap * zero)
+void show_score()
 {
   int digits = number_of_digits(score_counter);
-  int gap = 150; //distance between numbers
+  int gap = 75; //distance between numbers
   int score = score_counter;
 
   for (int i = 0; i < digits; i++)
   {
-    print_digit(score % 10, 1024 - gap, one, two, three, four, five, six, seven, eight, nine, zero);
+    print_digit(score % 10, get_horizontal_resolution() - gap);
     score /= 10;
-    gap += 100;
+    gap += 60; // gap increases with each extra digit
   }
 }
 
 //////////////////////////////////////////////////////////////////
 
-void print_digit(int score, int x, Bitmap * one, Bitmap * two, Bitmap * three, Bitmap * four, Bitmap * five, Bitmap * six, Bitmap * seven, Bitmap * eight, Bitmap * nine, Bitmap * zero)
+void print_digit(int score, int x)
 {
   switch (score)
   {
     case 0:
     {
-      drawBitmap(zero, x, 100, ALIGN_LEFT);
+      drawBitmap(images.zero, x, 135, ALIGN_LEFT);
       break;
     }
     case 1:
     {
-      drawBitmap(one, x, 100, ALIGN_LEFT);
+      drawBitmap(images.one, x, 135, ALIGN_LEFT);
       break;
     }
     case 2:
     {
-      drawBitmap(two, x, 100, ALIGN_LEFT);
+      drawBitmap(images.two, x, 135, ALIGN_LEFT);
       break;
     }
     case 3:
     {
-      drawBitmap(three, x, 100, ALIGN_LEFT);
+      drawBitmap(images.three, x, 135, ALIGN_LEFT);
       break;
     }
     case 4:
     {
-      drawBitmap(four, x, 100, ALIGN_LEFT);
+      drawBitmap(images.four, x, 135, ALIGN_LEFT);
       break;
     }
     case 5:
     {
-      drawBitmap(five, x, 100, ALIGN_LEFT);
+      drawBitmap(images.five, x, 135, ALIGN_LEFT);
       break;
     }
     case 6:
     {
-      drawBitmap(six, x, 100, ALIGN_LEFT);
+      drawBitmap(images.six, x, 135, ALIGN_LEFT);
       break;
     }
     case 7:
     {
-      drawBitmap(seven, x, 100, ALIGN_LEFT);
+      drawBitmap(images.seven, x, 135, ALIGN_LEFT);
       break;
     }
     case 8:
     {
-      drawBitmap(eight, x, 100, ALIGN_LEFT);
+      drawBitmap(images.eight, x, 135, ALIGN_LEFT);
       break;
     }
     case 9:
     {
-      drawBitmap(nine, x, 100, ALIGN_LEFT);
+      drawBitmap(images.nine, x, 135, ALIGN_LEFT);
       break;
     }
   }
@@ -174,4 +175,11 @@ int number_of_digits(int number)
 void reset_score_counter()
 {
   score_counter = 0;
+}
+
+//////////////////////////////////////////////////////////////////
+
+void reset_score_to_print()
+{
+  score_to_print = 0;
 }
