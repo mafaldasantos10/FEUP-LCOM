@@ -22,8 +22,7 @@ int powerx = 0;
 int powery = 0;
 int xi = 0;
 int yi = 0;
-int yf = 650;
-bool green = false;
+int yf = 300;
 
 //FUNCTIONS
 //////////////////////////////////////////////////////////////////
@@ -179,21 +178,14 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment)
 
         for(int j = 0; j < drawWidth; j ++)
         {
-            if(ptr[j] == 0x007c0d)
-            {
-                green = true;
-            }
+
             if(ptr[j] != 0x1f0ff8)
             {
-                if(!green)
-                {
-
-                    if(buff[j] == 0x007c0d || buff[j] == 0x00683f)   
+                    if(buff[j] == 0x630000)
                     {
                         
                         bmp->colided = true;
                     }  
-                }
 
                 buff[j] = ptr[j];
             } 
@@ -219,8 +211,8 @@ int pix_map_move_pos(Bitmap * pad, Bitmap * background, Bitmap * arrow_right, Bi
     if (timer_counter % (sys_hz() / FRAME_RATE) == 0)
     {
         drawBitmap(background, 0, 0, ALIGN_LEFT);
-        drawBitmap(pad, 462, 450, ALIGN_LEFT);
         changeDirect(power, pad, arrow_right, arrow_left, arrow_up, arrow_down, cromossoma_idle, cromossoma_up, cromossoma_down, cromossoma_right, cromossoma_left);
+        drawBitmap(pad, 462, 450, ALIGN_LEFT);
         drawBitmap(pointer, get_mouseX(), get_mouseY(), ALIGN_LEFT);
         show_score(arrow_up, arrow_left, arrow_down, arrow_right, cromossoma_up, cromossoma_left, cromossoma_down, cromossoma_right, cromossoma_idle, pad);
         
@@ -370,7 +362,7 @@ void printDance(Bitmap * cromossoma_idle, Bitmap * cromossoma_up, Bitmap * cromo
 
 int powerSpeed(int xi, int xf)
 {
-    int speedx = abs(xf - xi) / 150;
+    int speedx = abs(xf - xi) / 160;
 
     return speedx;
 }
@@ -379,15 +371,36 @@ void changeDirect(Bitmap *power, Bitmap * pad, Bitmap * arrow_right, Bitmap * ar
 {
     if(colision <= 2)
     {
+        printf("colision %d \n",colision);
         if(powerup)
         {
             powerUps(power, pad, arrow_right, arrow_left, arrow_up, arrow_down, cromossoma_idle, cromossoma_up, cromossoma_down, cromossoma_right, cromossoma_left, xi, yi, yf);
         }
         else
         {
-            yf = rand() % 696;
-            xi = powerx;
+            if(power->colided)
+            {
+                printf("COLIDI \n");
+                 if(powery < 368)
+                {
+                    yf = 468 +rand() % 250;
+                }
+                else
+                {
+                    yf = rand() % 250;
+                }
+                powerx =0;
+                printf("POSICAO Y = %d  ", yf);
+                power->colided = false;
+            }
+            else
+            {
+                yf = rand() % 691;
+                printf("POSICAO Y sem col = %d  ", yf);
+            }
+
             yi = powery;
+            xi = powerx;
             powerup = true;
             //printf("POSICAO X = %d  ", xi);
             //printf("POSICAO Y = %d  ", yf);
@@ -406,9 +419,9 @@ void powerUps(Bitmap *power, Bitmap * pad, Bitmap * arrow_right, Bitmap * arrow_
 {
     //printf("RECEBI o Y %d \n", yf);
     int xf;
-    if(xi >= 0 && xi < 500)
+    if(xi == 0)
     {
-        xf = 954;
+        xf = 954;       
     }
     else
     {
@@ -420,7 +433,8 @@ void powerUps(Bitmap *power, Bitmap * pad, Bitmap * arrow_right, Bitmap * arrow_
 
     if(pad->colided || cromossoma_up->colided || cromossoma_right->colided || cromossoma_left->colided || cromossoma_down->colided || arrow_up->colided || arrow_right->colided || arrow_left->colided || arrow_down->colided || cromossoma_idle->colided)
     {
-        printf("ENTREIII COLIDIII \n");
+
+        printf("ENTREIII I \n");
         pad->colided = false;
         cromossoma_up->colided = false;
         cromossoma_right->colided = false;
@@ -432,7 +446,8 @@ void powerUps(Bitmap *power, Bitmap * pad, Bitmap * arrow_right, Bitmap * arrow_
         arrow_down->colided = false;
         cromossoma_idle->colided = false;
         powerup = false;
-        colision ++;
+        power->colided = true;
+        colision++;
         return;
     }
 
