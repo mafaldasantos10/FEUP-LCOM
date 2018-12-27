@@ -201,6 +201,17 @@ void printDance()
 
 ///////////////////////////////////////////////////////////////////
 
+void reset_powerup()
+{
+    xi =0;
+    yf=0;
+    yi=0;
+    powerx=0;
+    colision = 4;
+    powery=0;
+    
+}
+
 int powerSpeed(int xi, int xf)
 {
     int speedx = abs(xf - xi) / 160;
@@ -512,9 +523,11 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
     /* to reset global variables for a new game */
     if (p_key)
     {
+        timer_counter =0;
         cromossomaDance = 4;
         reset_score_to_print();
         reset_score_counter();
+        reset_powerup();
     }
     
     return 0;
