@@ -10,6 +10,7 @@
 #include "keyboard.h"
 #include "interface.h"
 #include "PS2mouse.h"
+#include "menu.h"
 #include "score.h"
 
 //VARIABLE INITIALIZATION
@@ -55,7 +56,7 @@ int pix_map_move_pos()
         changeDirect();
         drawBitmap(images.pad, 462, 450, ALIGN_LEFT);
         drawBitmap(images.pointer, get_mouseX(), get_mouseY(), ALIGN_LEFT);
-        show_score();
+        show_score(get_horizontal_resolution(), 136);
         
         for (unsigned int i = 0; i < number_of_arrows; i++)
         {
@@ -376,6 +377,17 @@ void reset_powerup()
 
 //////////////////////////////////////////////////////////////////
 
+void reset_game()
+{
+    timer_counter = 0;
+    cromossomaDance = 4;
+    reset_score_to_print();
+    reset_score_counter();
+    reset_powerup();
+}
+
+//////////////////////////////////////////////////////////////////
+
 void arrowProcessing()
 {
     if (!arrows[0]->active)
@@ -415,10 +427,10 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
     
     uint8_t byte1[1], byte2[2];
     int ipc_status, r, size = 1, s = 1;
-    bool esc = true, p_key = true, wait = false;
+    bool esc = false, p_key = false, wait = false;
     message msg;
 
-    while (esc && p_key)
+    while (!esc)
     {
         /* Get a request message. */
         if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0)
@@ -433,8 +445,11 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
                 case HARDWARE: /* hardware interrupt notification */
                     if (msg.m_notify.interrupts & irq_set_timer)
                     {
-                        timer_int_handler();
-                        arrowProcessing();
+                        if (!p_key)
+                        {
+                            timer_int_handler();
+                            arrowProcessing();
+                        }
                     }
 
                     if (msg.m_notify.interrupts & irq_set_keyboard)
@@ -456,12 +471,21 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
 
                         if (status == ESC_BK)
                         {
-                            esc = false;
+                            esc = true;
                         }
 
                         if (status == P_KEY_BK)
                         {
-                            p_key = false;
+                            if (!p_key)
+                            {
+                                p_key = true;
+                                drawBitmap(images.pause, 0, 0, ALIGN_LEFT);
+                                double_buffer_to_video_mem();
+                            }
+                            else
+                            {
+                                p_key = false;
+                            }
                         }
 
                         if (status == W_KEY || status == A_KEY || status == S_KEY ||status  == D_KEY)
@@ -522,17 +546,24 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
             /* no standard messages expected: do nothing */
         }
 
-        size = 1;   
+        /* game ends after 45 seconds */
+        if (timer_counter > 2700)
+        {   
+            do_not_change = true;
+            drawBitmap(images.end, 0, 0, ALIGN_LEFT);
+            show_score(630, 590);
+            double_buffer_to_video_mem();
+            reset_game();
+            return 0;
+        }
+
+        size = 1;
     }
 
     /* to reset global variables for a new game */
-    if (p_key)
+    if (esc)
     {
-        timer_counter = 0;
-        cromossomaDance = 4;
-        reset_score_to_print();
-        reset_score_counter();
-        reset_powerup();
+        reset_game();
     }
     
     return 0;

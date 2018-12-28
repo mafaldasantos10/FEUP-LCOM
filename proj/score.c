@@ -41,6 +41,7 @@ void score(int distance, int *cdance)
   else
   {
     score_to_print = 4;
+
     if (!(score_counter - 5 < 0))
     {
       score_counter -= 5;
@@ -49,6 +50,7 @@ void score(int distance, int *cdance)
     {
       score_counter = 0;
     }
+
     *cdance = 4;
   }
 }
@@ -87,7 +89,7 @@ void printScore()
 
 //////////////////////////////////////////////////////////////////
 
-void show_score()
+void show_score(int x, int y)
 {
   int digits = number_of_digits(score_counter);
   int gap = 75; //distance between numbers
@@ -95,7 +97,7 @@ void show_score()
 
   for (int i = 0; i < digits; i++)
   {
-    print_digit(score % 10, get_horizontal_resolution() - gap);
+    print_digit(score % 10, x - gap, y);
     score /= 10;
     gap += 60; // gap increases with each extra digit
   }
@@ -103,58 +105,58 @@ void show_score()
 
 //////////////////////////////////////////////////////////////////
 
-void print_digit(int score, int x)
+void print_digit(int score, int x, int y)
 {
   switch (score)
   {
     case 0:
     {
-      drawBitmap(images.zero, x, 135, ALIGN_LEFT);
+      drawBitmap(images.zero, x, y, ALIGN_LEFT);
       break;
     }
     case 1:
     {
-      drawBitmap(images.one, x, 135, ALIGN_LEFT);
+      drawBitmap(images.one, x, y, ALIGN_LEFT);
       break;
     }
     case 2:
     {
-      drawBitmap(images.two, x, 135, ALIGN_LEFT);
+      drawBitmap(images.two, x, y, ALIGN_LEFT);
       break;
     }
     case 3:
     {
-      drawBitmap(images.three, x, 135, ALIGN_LEFT);
+      drawBitmap(images.three, x, y, ALIGN_LEFT);
       break;
     }
     case 4:
     {
-      drawBitmap(images.four, x, 135, ALIGN_LEFT);
+      drawBitmap(images.four, x, y, ALIGN_LEFT);
       break;
     }
     case 5:
     {
-      drawBitmap(images.five, x, 135, ALIGN_LEFT);
+      drawBitmap(images.five, x, y, ALIGN_LEFT);
       break;
     }
     case 6:
     {
-      drawBitmap(images.six, x, 135, ALIGN_LEFT);
+      drawBitmap(images.six, x, y, ALIGN_LEFT);
       break;
     }
     case 7:
     {
-      drawBitmap(images.seven, x, 135, ALIGN_LEFT);
+      drawBitmap(images.seven, x, y, ALIGN_LEFT);
       break;
     }
     case 8:
     {
-      drawBitmap(images.eight, x, 135, ALIGN_LEFT);
+      drawBitmap(images.eight, x, y, ALIGN_LEFT);
       break;
     }
     case 9:
     {
-      drawBitmap(images.nine, x, 135, ALIGN_LEFT);
+      drawBitmap(images.nine, x, y, ALIGN_LEFT);
       break;
     }
   }
@@ -195,5 +197,6 @@ void get_powerup()
 		score_counter += 100;
     click = true;
 	}
+
   images.pointer->colided = false;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 typedef enum {START, HIGHSCORES, INSTRUCTIONS, EXIT} state_t;
+extern bool do_not_change;
 
 int menu();
 
