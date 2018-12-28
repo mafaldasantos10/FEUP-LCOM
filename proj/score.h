@@ -8,9 +8,9 @@ void score(int distance, int  *cdance);
 
 void printScore();
 
-void show_score();
+void show_score(int x, int y);
 
-void print_digit(int score, int x);
+void print_digit(int score, int x, int y);
 
 int number_of_digits(int number);
 
