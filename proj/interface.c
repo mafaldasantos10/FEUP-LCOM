@@ -364,7 +364,7 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment)
 
             if(ptr[j] != 0x1f0ff8)
             {
-                    if(buff[j] == 0x630000)
+                    if(buff[j] == 0x630000 || buff[j] == 0xed5c22)
                     {
                         
                         bmp->colided = true;
