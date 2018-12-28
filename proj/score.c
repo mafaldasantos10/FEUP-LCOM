@@ -13,6 +13,7 @@
 //VARIABLE INITIALIZATION
 int score_to_print = 0;
 int score_counter = 0;
+bool click = false;
 
 //FUNCTIONS
 //////////////////////////////////////////////////////////////////
@@ -189,8 +190,11 @@ void reset_score_to_print()
 
 void get_powerup()
 {
-	if (pp.lb)
+  if (pp.lb && images.pointer->colided)
 	{
 		score_counter += 15;
+    click = true;
+    printf("IIIINNN \n");
 	}
+  images.pointer->colided = false;
 }

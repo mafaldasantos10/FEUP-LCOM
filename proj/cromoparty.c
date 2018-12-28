@@ -203,7 +203,7 @@ void printDance()
 
 int powerSpeed(int xi, int xf)
 {
-    int speedx = abs(xf - xi) / 160;
+    int speedx = abs(xf - xi) / 100;
 
     return speedx;
 }
@@ -212,7 +212,7 @@ void changeDirect()
 {
     if (colision <= 2)
     {
-        printf("colision %d \n", colision);
+        //printf("colision %d \n", colision);
         if (powerup)
         {
             powerUps(xi, yi, yf);
@@ -221,7 +221,7 @@ void changeDirect()
         {
             if (images.power->colided)
             {
-                printf("COLIDI \n");
+                //printf("COLIDI \n");
                  if (powery < 368)
                 {
                     yf = 468 +rand() % 250;
@@ -231,13 +231,13 @@ void changeDirect()
                     yf = rand() % 250;
                 }
                 powerx = 0;
-                printf("POSICAO Y = %d  ", yf);
+                //printf("POSICAO Y = %d  ", yf);
                 images.power->colided = false;
             }
             else
             {
                 yf = rand() % 691;
-                printf("POSICAO Y sem col = %d  ", yf);
+                //printf("POSICAO Y sem col = %d  ", yf);
             }
 
             yi = powery;
@@ -272,10 +272,19 @@ void powerUps(int xi, int yi, int yf)
     int speedx = powerSpeed(xi, xf);
     int speedy = powerSpeed(yi, yf);
 
+    if(click)
+    {
+        powerup = false;
+        colision = 4;
+        click = false;
+        images.power->colided = true;
+        return;
+    }
+
     if (images.pad->colided || images.cromossoma_up->colided || images.cromossoma_right->colided || images.cromossoma_left->colided || images.cromossoma_down->colided || images.arrow_up->colided || images.arrow_right->colided 
     || images.arrow_left->colided || images.arrow_down->colided || images.cromossoma_idle->colided)
     {
-        printf("ENTREIII I \n");
+        //printf("ENTREIII I \n");
         images.pad->colided = false;
         images.cromossoma_up->colided = false;
         images.cromossoma_right->colided = false;
@@ -428,7 +437,39 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
                         arrowProcessing();
                     }
 
-                    if (msg.m_notify.interrupts & irq_set_keyboard)
+                    if (msg.m_notify.interrupts & irq_set_mouse)
+                    { /* subscribed interrupt */
+
+                        mouse_ih();
+
+                        if (s == 1)
+                        {
+                            if (status_mouse & BIT(3))
+                            {
+                                pp.bytes[0] = status_mouse;
+                                s++;
+                            }
+                            continue;
+                        } 
+
+                        if (s == 2)
+                        {
+                            pp.bytes[1] = status_mouse;
+                            s++;
+                            continue;
+                        }
+                        
+                        if (s == 3)
+                        {
+                            pp.bytes[2] = status_mouse;
+                            packet_create();
+                            currentMousePosition();
+                            get_powerup();
+                            s = 1;
+                        }
+                    }
+
+                      if (msg.m_notify.interrupts & irq_set_keyboard)
                     { /* subscribed interrupt */
 
                         kbc_ih();
@@ -469,38 +510,6 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
                         {
                             byte2[0] = MSB;
                             byte2[1] = status;
-                        }
-                    }
-
-                    if (msg.m_notify.interrupts & irq_set_mouse)
-                    { /* subscribed interrupt */
-
-                        mouse_ih();
-
-                        if (s == 1)
-                        {
-                            if (status_mouse & BIT(3))
-                            {
-                                pp.bytes[0] = status_mouse;
-                                s++;
-                            }
-                            continue;
-                        } 
-
-                        if (s == 2)
-                        {
-                            pp.bytes[1] = status_mouse;
-                            s++;
-                            continue;
-                        }
-                        
-                        if (s == 3)
-                        {
-                            pp.bytes[2] = status_mouse;
-                            packet_create();
-                            currentMousePosition();
-                            get_powerup();
-                            s = 1;
                         }
                     }
                     break;
