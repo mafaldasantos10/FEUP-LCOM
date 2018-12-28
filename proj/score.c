@@ -192,9 +192,8 @@ void get_powerup()
 {
   if (pp.lb && images.pointer->colided)
 	{
-		score_counter += 15;
+		score_counter += 100;
     click = true;
-    printf("IIIINNN \n");
 	}
   images.pointer->colided = false;
 }
