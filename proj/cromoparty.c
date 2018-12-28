@@ -204,14 +204,14 @@ void printDance()
 
 int powerSpeed(int xi, int xf)
 {
-    int speedx = abs(xf - xi) / 100;
+    int speedx = abs(xf - xi) / 110;
 
     return speedx;
 }
 
 void changeDirect()
 {
-    if (colision <= 2)
+    if (colision <= 4)
     {
         //printf("colision %d \n", colision);
         if (powerup)
@@ -276,7 +276,7 @@ void powerUps(int xi, int yi, int yf)
     if(click)
     {
         powerup = false;
-        colision = 4;
+        colision = 5;
         click = false;
         images.power->colided = true;
         return;
