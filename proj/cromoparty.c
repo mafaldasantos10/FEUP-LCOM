@@ -360,7 +360,7 @@ void powerUps(int xi, int yi, int yf)
             powery += speedy;
         }
     }
-   
+
     drawBitmap(images.power, powerx, powery, ALIGN_LEFT);
 }
 
@@ -437,39 +437,7 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
                         arrowProcessing();
                     }
 
-                    if (msg.m_notify.interrupts & irq_set_mouse)
-                    { /* subscribed interrupt */
-
-                        mouse_ih();
-
-                        if (s == 1)
-                        {
-                            if (status_mouse & BIT(3))
-                            {
-                                pp.bytes[0] = status_mouse;
-                                s++;
-                            }
-                            continue;
-                        } 
-
-                        if (s == 2)
-                        {
-                            pp.bytes[1] = status_mouse;
-                            s++;
-                            continue;
-                        }
-                        
-                        if (s == 3)
-                        {
-                            pp.bytes[2] = status_mouse;
-                            packet_create();
-                            currentMousePosition();
-                            get_powerup();
-                            s = 1;
-                        }
-                    }
-
-                      if (msg.m_notify.interrupts & irq_set_keyboard)
+                    if (msg.m_notify.interrupts & irq_set_keyboard)
                     { /* subscribed interrupt */
 
                         kbc_ih();
@@ -510,6 +478,38 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
                         {
                             byte2[0] = MSB;
                             byte2[1] = status;
+                        }
+                    }
+
+                    if (msg.m_notify.interrupts & irq_set_mouse)
+                    { /* subscribed interrupt */
+
+                        mouse_ih();
+
+                        if (s == 1)
+                        {
+                            if (status_mouse & BIT(3))
+                            {
+                                pp.bytes[0] = status_mouse;
+                                s++;
+                            }
+                            continue;
+                        } 
+
+                        if (s == 2)
+                        {
+                            pp.bytes[1] = status_mouse;
+                            s++;
+                            continue;
+                        }
+                        
+                        if (s == 3)
+                        {
+                            pp.bytes[2] = status_mouse;
+                            packet_create();
+                            currentMousePosition();
+                            get_powerup();
+                            s = 1;
                         }
                     }
                     break;

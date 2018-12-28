@@ -80,6 +80,7 @@ typedef struct {
   Bitmap* menu;
   Bitmap* instructions;
   Bitmap* pause;
+  Bitmap* end;
 } Images;
 
 
