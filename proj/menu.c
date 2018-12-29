@@ -10,6 +10,7 @@
 #include "keyboard.h"
 #include "interface.h"
 #include "menu.h"
+#include "score.h"
 #include "PS2mouse.h"
 
 
@@ -24,10 +25,14 @@ bool do_not_change = false;
 
 int menu()
 {
-  //images are loaded at the begining
+  /* images are loaded at the begining */
   loadImages();
 
-  default_menu();
+  /* asks for a name */
+  drawBitmap(images.instructions, 0, 0, ALIGN_LEFT);
+  double_buffer_to_video_mem();
+
+  load_score_from_file();
 
   uint8_t bit_no_timer;
   uint8_t bit_no_kb;
@@ -57,8 +62,9 @@ int menu()
 
   uint8_t byte1[1], byte2[2];
   int ipc_status, r, size = 1, s = 1;
-  bool wait = false;
+  bool wait = false, ini = false;
   message msg;
+  char name[25];
 
   while (!exit_game) 
   {
@@ -99,6 +105,24 @@ int menu()
               byte2[0] = MSB;
               byte2[1] = status;
             }
+
+            if (status == ENTER_KEY_BK && !ini)
+            {
+              ini = true;
+              set_current_player_name(name);
+              default_menu();
+              continue;
+            }
+
+            if (size == 1 && !ini)
+            {
+              convert_key(status, name);
+              print_sentence(name, 150, 150);
+              double_buffer_to_video_mem();
+            }
+
+            if (!ini)
+              continue;
 
             change_state(bit_no_timer, bit_no_kb, bit_no_mouse);
             change_buttons();
@@ -169,6 +193,8 @@ int menu()
     return 1;
   }
 
+  save_score_to_file();
+
   /* frees memory occupied by the loaded images when exiting */
   deleteImages();
 
@@ -200,12 +226,21 @@ void change_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
       if (state == EXIT)
         exit_game = true;
       else if (state == START)
+      {
         game(bit_no_timer, bit_no_kb, bit_no_mouse);
+      }
       else if (state == INSTRUCTIONS)
       {
         drawBitmap(images.instructions, 0, 0, ALIGN_LEFT);
         double_buffer_to_video_mem();
         do_not_change = true; //so that it doesn't print the menu over the instructions
+      }
+      else if (state == HIGHSCORES)
+      {
+        drawBitmap(images.instructions, 0, 0, ALIGN_LEFT);
+        print_high_scores();
+        double_buffer_to_video_mem();
+        do_not_change = true; //so that it doesn't print the menu over the panel
       }
       break;
   }
@@ -263,4 +298,152 @@ void default_menu()
   drawBitmap(images.exit_not_selected, 342, 665, ALIGN_LEFT);
   drawBitmap(images.highscores_not_selected, 342, 425, ALIGN_LEFT);
   double_buffer_to_video_mem();
+}
+
+//////////////////////////////////////////////////////////////////
+
+void append(char* s, char c)
+{
+  int len = strlen(s);
+  s[len] = c;
+  s[len + 1] = '\0';
+}
+
+//////////////////////////////////////////////////////////////////
+
+void convert_key(uint32_t status, char name[25])
+{
+  switch (status)
+  {
+    case A_KEY:
+    {
+      append(name, 'a');
+      break;
+    }
+    case B_KEY:
+    {
+      append(name, 'b');
+      break;
+    }
+    case C_KEY:
+    {
+      append(name, 'c');
+      break;
+    }
+    case D_KEY:
+    {
+      append(name, 'd');
+      break;
+    }
+    case E_KEY:
+    {
+      append(name, 'e');
+      break;
+    }
+    case F_KEY:
+    {
+      append(name, 'f');
+      break;
+    }
+    case G_KEY:
+    {
+      append(name, 'g');
+      break;
+    }
+    case H_KEY:
+    {
+      append(name, 'h');
+      break;
+    }
+    case I_KEY:
+    {
+      append(name, 'i');
+      break;
+    }
+    case J_KEY:
+    {
+      append(name, 'j');
+      break;
+    }
+    case K_KEY:
+    {
+      append(name, 'k');
+      break;
+    }
+    case L_KEY:
+    {
+      append(name, 'l');
+      break;
+    }
+    case M_KEY:
+    {
+      append(name, 'm');
+      break;
+    }
+    case N_KEY:
+    {
+      append(name, 'n');
+      break;
+    }
+    case O_KEY:
+    {
+      append(name, 'o');
+      break;
+    }
+    case P_KEY:
+    {
+      append(name, 'p');
+      break;
+    }
+    case Q_KEY:
+    {
+      append(name, 'q');
+      break;
+    }
+    case R_KEY:
+    {
+      append(name, 'r');
+      break;
+    }
+    case S_KEY:
+    {
+      append(name, 's');
+      break;
+    }
+    case T_KEY:
+    {
+      append(name, 't');
+      break;
+    }
+    case U_KEY:
+    {
+      append(name, 'u');
+      break;
+    }
+    case V_KEY:
+    {
+      append(name, 'v');
+      break;
+    }
+    case W_KEY:
+    {
+      append(name, 'w');
+      break;
+    }
+    case X_KEY:
+    {
+      append(name, 'x');
+      break;
+    }
+    case Y_KEY:
+    {
+      append(name, 'y');
+      break;
+    }
+    case Z_KEY:
+    {
+      append(name, 'z');
+      break;
+    }
+  }
 }

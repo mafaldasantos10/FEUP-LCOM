@@ -10,3 +10,7 @@ void change_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
 void change_buttons();
 
 void default_menu();
+
+void append(char* s, char c);
+
+void convert_key(uint32_t status, char name[25]);
