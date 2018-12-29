@@ -81,6 +81,7 @@ typedef struct {
   Bitmap* instructions;
   Bitmap* pause;
   Bitmap* end;
+  Bitmap* extra;
 } Images;
 
 

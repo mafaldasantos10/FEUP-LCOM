@@ -17,7 +17,7 @@
 Arrow **arrows;
 size_t number_of_arrows = 2;
 int cromossomaDance = 4;
-int colision = 4;
+int colision = 6;
 bool powerup = true;
 int powerx = 0;
 int powery = 0;
@@ -204,7 +204,7 @@ void printDance()
 
 int powerSpeed(int xi, int xf)
 {
-    int speedx = abs(xf - xi) / 110;
+    int speedx = abs(xf - xi) / 120;
 
     return speedx;
 }

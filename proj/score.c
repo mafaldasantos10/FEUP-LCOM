@@ -84,6 +84,11 @@ void printScore()
       drawBitmap(images.miss, 362, 330, ALIGN_LEFT);
       break;
     }
+     case 5:
+    {
+      drawBitmap(images.extra, 362, 330, ALIGN_LEFT);
+      break;
+    }
   }
 }
 
@@ -196,6 +201,7 @@ void get_powerup()
 	{
 		score_counter += 100;
     click = true;
+    score_to_print = 5;
 	}
 
   images.pointer->colided = false;
