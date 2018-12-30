@@ -451,13 +451,6 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
                             timer_int_handler();
                             arrowProcessing();
                         }
-
-                        get_hour();
-                        get_min();
-                        get_sec();
-                        get_day();
-                        get_month();
-                        get_year();
                         
                         if((timer_counter % sys_hz()) ==0)
                          {

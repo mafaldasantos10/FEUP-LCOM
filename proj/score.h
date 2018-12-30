@@ -9,6 +9,9 @@ typedef struct {
   char name[25];
   int score;
   int rank;
+  //int day;
+  //int month;
+  //int year;
 } Player;
 
 //PROTOTYPES
@@ -20,7 +23,9 @@ void printScore();
 
 void show_score(int score, int x, int y);
 
-void print_digit(int score, int x, int y);
+void print_digit(int number, int x, int y);
+
+void print_small_digit(int number, int x, int y);
 
 int number_of_digits(int number);
 
@@ -32,7 +37,7 @@ void get_powerup();
 
 void print_sentence(char string[], int x, int y);
 
-void print_letter(char c, int x, int y);
+int print_letter(char c, int x, int y);
 
 void save_score();
 

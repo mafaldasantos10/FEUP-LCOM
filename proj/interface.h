@@ -42,6 +42,16 @@ typedef struct {
 
 // Struct that has all images to be loaded
 typedef struct {
+    Bitmap* one_s;
+    Bitmap* two_s;
+    Bitmap* three_s;
+    Bitmap* four_s;
+    Bitmap* five_s;
+    Bitmap* six_s;
+    Bitmap* seven_s;
+    Bitmap* eight_s;
+    Bitmap* nine_s;
+    Bitmap* zero_s;
     Bitmap* one;
     Bitmap* two;
     Bitmap* three;
@@ -83,6 +93,7 @@ typedef struct {
     Bitmap* pause;
     Bitmap* end;
     Bitmap* extra;
+    Bitmap* name_menu;
     Bitmap* a;
     Bitmap* b;
     Bitmap* c;
@@ -109,7 +120,8 @@ typedef struct {
     Bitmap* x;
     Bitmap* y;
     Bitmap* z;
-    Bitmap* name_menu;
+    Bitmap* exc;
+    Bitmap* inter;
 } Images;
 
 

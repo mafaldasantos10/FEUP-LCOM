@@ -85,6 +85,6 @@
 #define FRAME_RATE 60
 
 /* Score */
-#define MAX_PLAYER_SLOTS 7
+#define MAX_PLAYER_SLOTS 6
 
 #endif /* _LCOM_I8042_H */

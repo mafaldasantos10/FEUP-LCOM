@@ -115,9 +115,9 @@ void show_score(int score, int x, int y)
 
 //////////////////////////////////////////////////////////////////
 
-void print_digit(int score, int x, int y)
+void print_digit(int number, int x, int y)
 {
-  switch (score)
+  switch (number)
   {
     case 0:
     {
@@ -174,6 +174,65 @@ void print_digit(int score, int x, int y)
 
 //////////////////////////////////////////////////////////////////
 
+void print_small_digit(int number, int x, int y)
+{
+  switch (number)
+  {
+    case 0:
+    {
+      drawBitmap(images.zero_s, x, y, ALIGN_LEFT);
+      break;
+    }
+    case 1:
+    {
+      drawBitmap(images.one_s, x, y, ALIGN_LEFT);
+      break;
+    }
+    case 2:
+    {
+      drawBitmap(images.two_s, x, y, ALIGN_LEFT);
+      break;
+    }
+    case 3:
+    {
+      drawBitmap(images.three_s, x, y, ALIGN_LEFT);
+      break;
+    }
+    case 4:
+    {
+      drawBitmap(images.four_s, x, y, ALIGN_LEFT);
+      break;
+    }
+    case 5:
+    {
+      drawBitmap(images.five_s, x, y, ALIGN_LEFT);
+      break;
+    }
+    case 6:
+    {
+      drawBitmap(images.six_s, x, y, ALIGN_LEFT);
+      break;
+    }
+    case 7:
+    {
+      drawBitmap(images.seven_s, x, y, ALIGN_LEFT);
+      break;
+    }
+    case 8:
+    {
+      drawBitmap(images.eight_s, x, y, ALIGN_LEFT);
+      break;
+    }
+    case 9:
+    {
+      drawBitmap(images.nine_s, x, y, ALIGN_LEFT);
+      break;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////
+
 int number_of_digits(int number)
 {
   int digits = 0;
@@ -216,149 +275,192 @@ void get_powerup()
 
 void print_sentence(char string[], int x, int y)
 {
-  for (unsigned int i = 0; i < strlen(string); i++, x += 28)
+  for (unsigned int i = 0; i < strlen(string); i++)
   {
-    print_letter(string[i], x, y);
+    x += print_letter(string[i], x, y);
   }
 }
 
 //////////////////////////////////////////////////////////////////
 
-void print_letter(char c, int x, int y)
+int print_letter(char c, int x, int y)
 {
+  /* adjust the distance between each letter accordingly */
+  int len;
+
   switch (c)
   {
     case 'a':
     {
       drawBitmap(images.a, x, y, ALIGN_LEFT);
+      len = images.a->bitmapInfoHeader.width;
       break;
     }
     case 'b':
     {
       drawBitmap(images.b, x, y, ALIGN_LEFT);
+      len = images.b->bitmapInfoHeader.width;
       break;
     }
     case 'c':
     {
       drawBitmap(images.c, x, y, ALIGN_LEFT);
+      len = images.c->bitmapInfoHeader.width;
       break;
     }
     case 'd':
     {
       drawBitmap(images.d, x, y, ALIGN_LEFT);
+      len = images.d->bitmapInfoHeader.width;
       break;
     }
     case 'e':
     {
       drawBitmap(images.e, x, y, ALIGN_LEFT);
+      len = images.e->bitmapInfoHeader.width;
       break;
     }
     case 'f':
     {
       drawBitmap(images.f, x, y, ALIGN_LEFT);
+      len = images.f->bitmapInfoHeader.width;
       break;
     }
     case 'g':
     {
       drawBitmap(images.g, x, y, ALIGN_LEFT);
+      len = images.g->bitmapInfoHeader.width;
       break;
     }
     case 'h':
     {
       drawBitmap(images.h, x, y, ALIGN_LEFT);
+      len = images.h->bitmapInfoHeader.width;
       break;
     }
     case 'i':
     {
       drawBitmap(images.i, x, y, ALIGN_LEFT);
+      len = images.i->bitmapInfoHeader.width;
       break;
     }
     case 'j':
     {
       drawBitmap(images.j, x, y, ALIGN_LEFT);
+      len = images.j->bitmapInfoHeader.width;
       break;
     }
     case 'k':
     {
       drawBitmap(images.k, x, y, ALIGN_LEFT);
+      len = images.k->bitmapInfoHeader.width;
       break;
     }
     case 'l':
     {
       drawBitmap(images.l, x, y, ALIGN_LEFT);
+      len = images.l->bitmapInfoHeader.width;
       break;
     }
     case 'm':
     {
       drawBitmap(images.m, x, y, ALIGN_LEFT);
+      len = images.m->bitmapInfoHeader.width;
       break;
     }
     case 'n':
     {
       drawBitmap(images.n, x, y, ALIGN_LEFT);
+      len = images.n->bitmapInfoHeader.width;
       break;
     }
     case 'o':
     {
       drawBitmap(images.o, x, y, ALIGN_LEFT);
+      len = images.o->bitmapInfoHeader.width;
       break;
     }
     case 'p':
     {
       drawBitmap(images.p, x, y, ALIGN_LEFT);
+      len = images.p->bitmapInfoHeader.width;
       break;
     }
     case 'q':
     {
       drawBitmap(images.q, x, y, ALIGN_LEFT);
+      len = images.q->bitmapInfoHeader.width;
       break;
     }
     case 'r':
     {
       drawBitmap(images.r, x, y, ALIGN_LEFT);
+      len = images.r->bitmapInfoHeader.width;
       break;
     }
     case 's':
     {
       drawBitmap(images.s, x, y, ALIGN_LEFT);
+      len = images.s->bitmapInfoHeader.width;
       break;
     }
     case 't':
     {
       drawBitmap(images.t, x, y, ALIGN_LEFT);
+      len = images.t->bitmapInfoHeader.width;
       break;
     }
     case 'u':
     {
       drawBitmap(images.u, x, y, ALIGN_LEFT);
+      len = images.u->bitmapInfoHeader.width;
       break;
     }
     case 'v':
     {
       drawBitmap(images.v, x, y, ALIGN_LEFT);
+      len = images.v->bitmapInfoHeader.width;
       break;
     }
     case 'w':
     {
       drawBitmap(images.w, x, y, ALIGN_LEFT);
+      len = images.w->bitmapInfoHeader.width;
       break;
     }
     case 'x':
     {
       drawBitmap(images.x, x, y, ALIGN_LEFT);
+      len = images.x->bitmapInfoHeader.width;
       break;
     }
     case 'y':
     {
       drawBitmap(images.y, x, y, ALIGN_LEFT);
+      len = images.y->bitmapInfoHeader.width;
       break;
     }
     case 'z':
     {
       drawBitmap(images.z, x, y, ALIGN_LEFT);
+      len = images.z->bitmapInfoHeader.width;
+      break;
+    }
+    case '!':
+    {
+      drawBitmap(images.exc, x, y, ALIGN_LEFT);
+      len = images.exc->bitmapInfoHeader.width;
+      break;
+    }
+    case '?':
+    {
+      drawBitmap(images.inter, x, y, ALIGN_LEFT);
+      len = images.inter->bitmapInfoHeader.width;
       break;
     }
   }
+
+  return len;
 }
 
 Player players[MAX_PLAYER_SLOTS];
@@ -439,7 +541,8 @@ void load_score_from_file()
 
   if (f == NULL)
   {
-    print_sentence("Error opening file!", 300, 300);
+    print_sentence("highscores file missing!", 250, 300);
+    double_buffer_to_video_mem();
     exit(1);
   }
 
