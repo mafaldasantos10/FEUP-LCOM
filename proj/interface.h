@@ -109,6 +109,7 @@ typedef struct {
     Bitmap* x;
     Bitmap* y;
     Bitmap* z;
+    Bitmap* name_menu;
 } Images;
 
 

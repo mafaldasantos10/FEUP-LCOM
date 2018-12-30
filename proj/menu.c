@@ -29,7 +29,7 @@ int menu()
   loadImages();
 
   /* asks for a name */
-  drawBitmap(images.instructions, 0, 0, ALIGN_LEFT);
+  drawBitmap(images.name_menu, 0, 0, ALIGN_LEFT);
   double_buffer_to_video_mem();
 
   load_score_from_file();
@@ -117,7 +117,7 @@ int menu()
             if (size == 1 && !ini)
             {
               convert_key(status, name);
-              print_sentence(name, 150, 150);
+              print_sentence(name, 180, 500);
               double_buffer_to_video_mem();
             }
 
@@ -237,7 +237,7 @@ void change_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
       }
       else if (state == HIGHSCORES)
       {
-        drawBitmap(images.instructions, 0, 0, ALIGN_LEFT);
+        drawBitmap(images.highscores, 0, 0, ALIGN_LEFT);
         print_high_scores();
         double_buffer_to_video_mem();
         do_not_change = true; //so that it doesn't print the menu over the panel
