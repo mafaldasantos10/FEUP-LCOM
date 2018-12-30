@@ -210,6 +210,7 @@ void loadImages()
     images.x = loadBitmap("/home/lcom/labs/proj/bitmap/alphabet/x.bmp");
     images.y = loadBitmap("/home/lcom/labs/proj/bitmap/alphabet/y.bmp");
     images.z = loadBitmap("/home/lcom/labs/proj/bitmap/alphabet/z.bmp");
+    images.name_menu = loadBitmap("/home/lcom/labs/proj/bitmap/namemenu.bmp");
 }
 
 //////////////////////////////////////////////////////////////////
@@ -285,6 +286,7 @@ void deleteImages()
     deleteBitmap(images.x);
     deleteBitmap(images.y);
     deleteBitmap(images.z);
+    deleteBitmap(images.name_menu);
 }
 
 //////////////////////////////////////////////////////////////////

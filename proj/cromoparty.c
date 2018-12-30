@@ -12,6 +12,7 @@
 #include "PS2mouse.h"
 #include "menu.h"
 #include "score.h"
+#include "rtc.h"
 
 //VARIABLE INITIALIZATION
 Arrow **arrows;
@@ -450,6 +451,15 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
                             timer_int_handler();
                             arrowProcessing();
                         }
+
+                        get_hour();
+                        get_min();
+                        get_sec();
+                        if((timer_counter % sys_hz()) ==0)
+                         {
+                         printf("%d : %d : %d  \n", get_hour(), get_min(),   get_sec());
+                         }
+                         
                     }
 
                     if (msg.m_notify.interrupts & irq_set_keyboard)
