@@ -455,9 +455,13 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
                         get_hour();
                         get_min();
                         get_sec();
+                        get_day();
+                        get_month();
+                        get_year();
+                        
                         if((timer_counter % sys_hz()) ==0)
                          {
-                         printf("%d : %d : %d  \n", get_hour(), get_min(),   get_sec());
+                         printf("%d : %d : %d   %d / %d / %d\n", get_hour(), get_min(), get_sec(), get_day(), get_month(), get_year());
                          }
                          
                     }
