@@ -140,6 +140,16 @@ Images images;
 
 void loadImages()
 {
+    images.one_s = loadBitmap("/home/lcom/labs/proj/bitmap/1h.bmp");
+    images.two_s = loadBitmap("/home/lcom/labs/proj/bitmap/2h.bmp");
+    images.three_s = loadBitmap("/home/lcom/labs/proj/bitmap/3h.bmp");
+    images.four_s = loadBitmap("/home/lcom/labs/proj/bitmap/4h.bmp");
+    images.five_s = loadBitmap("/home/lcom/labs/proj/bitmap/5h.bmp");
+    images.six_s = loadBitmap("/home/lcom/labs/proj/bitmap/6h.bmp");
+    images.seven_s = loadBitmap("/home/lcom/labs/proj/bitmap/7h.bmp");
+    images.eight_s = loadBitmap("/home/lcom/labs/proj/bitmap/8h.bmp");
+    images.nine_s = loadBitmap("/home/lcom/labs/proj/bitmap/9h.bmp");
+    images.zero_s = loadBitmap("/home/lcom/labs/proj/bitmap/0h.bmp");
     images.one = loadBitmap("/home/lcom/labs/proj/bitmap/1.bmp");
     images.two = loadBitmap("/home/lcom/labs/proj/bitmap/2.bmp");
     images.three = loadBitmap("/home/lcom/labs/proj/bitmap/3.bmp");
@@ -183,6 +193,7 @@ void loadImages()
     images.pause = loadBitmap("/home/lcom/labs/proj/bitmap/pause.bmp");
     images.end = loadBitmap("/home/lcom/labs/proj/bitmap/end.bmp");
     images.extra = loadBitmap("/home/lcom/labs/proj/bitmap/extra.bmp");
+    images.name_menu = loadBitmap("/home/lcom/labs/proj/bitmap/namemenu.bmp");
 
     images.a = loadBitmap("/home/lcom/labs/proj/bitmap/alphabet/a.bmp");
     images.b = loadBitmap("/home/lcom/labs/proj/bitmap/alphabet/b.bmp");
@@ -210,7 +221,8 @@ void loadImages()
     images.x = loadBitmap("/home/lcom/labs/proj/bitmap/alphabet/x.bmp");
     images.y = loadBitmap("/home/lcom/labs/proj/bitmap/alphabet/y.bmp");
     images.z = loadBitmap("/home/lcom/labs/proj/bitmap/alphabet/z.bmp");
-    images.name_menu = loadBitmap("/home/lcom/labs/proj/bitmap/namemenu.bmp");
+    images.exc = loadBitmap("/home/lcom/labs/proj/bitmap/alphabet/exc.bmp");
+    images.inter = loadBitmap("/home/lcom/labs/proj/bitmap/alphabet/int.bmp");
 }
 
 //////////////////////////////////////////////////////////////////
@@ -219,6 +231,16 @@ Images images;
 
 void deleteImages()
 {
+    deleteBitmap(images.one_s);
+    deleteBitmap(images.two_s);
+    deleteBitmap(images.three_s);
+    deleteBitmap(images.four_s);
+    deleteBitmap(images.five_s);
+    deleteBitmap(images.six_s);
+    deleteBitmap(images.seven_s);
+    deleteBitmap(images.eight_s);
+    deleteBitmap(images.nine_s);
+    deleteBitmap(images.zero_s);
     deleteBitmap(images.one);
     deleteBitmap(images.two);
     deleteBitmap(images.three);
@@ -260,6 +282,7 @@ void deleteImages()
     deleteBitmap(images.pause);
     deleteBitmap(images.end);
     deleteBitmap(images.extra);
+    deleteBitmap(images.name_menu);
     deleteBitmap(images.a);
     deleteBitmap(images.b);
     deleteBitmap(images.c);
@@ -286,7 +309,8 @@ void deleteImages()
     deleteBitmap(images.x);
     deleteBitmap(images.y);
     deleteBitmap(images.z);
-    deleteBitmap(images.name_menu);
+    deleteBitmap(images.exc);
+    deleteBitmap(images.inter);
 }
 
 //////////////////////////////////////////////////////////////////
@@ -425,11 +449,11 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment)
 
             if(ptr[j] != 0x1f0ff8)
             {
-                    if(buff[j] == 0x630000 || buff[j] == 0xed5c22)
-                    {
-                        
-                        bmp->colided = true;
-                    }  
+                if(buff[j] == 0x630000 || buff[j] == 0xed5c22)
+                {
+                    
+                    bmp->colided = true;
+                }  
 
                 buff[j] = ptr[j];
             } 

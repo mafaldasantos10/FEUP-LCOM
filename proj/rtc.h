@@ -8,7 +8,6 @@
 #define DAY 0x07
 #define MONTH 0x08
 #define YEAR 0x09
-#define BIT(n) (0x01<<(n))
 #define RTC_REG_A 0x0A
 #define RTC_REG_B 0x0B
 #define RTC_UIP BIT(7)
