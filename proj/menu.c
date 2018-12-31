@@ -109,6 +109,14 @@ int menu()
 
             if (status == ENTER_KEY_BK && !ini)
             {
+              if (strlen(name) == 0)
+              {
+                print_sentence("empty name!", 360, 600);
+                double_buffer_to_video_mem();
+                drawBitmap(images.name_menu, 0, 0, ALIGN_LEFT);
+                continue;
+              }
+
               ini = true;
               set_current_player_name(name);
               default_menu();
@@ -117,6 +125,9 @@ int menu()
 
             if (size == 1 && !ini)
             {
+              if (strlen(name) == 20 && status != BACKSPACE_KEY)
+                continue;
+
               convert_key(status, name);
               print_sentence(name, 180, 500);
               double_buffer_to_video_mem();
@@ -444,6 +455,13 @@ void convert_key(uint32_t status, char name[25])
     case Z_KEY:
     {
       append(name, 'z');
+      break;
+    }
+    case BACKSPACE_KEY:
+    {
+      /* deletes last character of "name" */
+      name[strlen(name) - 1] = '\0';
+      drawBitmap(images.name_menu, 0, 0, ALIGN_LEFT);
       break;
     }
   }

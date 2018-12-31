@@ -11,6 +11,7 @@
 #include "interface.h"
 #include "PS2mouse.h"
 #include "score.h"
+#include "rtc.h"
 
 //VARIABLE INITIALIZATION
 int score_to_print = 0;
@@ -477,30 +478,25 @@ void save_score()
 
   if (player_counter == MAX_PLAYER_SLOTS)
   {
-    //printf("this one");
     int index = get_last_player_index();
     strcpy(players[index].name, player_name);
     players[index].score = score_counter;
     players[index].rank = rank();
-    //printf("%s ", players[index].name);
-    //printf("%d ", players[index].score);
+    players[index].day = get_day();
+    players[index].month = get_month();
+    players[index].year = get_year();
   }
   else
   {
-    //printf("me");
     strcpy(players[player_counter].name, player_name);
     players[player_counter].score = score_counter;
     players[player_counter].rank = rank() + 1;
+    players[player_counter].day = get_day();
+    players[player_counter].month = get_month();
+    players[player_counter].year = get_year();
 
     player_counter++;
   }
-
-    /*for (int j = 0; j < player_counter; j++)
-    {
-      printf("%s ", players[j].name);
-      printf("%d ", players[j].score);
-      printf("%d\n", players[j].rank);
-    }*/
 }
 
 //////////////////////////////////////////////////////////////////
@@ -524,6 +520,9 @@ void save_score_to_file()
       {
         fprintf(f, "%s ", players[j].name);
         fprintf(f, "%d\r\n", players[j].score);
+        fprintf(f, "%d \n", players[j].day);
+        fprintf(f, "%d \n", players[j].month);
+        fprintf(f, "%d\r\n", players[j].year);
       }
     }
   }
@@ -559,6 +558,12 @@ void load_score_from_file()
     fscanf(f, "%d", &buff2);
     players[player_counter].score = buff2;
     players[player_counter].rank = (player_counter + 1);
+    fscanf(f, "%d", &buff2);
+    players[player_counter].day = buff2;
+    fscanf(f, "%d", &buff2);
+    players[player_counter].month = buff2;
+    fscanf(f, "%d", &buff2);
+    players[player_counter].year = buff2;
 
     player_counter++;
   }
@@ -589,8 +594,6 @@ int rank()
 {
   int r = player_counter;
 
-  //printf("r_a: %d\n", r);
-
   for (int j = (player_counter - 1); j >= 0; j--)
   {
     if (players[j].score < score_counter)
@@ -600,8 +603,6 @@ int rank()
     }
   }
 
-  //printf("r_d: %d\n", r);
-
   return r;
 }
 
@@ -609,8 +610,8 @@ int rank()
 
 void print_high_scores()
 {
-  int x_pos = 100, x_name = 300, x_score = 900;
-  int y_pos = 140, y_name = 170;
+  int x_pos = 85, x_name = 175, x_score = 760, x_date = 920;
+  int y_pos = 140, y_name = 175;
 
   for (int i = 1; i <= player_counter; i++)
   {
@@ -621,6 +622,7 @@ void print_high_scores()
         print_digit(i, x_pos, y_pos);
         print_sentence(players[j].name, x_name, y_name);
         show_score(players[j].score, x_score, y_pos);
+        print_date(players[j].day, players[j].month, players[j].year, x_date, y_name);
         y_pos += 90;
         y_name += 90;
       }
