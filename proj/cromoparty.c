@@ -58,7 +58,7 @@ int pix_map_move_pos()
         drawBitmap(images.pad, 462, 450, ALIGN_LEFT);
         drawBitmap(images.pointer, get_mouseX(), get_mouseY(), ALIGN_LEFT);
         show_score(1, get_horizontal_resolution(), 136);
-        print_time(1000, 30);
+        print_time(992, 60);
         
         for (unsigned int i = 0; i < number_of_arrows; i++)
         {
@@ -215,7 +215,6 @@ void changeDirect()
 {
     if (colision <= 4)
     {
-        //printf("colision %d \n", colision);
         if (powerup)
         {
             powerUps(xi, yi, yf);
@@ -224,7 +223,6 @@ void changeDirect()
         {
             if (images.power->colided)
             {
-                //printf("COLIDI \n");
                  if (powery < 368)
                 {
                     yf = 468 +rand() % 250;
@@ -234,13 +232,11 @@ void changeDirect()
                     yf = rand() % 250;
                 }
                 powerx = 0;
-                //printf("POSICAO Y = %d  ", yf);
                 images.power->colided = false;
             }
             else
             {
                 yf = rand() % 691;
-                //printf("POSICAO Y sem col = %d  ", yf);
             }
 
             yi = powery;
@@ -260,7 +256,6 @@ void changeDirect()
 
 void powerUps(int xi, int yi, int yf)
 {
-    //printf("RECEBI o Y %d \n", yf);
     int xf;
     if (xi == 0)
     {
@@ -286,7 +281,6 @@ void powerUps(int xi, int yi, int yf)
     if (images.pad->colided || images.cromossoma_up->colided || images.cromossoma_right->colided || images.cromossoma_left->colided || images.cromossoma_down->colided || images.arrow_up->colided || images.arrow_right->colided 
     || images.arrow_left->colided || images.arrow_down->colided || images.cromossoma_idle->colided)
     {
-        //printf("ENTREIII I \n");
         images.pad->colided = false;
         images.cromossoma_up->colided = false;
         images.cromossoma_right->colided = false;
@@ -308,13 +302,11 @@ void powerUps(int xi, int yi, int yf)
          if ((powerx - speedx) <= xf)
         {
             powerx = xf;    
-            //printf("xi = 899  %d ", colision);
             powerup = false; 
             colision++;
         }
         else
         {
-           //printf("pisca 2 ?");
             powerx -= speedx;
         }
     }
@@ -324,13 +316,11 @@ void powerUps(int xi, int yi, int yf)
          if ((powerx + speedx) >= xf)
         {
             powerx = xf;    
-            //printf("xi = 899 e %d", colision);
             powerup = false;
             colision++; 
         }
         else
         {
-            //printf("pisca 1?");
             powerx += speedx;
         }
     }
@@ -339,12 +329,10 @@ void powerUps(int xi, int yi, int yf)
     {
         if(powery - speedy <= yf) 
         {
-            //printf("pisca 3 ?");
             powery = yf;
         }
         else
         {
-            //printf("para baixo %d \n", powery);
             powery -= speedy;
         }
     }
@@ -353,12 +341,10 @@ void powerUps(int xi, int yi, int yf)
     {
         if(powery + speedy >= yf) 
         {
-            //printf("pisca 4 ?");
             powery = yf;
         }
         else
         {
-            //printf("para cima %d \n", powery);
             powery += speedy;
         }
     }
@@ -548,7 +534,7 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
         }
 
         /* game ends after 45 seconds */
-        if (timer_counter > 180)
+        if (timer_counter > 2700)
         {   
             save_score();
             do_not_change = true;
