@@ -223,6 +223,8 @@ void loadImages()
     images.z = loadBitmap("/home/lcom/labs/proj/bitmap/alphabet/z.bmp");
     images.exc = loadBitmap("/home/lcom/labs/proj/bitmap/alphabet/exc.bmp");
     images.inter = loadBitmap("/home/lcom/labs/proj/bitmap/alphabet/int.bmp");
+    images.slash = loadBitmap("/home/lcom/labs/proj/bitmap/alphabet/slash.bmp");
+    images.colon = loadBitmap("/home/lcom/labs/proj/bitmap/alphabet/colon.bmp");
 }
 
 //////////////////////////////////////////////////////////////////
@@ -311,6 +313,8 @@ void deleteImages()
     deleteBitmap(images.z);
     deleteBitmap(images.exc);
     deleteBitmap(images.inter);
+    deleteBitmap(images.slash);
+    deleteBitmap(images.colon);
 }
 
 //////////////////////////////////////////////////////////////////
