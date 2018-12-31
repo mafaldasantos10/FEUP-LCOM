@@ -9,9 +9,9 @@ typedef struct {
   char name[25];
   int score;
   int rank;
-  //int day;
-  //int month;
-  //int year;
+  int day;
+  int month;
+  int year;
 } Player;
 
 //PROTOTYPES

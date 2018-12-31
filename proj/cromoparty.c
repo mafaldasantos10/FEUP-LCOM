@@ -59,7 +59,6 @@ int pix_map_move_pos()
         drawBitmap(images.pointer, get_mouseX(), get_mouseY(), ALIGN_LEFT);
         show_score(1, get_horizontal_resolution(), 136);
         print_time(1000, 30);
-        print_date(700, 30);
         
         for (unsigned int i = 0; i < number_of_arrows; i++)
         {
@@ -549,13 +548,14 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
         }
 
         /* game ends after 45 seconds */
-        if (timer_counter > 2700)
+        if (timer_counter > 180)
         {   
             save_score();
             do_not_change = true;
             drawBitmap(images.end, 0, 0, ALIGN_LEFT);
             show_score(1, 630, 615);
             double_buffer_to_video_mem();
+            sleep(3);
             reset_game();
             return 0;
         }

@@ -110,7 +110,7 @@ void print_digit_rtc(int number, int x, int y)
   {
     print_small_digit(number, x, y);
     pos_x -= 25;
-    print_small_digit(0, pos_x, y);   
+    print_small_digit(0, pos_x, y);
     pos_x -= 18;
   }
   else
@@ -123,17 +123,17 @@ void print_digit_rtc(int number, int x, int y)
   }
 }
 
-void print_date(int x, int y)
+void print_date(int day, int month, int year, int x, int y)
 {
   pos_x = x;
 
-  print_digit_rtc(get_year(), pos_x, y);
+  print_digit_rtc(year, pos_x, y);
   drawBitmap(images.slash, pos_x, y, ALIGN_LEFT);
   pos_x -= 22;
-  print_digit_rtc(get_month(), pos_x, y);
+  print_digit_rtc(month, pos_x, y);
   drawBitmap(images.slash, pos_x, y, ALIGN_LEFT);
   pos_x -= 22;
-  print_digit_rtc(get_day(), pos_x, y);
+  print_digit_rtc(day, pos_x, y);
 }
 
 void print_time(int x, int y)

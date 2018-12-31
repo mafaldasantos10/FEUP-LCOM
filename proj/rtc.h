@@ -29,6 +29,6 @@ int get_year();
 
 void print_digit_rtc(int number, int x, int y);
 
-void print_date(int x, int y);
+void print_date(int day, int month, int year, int x, int y);
 
 void print_time(int x, int y);
