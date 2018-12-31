@@ -58,6 +58,8 @@ int pix_map_move_pos()
         drawBitmap(images.pad, 462, 450, ALIGN_LEFT);
         drawBitmap(images.pointer, get_mouseX(), get_mouseY(), ALIGN_LEFT);
         show_score(1, get_horizontal_resolution(), 136);
+        print_time(1000, 30);
+        print_date(700, 30);
         
         for (unsigned int i = 0; i < number_of_arrows; i++)
         {
@@ -245,8 +247,7 @@ void changeDirect()
             yi = powery;
             xi = powerx;
             powerup = true;
-            //printf("POSICAO X = %d  ", xi);
-            //printf("POSICAO Y = %d  ", yf);
+
         }
     }
     else
@@ -373,7 +374,7 @@ void reset_powerup()
     yi = 0;
     powerx = 0;
     powery = 0;
-    colision = 4;
+    colision = 6;
 }
 
 //////////////////////////////////////////////////////////////////
@@ -451,12 +452,6 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
                             timer_int_handler();
                             arrowProcessing();
                         }
-                        
-                        if((timer_counter % sys_hz()) ==0)
-                         {
-                         printf("%d : %d : %d   %d / %d / %d\n", get_hour(), get_min(), get_sec(), get_day(), get_month(), get_year());
-                         }
-                         
                     }
 
                     if (msg.m_notify.interrupts & irq_set_keyboard)

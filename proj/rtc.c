@@ -3,6 +3,9 @@
 
 #include "rtc.h"
 #include "i8042.h"
+#include "score.h"
+#include "interface.h"
+
 
 int read_rtc(uint32_t reg) 
 {
@@ -93,4 +96,55 @@ int get_year()
   year = (((year & 0xF0) >> 4) * 10) + (year & 0x0F);
 
   return year;
+}
+
+int pos_x;
+
+void print_digit_rtc(int number, int x, int y)
+{
+  int digits;
+
+  digits = number_of_digits(number);
+
+  if (digits == 1)
+  {
+    print_small_digit(number, x, y);
+    pos_x -= 25;
+    print_small_digit(0, pos_x, y);   
+    pos_x -= 18;
+  }
+  else
+  {
+    print_small_digit(number % 10, x, y);
+    number /= 10;
+    pos_x -= 23;
+    print_small_digit(number, pos_x, y);
+    pos_x -= 15;
+  }
+}
+
+void print_date(int x, int y)
+{
+  pos_x = x;
+
+  print_digit_rtc(get_year(), pos_x, y);
+  drawBitmap(images.slash, pos_x, y, ALIGN_LEFT);
+  pos_x -= 22;
+  print_digit_rtc(get_month(), pos_x, y);
+  drawBitmap(images.slash, pos_x, y, ALIGN_LEFT);
+  pos_x -= 22;
+  print_digit_rtc(get_day(), pos_x, y);
+}
+
+void print_time(int x, int y)
+{
+  pos_x = x;
+
+  print_digit_rtc(get_sec(), pos_x, y);
+  drawBitmap(images.colon, pos_x, y, ALIGN_LEFT);
+  pos_x -= 25;
+  print_digit_rtc(get_min(), pos_x, y);
+  drawBitmap(images.colon, pos_x, y, ALIGN_LEFT);
+  pos_x -= 25;
+  print_digit_rtc(get_hour(), pos_x, y);
 }

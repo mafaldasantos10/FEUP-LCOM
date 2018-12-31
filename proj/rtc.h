@@ -26,3 +26,9 @@ int get_day();
 int get_month();
 
 int get_year();
+
+void print_digit_rtc(int number, int x, int y);
+
+void print_date(int x, int y);
+
+void print_time(int x, int y);

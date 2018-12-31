@@ -12,6 +12,7 @@
 #include "menu.h"
 #include "score.h"
 #include "PS2mouse.h"
+#include "rtc.h"
 
 
 //VARIABLE INITIALIZATION
