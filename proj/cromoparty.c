@@ -375,6 +375,19 @@ void reset_game()
 
 //////////////////////////////////////////////////////////////////
 
+void end_game()
+{
+    save_score();
+    do_not_change = true;
+    drawBitmap(images.end, 0, 0, ALIGN_LEFT);
+    show_score(1, 630, 615); /* 1 - current score */
+    double_buffer_to_video_mem();
+    sleep(3);
+    reset_game();
+}
+
+//////////////////////////////////////////////////////////////////
+
 void arrowProcessing()
 {
     if (!arrows[0]->active)
@@ -536,13 +549,7 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
         /* game ends after 45 seconds */
         if (timer_counter > 2700)
         {   
-            save_score();
-            do_not_change = true;
-            drawBitmap(images.end, 0, 0, ALIGN_LEFT);
-            show_score(1, 630, 615);
-            double_buffer_to_video_mem();
-            sleep(3);
-            reset_game();
+            end_game();
             return 0;
         }
 
@@ -552,8 +559,7 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
     /* to reset global variables for a new game */
     if (esc)
     {
-        save_score();
-        reset_game();
+        end_game();
     }
     
     return 0;

@@ -38,3 +38,5 @@ void changeDirect();
 void reset_powerup();
 
 void reset_game();
+
+void end_game();
