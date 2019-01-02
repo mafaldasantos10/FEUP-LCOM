@@ -56,7 +56,7 @@ void print_queue()
     drawBitmap(images.pad, 462, 450, ALIGN_LEFT);
     drawBitmap(images.pointer, get_mouseX(), get_mouseY(), ALIGN_LEFT);
     show_score(1, get_horizontal_resolution(), 136);
-    print_time(992, 20);
+    print_time(984, 17);
 }
 
 //////////////////////////////////////////////////////////////////
@@ -461,8 +461,7 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
 
                     if (msg.m_notify.interrupts & irq_set_keyboard)
                     { /* subscribed interrupt */
-
-                        //kbc_ih();
+                    
                         kbc_asm_ih();
 
                         if (status == MSB)
