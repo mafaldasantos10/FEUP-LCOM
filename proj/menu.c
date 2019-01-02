@@ -82,7 +82,7 @@ int menu()
           if (msg.m_notify.interrupts & irq_set_keyboard)
           { /* subscribed interrupt */
 
-            kbc_ih();
+            kbc_asm_ih();
 
             if (status == MSB)
             {

@@ -17,6 +17,8 @@ typedef struct {
 
 void init_arrows();
 
+void print_queue();
+
 int pix_map_move_pos();
 
 int arrowRate(int i);
