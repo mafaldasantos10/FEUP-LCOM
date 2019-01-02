@@ -42,12 +42,15 @@ int main(int argc, char *argv[])
 
 int (proj_main_loop)(int argc, char *argv[]) 
 {
-  //Uses current time as a seed for random number generation
+  // Sets permissions for the in and out functions on the assembly code
+  sys_enable_iop(SELF);
+
+  // Uses current time as a seed for random number generation
   srand((unsigned) time(NULL));
 
   printf("(%d, %p): under construction\n", argc, argv);
 
-  if(vg_init(0x144) == NULL)
+  if (vg_init(0x144) == NULL)
   {
   	return 1;
   }

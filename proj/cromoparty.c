@@ -49,23 +49,30 @@ void init_arrows()
 
 //////////////////////////////////////////////////////////////////
 
+void print_queue()
+{
+    drawBitmap(images.background, 0, 0, ALIGN_LEFT);
+    changeDirect();
+    drawBitmap(images.pad, 462, 450, ALIGN_LEFT);
+    drawBitmap(images.pointer, get_mouseX(), get_mouseY(), ALIGN_LEFT);
+    show_score(1, get_horizontal_resolution(), 136);
+    print_time(992, 60);
+}
+
+//////////////////////////////////////////////////////////////////
+
 int pix_map_move_pos()
 {
     if (timer_counter % (sys_hz() / FRAME_RATE) == 0)
     {
-        drawBitmap(images.background, 0, 0, ALIGN_LEFT);
-        changeDirect();
-        drawBitmap(images.pad, 462, 450, ALIGN_LEFT);
-        drawBitmap(images.pointer, get_mouseX(), get_mouseY(), ALIGN_LEFT);
-        show_score(1, get_horizontal_resolution(), 136);
-        print_time(992, 60);
-        
+        print_queue();
+
         for (unsigned int i = 0; i < number_of_arrows; i++)
         {
             if (arrows[i]->currentX >= get_horizontal_resolution())
             {
                 cromossomaDance = 4;
-                score(200, &cromossomaDance); //case that evaluates to fail
+                score(200, &cromossomaDance); //case that always evaluates to fail
                 arrows[i]->active = false;
             }
             else
@@ -455,8 +462,8 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
                     if (msg.m_notify.interrupts & irq_set_keyboard)
                     { /* subscribed interrupt */
 
-                        kbc_ih();
-                        //kbc_asm_ih();
+                        //kbc_ih();
+                        kbc_asm_ih();
 
                         if (status == MSB)
                         {

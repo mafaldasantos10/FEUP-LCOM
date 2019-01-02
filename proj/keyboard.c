@@ -41,37 +41,3 @@ int (kbd_unsubscribe_int)()
 
 	return 0;
 }
-
-//////////////////////////////////////////////////////////////////
-
-void (kbc_ih)(void) 
-{
-	int i = 0;
-	uint32_t stat;
-
-	while( i < 5 ) 
-	{
-		sys_inb(STAT_REG, &stat); /* assuming it returns OK */
-		/* loop while 8042 output buffer is empty */
-		if( stat & OBF ) 
-		{
-			sys_inb(OUT_BUF, &status); /* assuming it returns OK */
-
-			if ( (stat & (PAR_ERR | TO_ERR)) == 0 )
-			{
-				error_kbd = false;
-				return;
-			}
-			else
-			{
-				error_kbd = true;
-				return;
-			}
-		}
-
-		i++;
-	}
-
-	error_kbd = true;
-	return;
-}
