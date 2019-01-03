@@ -124,6 +124,7 @@ typedef struct {
     Bitmap* inter;
     Bitmap* slash;
     Bitmap* colon;
+    Bitmap* waiting;
 } Images;
 
 
