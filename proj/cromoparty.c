@@ -13,6 +13,7 @@
 #include "menu.h"
 #include "score.h"
 #include "rtc.h"
+#include "serialPort.h"
 
 //VARIABLE INITIALIZATION
 Arrow **arrows;

@@ -26,19 +26,19 @@ void score(int distance, int *cdance)
 {
   if (abs(462 - distance) < 10)
   {
-    score_counter += 30;
+    score_counter += 8;
     score_to_print = 1;
     return;
   }
   else if (abs(462 - distance) < 35)
   {
-    score_counter += 10;
+    score_counter += 5;
     score_to_print = 2;
     return;
   }
   else if (abs(462 - distance) < 70)
   {
-    score_counter += 5;
+    score_counter += 3;
     score_to_print = 3;
     return;
   }
@@ -48,7 +48,7 @@ void score(int distance, int *cdance)
 
     if (!(score_counter - 5 < 0))
     {
-      score_counter -= 5;
+      score_counter -= 4;
     }
     else
     {
@@ -264,7 +264,7 @@ void get_powerup()
 {
   if (pp.lb && images.pointer->colided)
 	{
-		score_counter += 100;
+		score_counter += 10;
     click = true;
     score_to_print = 5;
 	}
