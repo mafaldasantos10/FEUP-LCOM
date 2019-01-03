@@ -17,9 +17,13 @@
 
 
 //VARIABLE INITIALIZATION
-static state_t state = START;
+static st_t st = START;
+static state_t state = SINGLE;
+static state2_t state2 = C_Y;
+
 bool exit_game = false;
-bool do_not_change = false;
+bool do_not_change = true;
+char name[25];
 
 
 //FUNCTIONS
@@ -31,6 +35,7 @@ int menu()
   loadImages();
 
   /* asks for a name */
+  printf("aqui!!\n");
   drawBitmap(images.name_menu, 0, 0, ALIGN_LEFT);
   double_buffer_to_video_mem();
 
@@ -55,10 +60,12 @@ int menu()
   {
     return 1;
   }
+
   if (mouse_subscribe_int(&bit_no_mouse) != OK)
   {
     return 1;
   }
+
    if (serialPort_subscribe_int(&bit_no_uart) != OK)
   {
     return 1;
@@ -69,9 +76,8 @@ int menu()
 
   uint8_t byte1[1], byte2[2];
   int ipc_status, r, size = 1, s = 1;
-  bool wait = false, ini = false;
+  bool wait = false;
   message msg;
-  char name[25];
 
   while (!exit_game) 
   {
@@ -113,37 +119,23 @@ int menu()
               byte2[1] = status;
             }
 
-            if (status == ENTER_KEY_BK && !ini)
-            {
-              if (strlen(name) == 0)
-              {
-                print_sentence("empty name!", 360, 600);
-                double_buffer_to_video_mem();
-                drawBitmap(images.name_menu, 0, 0, ALIGN_LEFT);
-                continue;
-              }
-
-              ini = true;
-              set_current_player_name(name);
-              default_menu();
-              continue;
-            }
-
-            if (size == 1 && !ini)
+            if (st == START)
             {
               if (strlen(name) == 20 && status != BACKSPACE_KEY)
                 continue;
 
-              convert_key(status, name);
+              //printf("entrei aqui:\n");
+              convert_key();
               print_sentence(name, 180, 500);
               double_buffer_to_video_mem();
             }
 
-            if (!ini)
-              continue;
-
-            change_state(bit_no_timer, bit_no_kb, bit_no_mouse);
-            change_buttons();
+            if (status == W_KEY || status == A_KEY || status == S_KEY || status  == D_KEY ||
+                status  == ENTER_KEY_BK || status  == ESC_KEY || st == START)
+            {
+              change_menu_state(bit_no_timer, bit_no_kb, bit_no_mouse);
+              change_buttons();
+            }
           }
 
           if (msg.m_notify.interrupts & irq_set_mouse)
@@ -184,7 +176,6 @@ int menu()
       /* no standard messages expected: do nothing */
     }
 
-    do_not_change = false;
     size = 1;
   }
 
@@ -217,7 +208,7 @@ int menu()
   uint32_t stat;
 	sys_inb(STAT_REG, &stat); 
 		
-	if( stat & OBF ) 
+	if( stat & OBF )
 	{
 		sys_inb(OUT_BUF, &status);
   }
@@ -227,36 +218,153 @@ int menu()
 
 //////////////////////////////////////////////////////////////////
 
-void change_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
+void change_menu_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
 {
+  if (do_not_change && st == MENU && status != ESC_KEY)
+  {
+    return;
+  }
+
   switch (status)
   {
-    case W_KEY:
-      state = (state - 1) % 4;
-      break;
-    case S_KEY:
-      state = (state + 1) % 4;
-      break;
-    case ENTER_KEY_BK:
-      if (state == EXIT)
-        exit_game = true;
-      else if (state == START)
+    case ESC_KEY:
+      if (st == MENU)
       {
+        //printf("do: %d\n", do_not_change);
+        if (!do_not_change)
+        {
+          st = START;
+          state = SINGLE;
+          state2 = C_Y;
+          //printf("aqui2!!\n");
+          drawBitmap(images.name_menu, 0, 0, ALIGN_LEFT);
+          double_buffer_to_video_mem();
+        }
+
+        if (state == INSTRUCTIONS || state == HIGHSCORES)
+          do_not_change = false;
+      }
+
+      if (st == CHARACTER)
+      {
+        st = MENU;
+        state = SINGLE;
+        state2 = C_Y;
+        drawBitmap(images.menu, 0, 0, ALIGN_LEFT);
+        double_buffer_to_video_mem();
+      }
+      break;
+
+    case W_KEY:
+      if (st == MENU)
+      {
+        if (state == SINGLE)
+        {
+          state = EXIT;
+          break;
+        }
+        state = (state - 1) % 5;
+      }
+      break;
+
+    case S_KEY:
+      if (st == MENU)
+      {
+        state = (state + 1) % 5;
+        
+      }
+      break;
+
+    case A_KEY:
+      if (st == CHARACTER)
+      {
+        //printf("tens razao!!\n");
+        state2 = (state2 - 1) % 2;
+        
+      }
+      break;
+
+    case D_KEY:
+      if (st == CHARACTER)
+      {
+        
+        state2 = (state2 + 1) % 2; 
+      }
+      break;
+
+    /* any state */
+    case ENTER_KEY_BK:
+
+      //printf("st: %d\n", st);
+
+      if (st == START)
+      {
+        printf("tens razao!! %d\n", strlen(name));
+        if (strlen(name) == 0)
+        {
+          print_sentence("empty name!", 360, 600);
+          double_buffer_to_video_mem();
+          drawBitmap(images.name_menu, 0, 0, ALIGN_LEFT);
+          return;
+        }
+        
+        set_current_player_name(name);
+        do_not_change = false;
+        st = MENU;
+        default_menu();
+        return;
+      }
+
+      if (st == MENU)
+      {
+        if (state == EXIT)
+        {
+          exit_game = true;
+        }
+
+        else if (state == SINGLE)
+        {
+          //printf("é aqui: %d\n", st);
+          st = CHARACTER;
+          drawBitmap(images.cromossomaY, 0, 0, ALIGN_LEFT);
+          double_buffer_to_video_mem();
+        }
+
+        else if (state == INSTRUCTIONS)
+        {
+          drawBitmap(images.instructions, 0, 0, ALIGN_LEFT);
+          double_buffer_to_video_mem();
+          do_not_change = true; //so that it doesn't print the menu over the instructions
+        }
+
+        else if (state == HIGHSCORES)
+        {
+          drawBitmap(images.highscores, 0, 0, ALIGN_LEFT);
+          print_high_scores();
+          double_buffer_to_video_mem();
+          do_not_change = true; //so that it doesn't print the menu over the panel
+        }
+      }
+
+      else if (st == CHARACTER)
+      {
+        if (state2 == C_Y)
+        {
+          //printf("hey\n");
+          //printf("GAME? %d\n", st);
+          
+          set_current_player_cromossoma(0);
+        } 
+        else if (state2 == C_X)
+        {
+          set_current_player_cromossoma(1);
+          // por o boneco X
+        }
+
+        st = GAME;
         game(bit_no_timer, bit_no_kb, bit_no_mouse);
       }
-      else if (state == INSTRUCTIONS)
-      {
-        drawBitmap(images.instructions, 0, 0, ALIGN_LEFT);
-        double_buffer_to_video_mem();
-        do_not_change = true; //so that it doesn't print the menu over the instructions
-      }
-      else if (state == HIGHSCORES)
-      {
-        drawBitmap(images.highscores, 0, 0, ALIGN_LEFT);
-        print_high_scores();
-        double_buffer_to_video_mem();
-        do_not_change = true; //so that it doesn't print the menu over the panel
-      }
+
       break;
   }
 }
@@ -265,42 +373,73 @@ void change_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
 
 void change_buttons()
 { 
-  drawBitmap(images.menu, 0, 0, ALIGN_LEFT); 
-
   if (do_not_change)
   {
     return;
   }
+  
+  //printf("st_d: %d\n", st);
 
-  switch(state % 4)
+  if (st == MENU)
   {
-    case 0:
-      drawBitmap(images.start_selected, 342, 305, ALIGN_LEFT); 
-      drawBitmap(images.highscores_not_selected, 342, 425, ALIGN_LEFT);
-      drawBitmap(images.instructions_not_selected, 342, 545, ALIGN_LEFT);
-      drawBitmap(images.exit_not_selected, 342, 665, ALIGN_LEFT);
-      break;
-    case 1:
-      drawBitmap(images.start_not_selected, 342, 305, ALIGN_LEFT);
-      drawBitmap(images.highscores_selected, 342, 425, ALIGN_LEFT);
-      drawBitmap(images.instructions_not_selected, 342, 545, ALIGN_LEFT);
-      drawBitmap(images.exit_not_selected, 342, 665, ALIGN_LEFT);
-      break;
-    case 2:
-      drawBitmap(images.start_not_selected, 342, 305, ALIGN_LEFT);
-      drawBitmap(images.highscores_not_selected, 342, 425, ALIGN_LEFT);
-      drawBitmap(images.instructions_selected, 342, 545, ALIGN_LEFT);
-      drawBitmap(images.exit_not_selected, 342, 665, ALIGN_LEFT);
-      break;
-    case 3:
-      drawBitmap(images.start_not_selected, 342, 305, ALIGN_LEFT);
-      drawBitmap(images.highscores_not_selected, 342, 425, ALIGN_LEFT);
-      drawBitmap(images.instructions_not_selected, 342, 545, ALIGN_LEFT);
-      drawBitmap(images.exit_selected, 342, 665, ALIGN_LEFT);
-      break;
-  } 
+    drawBitmap(images.menu, 0, 0, ALIGN_LEFT); 
 
-  double_buffer_to_video_mem();
+    switch(state % 5)
+    {
+      case 0:
+        drawBitmap(images.singleplayer_selected, 372, 305, ALIGN_LEFT);
+        drawBitmap(images.multiplayer_not_selected, 372, 395, ALIGN_LEFT);
+        drawBitmap(images.highscores_not_selected, 372, 485, ALIGN_LEFT);
+        drawBitmap(images.instructions_not_selected, 372, 575, ALIGN_LEFT);
+        drawBitmap(images.exit_not_selected, 372, 665, ALIGN_LEFT);
+        break;
+      case 1:
+        drawBitmap(images.singleplayer_not_selected, 372, 305, ALIGN_LEFT);
+        drawBitmap(images.multiplayer_selected, 372, 395, ALIGN_LEFT);
+        drawBitmap(images.highscores_not_selected, 372, 485, ALIGN_LEFT);
+        drawBitmap(images.instructions_not_selected, 372, 575, ALIGN_LEFT);
+        drawBitmap(images.exit_not_selected, 372, 665, ALIGN_LEFT);
+        break;
+      case 2:
+        drawBitmap(images.singleplayer_not_selected, 372, 305, ALIGN_LEFT);
+        drawBitmap(images.multiplayer_not_selected, 372, 395, ALIGN_LEFT);
+        drawBitmap(images.highscores_selected, 372, 485, ALIGN_LEFT);
+        drawBitmap(images.instructions_not_selected, 372, 575, ALIGN_LEFT);
+        drawBitmap(images.exit_not_selected, 372, 665, ALIGN_LEFT);
+        break;
+      case 3:
+        drawBitmap(images.singleplayer_not_selected, 372, 305, ALIGN_LEFT);
+        drawBitmap(images.multiplayer_not_selected, 372, 395, ALIGN_LEFT);
+        drawBitmap(images.highscores_not_selected, 372, 485, ALIGN_LEFT);
+        drawBitmap(images.instructions_selected, 372, 575, ALIGN_LEFT);
+        drawBitmap(images.exit_not_selected, 372, 665, ALIGN_LEFT);
+        break;
+      case 4:
+        drawBitmap(images.singleplayer_not_selected, 372, 305, ALIGN_LEFT);
+        drawBitmap(images.multiplayer_not_selected, 372, 395, ALIGN_LEFT);
+        drawBitmap(images.highscores_not_selected, 372, 485, ALIGN_LEFT);
+        drawBitmap(images.instructions_not_selected, 372, 575, ALIGN_LEFT);
+        drawBitmap(images.exit_selected, 372, 665, ALIGN_LEFT);
+        break;
+    }
+  }
+
+  else if (st == CHARACTER)
+  {
+    //printf("state fora: %d\n", state2);
+    switch(state2 % 2)
+    {
+      case 0:
+        drawBitmap(images.cromossomaY, 0, 0, ALIGN_LEFT);
+        break;
+      case 1:
+        drawBitmap(images.cromossomaX, 0, 0, ALIGN_LEFT);
+        break;
+    }
+  }
+
+  if (st != START)
+    double_buffer_to_video_mem();
 }
 
 //////////////////////////////////////////////////////////////////
@@ -308,10 +447,11 @@ void change_buttons()
 void default_menu()
 {
   drawBitmap(images.menu, 0, 0, ALIGN_LEFT);
-  drawBitmap(images.start_selected, 342, 305, ALIGN_LEFT);
-  drawBitmap(images.instructions_not_selected, 342, 545, ALIGN_LEFT);
-  drawBitmap(images.exit_not_selected, 342, 665, ALIGN_LEFT);
-  drawBitmap(images.highscores_not_selected, 342, 425, ALIGN_LEFT);
+  drawBitmap(images.singleplayer_selected, 372, 305, ALIGN_LEFT);
+  drawBitmap(images.multiplayer_not_selected, 372, 395, ALIGN_LEFT);
+  drawBitmap(images.highscores_not_selected, 372, 485, ALIGN_LEFT);
+  drawBitmap(images.instructions_not_selected, 372, 575, ALIGN_LEFT);
+  drawBitmap(images.exit_not_selected, 372, 665, ALIGN_LEFT);
   double_buffer_to_video_mem();
 }
 
@@ -326,7 +466,7 @@ void append(char* s, char c)
 
 //////////////////////////////////////////////////////////////////
 
-void convert_key(uint32_t status, char name[25])
+void convert_key()
 {
   switch (status)
   {
@@ -468,4 +608,14 @@ void convert_key(uint32_t status, char name[25])
       break;
     }
   }
+}
+
+//////////////////////////////////////////////////////////////////
+
+void default_state()
+{
+  default_menu();
+  st = MENU;
+  state = SINGLE;
+  state2 = C_Y;
 }

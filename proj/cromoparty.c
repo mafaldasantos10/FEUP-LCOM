@@ -18,6 +18,7 @@
 //VARIABLE INITIALIZATION
 Arrow **arrows;
 size_t number_of_arrows = 2;
+int cromossoma_choice;
 int cromossomaDance = 4;
 int colision = 6;
 bool powerup = true;
@@ -184,27 +185,52 @@ void printDance()
     {
         case 0:
         {
-            drawBitmap(images.cromossoma_up, 650, 300, ALIGN_LEFT);
+            /* Y */
+            if (!cromossoma_choice)
+                drawBitmap(images.cromossoma_up, 650, 300, ALIGN_LEFT);
+            /* X */
+            else
+                drawBitmap(images.cromossoma_up, 650, 300, ALIGN_LEFT);
             break;
         }
         case 1:
         {
-            drawBitmap(images.cromossoma_right, 650, 300, ALIGN_LEFT);
+            /* Y */
+            if (!cromossoma_choice)
+                drawBitmap(images.cromossoma_right, 650, 300, ALIGN_LEFT);
+            /* X */
+            else
+                drawBitmap(images.cromossoma_right, 650, 300, ALIGN_LEFT);
             break;
         }
         case 2:
         {
-            drawBitmap(images.cromossoma_down, 650, 300, ALIGN_LEFT);
+            /* Y */
+            if (!cromossoma_choice)
+                drawBitmap(images.cromossoma_down, 650, 300, ALIGN_LEFT);
+            /* X */
+            else
+                drawBitmap(images.cromossoma_down, 650, 300, ALIGN_LEFT);
             break;
         }
         case 3:
         {
-            drawBitmap(images.cromossoma_left, 650, 300, ALIGN_LEFT);
+            /* Y */
+            if (!cromossoma_choice)
+                drawBitmap(images.cromossoma_left, 650, 300, ALIGN_LEFT);
+            /* X */
+            else
+                drawBitmap(images.cromossoma_left, 650, 300, ALIGN_LEFT);
             break;
         }
         case 4:
         {
-            drawBitmap(images.cromossoma_idle, 650, 300, ALIGN_LEFT);
+            /* Y */
+            if (!cromossoma_choice)
+                drawBitmap(images.cromossoma_idle, 650, 300, ALIGN_LEFT);
+            /* X */
+            else
+                drawBitmap(images.cromossoma_idle, 650, 300, ALIGN_LEFT);
             break;
         }
     }
@@ -386,11 +412,11 @@ void reset_game()
 void end_game()
 {
     save_score();
-    do_not_change = true;
     drawBitmap(images.end, 0, 0, ALIGN_LEFT);
     show_score(1, 630, 615); /* 1 - current score */
     double_buffer_to_video_mem();
     sleep(3);
+    default_state();
     reset_game();
 }
 
@@ -570,4 +596,11 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
     }
     
     return 0;
+}
+
+///////////////////////////////////////////////////////////////////
+
+void set_current_player_cromossoma(int cr)
+{
+  cromossoma_choice = cr;
 }

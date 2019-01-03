@@ -1,11 +1,16 @@
 #pragma once
 
-typedef enum {START, HIGHSCORES, INSTRUCTIONS, EXIT} state_t;
-extern bool do_not_change;
+typedef enum {START, MENU, CHARACTER, GAME} st_t;
+typedef enum {SINGLE, MULTI, HIGHSCORES, INSTRUCTIONS, EXIT} state_t;
+typedef enum {C_Y, C_X} state2_t;
+
+
+//PROTOTYPES
+//////////////////////////////////////////////////////////////////
 
 int menu();
 
-void change_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse);
+void change_menu_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse);
 
 void change_buttons();
 
@@ -13,4 +18,6 @@ void default_menu();
 
 void append(char* s, char c);
 
-void convert_key(uint32_t status, char name[25]);
+void convert_key();
+
+void default_state();
