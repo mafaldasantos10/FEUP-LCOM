@@ -42,3 +42,5 @@ void reset_powerup();
 void reset_game();
 
 void end_game();
+
+void set_current_player_cromossoma(int cr);

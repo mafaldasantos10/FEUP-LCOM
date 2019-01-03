@@ -79,11 +79,13 @@ typedef struct {
     Bitmap* miss;
     Bitmap* power;
     Bitmap* pointer;
-    Bitmap* start_selected;
+    Bitmap* singleplayer_selected;
+    Bitmap* multiplayer_selected;
     Bitmap* instructions_selected;
     Bitmap* highscores_selected;
     Bitmap* exit_selected;
-    Bitmap* start_not_selected;
+    Bitmap* singleplayer_not_selected;
+    Bitmap* multiplayer_not_selected;
     Bitmap* instructions_not_selected;
     Bitmap* highscores_not_selected;
     Bitmap* exit_not_selected;
@@ -94,6 +96,7 @@ typedef struct {
     Bitmap* end;
     Bitmap* extra;
     Bitmap* name_menu;
+    Bitmap* waiting;
     Bitmap* a;
     Bitmap* b;
     Bitmap* c;
@@ -124,7 +127,8 @@ typedef struct {
     Bitmap* inter;
     Bitmap* slash;
     Bitmap* colon;
-    Bitmap* waiting;
+    Bitmap* cromossomaY;
+    Bitmap* cromossomaX;
 } Images;
 
 
