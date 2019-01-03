@@ -13,6 +13,7 @@
 #include "score.h"
 #include "PS2mouse.h"
 #include "rtc.h"
+#include "serialPort.h"
 
 
 //VARIABLE INITIALIZATION
@@ -38,6 +39,7 @@ int menu()
   uint8_t bit_no_timer;
   uint8_t bit_no_kb;
   uint8_t bit_no_mouse;
+  uint8_t bit_no_uart;
   
   if (timer_subscribe_int(&bit_no_timer) != OK)
   {
@@ -54,6 +56,10 @@ int menu()
     return 1;
   }
   if (mouse_subscribe_int(&bit_no_mouse) != OK)
+  {
+    return 1;
+  }
+   if (serialPort_subscribe_int(&bit_no_uart) != OK)
   {
     return 1;
   }
@@ -144,10 +150,7 @@ int menu()
           { /* subscribed interrupt */
 
             mouse_ih();
-            //if (error_mouse == true)
-            //{
-            //    continue;
-            //}
+
             if (s == 1)
             {
               if (status_mouse & BIT(3))
