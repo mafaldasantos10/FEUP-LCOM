@@ -149,14 +149,31 @@ extern Images images;
 
 int get_mode_info(uint16_t mode, vbe_mode_info_t * vmi_p);
 
+/**
+ * @brief Double buffer function
+ */
 void double_buffer_to_video_mem();
 
+/**
+ * @brief Gets the horizontal resolution
+ * @return Horizontal resolution
+ */
 int get_horizontal_resolution();
 
+/**
+ * @brief Gets the vertical resolution
+ * @return Vertical resolution
+ */
 int get_vertical_resolution();
 
+/**
+ * @brief Loads all the images used in the project
+ */
 void loadImages();
 
+/**
+ * @brief Deletes all the images used
+ */
 void deleteImages();
 
 /**
