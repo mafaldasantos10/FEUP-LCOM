@@ -108,9 +108,9 @@ int clear_RBR()
 }
 
 
-uint32_t serialPort_handler()
+int serialPort_handler(uint32_t *byte)
 {
-  uint32_t byte = 0, iirByte, lsrByte;
+  uint32_t iirByte, lsrByte;
 
   if(sys_inb(IIR,&iirByte) != OK)
   {
@@ -119,7 +119,7 @@ uint32_t serialPort_handler()
 
   if(iirByte & RD)
   {
-    if(get_RBR(&byte) != 0)
+    if(get_RBR(byte) != 0)
     {
       return 1;
     }
@@ -130,9 +130,8 @@ uint32_t serialPort_handler()
     {
       return 1;
     }
-
   } 
-    return byte;
+  return 0;
 }
 
 int playery_sync(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, uint8_t bit_no_uart)
@@ -185,19 +184,18 @@ int playery_sync(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, 
 
                         mouse_ih();
 
-                      	uint32_t stat;
+                      /*	uint32_t stat;
 	                      sys_inb(STAT_REG, &stat); 
 
 	                      if( stat & OBF ) 
 	                      {
 	                      	sys_inb(OUT_BUF, &status);
-                        }
-
+                        }*/
 
                     }
                      if (msg.m_notify.interrupts & irq_set_serialPort)
                     { /* subscribed interrupt */
-                      char_container = serialPort_handler();
+                      serialPort_handler(&char_container);
                     }
 
                     break;
@@ -216,7 +214,7 @@ int playery_sync(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, 
     /* to reset global variables for a new game */
     if (esc)
     {
-        end_game();
+        return 1;
     }
     
     return 0;
@@ -274,19 +272,17 @@ int playerx_sync(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, 
 
                         mouse_ih();
 
-                      uint32_t stat;
+                    /*  uint32_t stat;
 	                    sys_inb(STAT_REG, &stat); 
                     
 	                    if( stat & OBF ) 
 	                    {
 	                    	sys_inb(OUT_BUF, &status);
-                      }
-
-
+                      }*/
                     }
                      if (msg.m_notify.interrupts & irq_set_serialPort)
                     { /* subscribed interrupt */
-                      char_container = serialPort_handler();
+                      serialPort_handler(&char_container);
                     }
 
                     break;
@@ -305,7 +301,7 @@ int playerx_sync(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, 
     /* to reset global variables for a new game */
     if (esc)
     {
-        end_game();
+        return 1;
     }
     
     return 0;

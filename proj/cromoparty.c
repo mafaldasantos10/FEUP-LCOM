@@ -20,6 +20,8 @@ Arrow **arrows;
 size_t number_of_arrows = 2;
 int cromossoma_choice;
 int cromossomaDance = 4;
+uint32_t char_containerx = 0;
+uint32_t char_containery = 0;
 int colision = 6;
 bool powerup = true;
 int powerx = 0;
@@ -58,16 +60,26 @@ void print_queue()
     drawBitmap(images.pad, 462, 450, ALIGN_LEFT);
     drawBitmap(images.pointer, get_mouseX(), get_mouseY(), ALIGN_LEFT);
     show_score(1, get_horizontal_resolution(), 136);
+  
     print_time(984, 17);
 }
 
 //////////////////////////////////////////////////////////////////
 
-int pix_map_move_pos()
+int pix_map_move_pos(int x)
 {
     if (timer_counter % (sys_hz() / FRAME_RATE) == 0)
     {
-        print_queue();
+          print_queue();
+
+          if(x == 1)
+          {
+            show_score((int)char_containery, 1000, 250); 
+          }
+          else if (x == 2)
+          {
+            show_score((int)char_containerx, 1000, 250); 
+          } 
 
         for (unsigned int i = 0; i < number_of_arrows; i++)
         {
@@ -187,50 +199,50 @@ void printDance()
         {
             /* Y */
             if (!cromossoma_choice)
-                drawBitmap(images.cromossoma_up, 650, 300, ALIGN_LEFT);
+                drawBitmap(images.cromossomaY_up, 650, 300, ALIGN_LEFT);
             /* X */
             else
-                drawBitmap(images.cromossoma_up, 650, 300, ALIGN_LEFT);
+                drawBitmap(images.cromossomaX_up, 650, 300, ALIGN_LEFT);
             break;
         }
         case 1:
         {
             /* Y */
             if (!cromossoma_choice)
-                drawBitmap(images.cromossoma_right, 650, 300, ALIGN_LEFT);
+                drawBitmap(images.cromossomaY_right, 650, 300, ALIGN_LEFT);
             /* X */
             else
-                drawBitmap(images.cromossoma_right, 650, 300, ALIGN_LEFT);
+                drawBitmap(images.cromossomaX_right, 650, 300, ALIGN_LEFT);
             break;
         }
         case 2:
         {
             /* Y */
             if (!cromossoma_choice)
-                drawBitmap(images.cromossoma_down, 650, 300, ALIGN_LEFT);
+                drawBitmap(images.cromossomaY_down, 650, 300, ALIGN_LEFT);
             /* X */
             else
-                drawBitmap(images.cromossoma_down, 650, 300, ALIGN_LEFT);
+                drawBitmap(images.cromossomaX_down, 650, 300, ALIGN_LEFT);
             break;
         }
         case 3:
         {
             /* Y */
             if (!cromossoma_choice)
-                drawBitmap(images.cromossoma_left, 650, 300, ALIGN_LEFT);
+                drawBitmap(images.cromossomaY_left, 650, 300, ALIGN_LEFT);
             /* X */
             else
-                drawBitmap(images.cromossoma_left, 650, 300, ALIGN_LEFT);
+                drawBitmap(images.cromossomaX_left, 650, 300, ALIGN_LEFT);
             break;
         }
         case 4:
         {
             /* Y */
             if (!cromossoma_choice)
-                drawBitmap(images.cromossoma_idle, 650, 300, ALIGN_LEFT);
+                drawBitmap(images.cromossomaY_idle, 650, 300, ALIGN_LEFT);
             /* X */
             else
-                drawBitmap(images.cromossoma_idle, 650, 300, ALIGN_LEFT);
+                drawBitmap(images.cromossomaX_idle, 650, 300, ALIGN_LEFT);
             break;
         }
     }
@@ -312,23 +324,45 @@ void powerUps(int xi, int yi, int yf)
         return;
     }
 
-    if (images.pad->colided || images.cromossoma_up->colided || images.cromossoma_right->colided || images.cromossoma_left->colided || images.cromossoma_down->colided || images.arrow_up->colided || images.arrow_right->colided 
-    || images.arrow_left->colided || images.arrow_down->colided || images.cromossoma_idle->colided)
+    if (!cromossoma_choice)
     {
-        images.pad->colided = false;
-        images.cromossoma_up->colided = false;
-        images.cromossoma_right->colided = false;
-        images.cromossoma_left->colided = false;
-        images.cromossoma_down->colided = false;
-        images.arrow_up->colided = false;
-        images.arrow_right->colided = false;
-        images.arrow_left->colided = false;
-        images.arrow_down->colided = false;
-        images.cromossoma_idle->colided = false;
-        powerup = false;
-        images.power->colided = true;
-        colision++;
-        return;
+        if (images.cromossomaY_up->colided || images.cromossomaY_right->colided || images.cromossomaY_left->colided || images.cromossomaY_down->colided || images.arrow_up->colided || images.arrow_right->colided 
+        || images.arrow_left->colided || images.arrow_down->colided || images.cromossomaY_idle->colided)
+        {          
+            images.cromossomaY_up->colided = false;
+            images.cromossomaY_right->colided = false;
+            images.cromossomaY_left->colided = false;
+            images.cromossomaY_down->colided = false;
+            images.cromossomaY_idle->colided = false;
+            images.arrow_up->colided = false;
+            images.arrow_right->colided = false;
+            images.arrow_left->colided = false;
+            images.arrow_down->colided = false;
+            images.power->colided = true;
+            powerup = false;
+            colision++;
+            return;
+        }
+    }
+    else
+    {
+        if (images.cromossomaX_up->colided || images.cromossomaX_right->colided || images.cromossomaX_left->colided || images.cromossomaX_down->colided || images.arrow_up->colided || images.arrow_right->colided 
+        || images.arrow_left->colided || images.arrow_down->colided || images.cromossomaX_idle->colided)
+        {         
+            images.cromossomaX_up->colided = false;
+            images.cromossomaX_right->colided = false;
+            images.cromossomaX_left->colided = false;
+            images.cromossomaX_down->colided = false;
+            images.cromossomaX_idle->colided = false;
+            images.arrow_up->colided = false;
+            images.arrow_right->colided = false;
+            images.arrow_left->colided = false;
+            images.arrow_down->colided = false;
+            images.power->colided = true;
+            powerup = false;
+            colision++;
+            return;
+        }
     }
 
     if (xi >= xf)
@@ -422,7 +456,7 @@ void end_game()
 
 //////////////////////////////////////////////////////////////////
 
-void arrowProcessing()
+void arrowProcessing(int x)
 {
     if (!arrows[0]->active)
     {
@@ -440,7 +474,7 @@ void arrowProcessing()
     }
     else
     {
-        pix_map_move_pos();
+        pix_map_move_pos(x);
     }
 }
 
@@ -451,7 +485,14 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
     init_arrows();
 
     drawBitmap(images.background, 0, 0, ALIGN_LEFT);
-    drawBitmap(images.cromossoma_idle, 650, 300, ALIGN_LEFT);
+    if (!cromossoma_choice)
+    {
+        drawBitmap(images.cromossomaY_idle, 650, 300, ALIGN_LEFT);
+    }
+    else
+    {
+        drawBitmap(images.cromossomaX_idle, 650, 300, ALIGN_LEFT);
+    }
     drawBitmap(images.pad, 462, 450, ALIGN_LEFT);
     double_buffer_to_video_mem();
 
@@ -482,7 +523,7 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
                         if (!p_key)
                         {
                             timer_int_handler();
-                            arrowProcessing();
+                            arrowProcessing(0);
                         }
                     }
 
@@ -591,7 +632,7 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
 
     /* to reset global variables for a new game */
     if (esc)
-    {
+    {   
         end_game();
     }
     
@@ -604,3 +645,353 @@ void set_current_player_cromossoma(int cr)
 {
   cromossoma_choice = cr;
 }
+
+
+
+////////////////////////////// MULTI ///////////////////////////////////////
+
+
+
+int gameMultiX(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, uint8_t bit_no_uart)
+{
+    init_arrows();
+    reset_score_counter();
+    drawBitmap(images.background, 0, 0, ALIGN_LEFT);
+    if (!cromossoma_choice)
+    {
+        drawBitmap(images.cromossomaY_idle, 650, 300, ALIGN_LEFT);
+    }
+    else
+    {
+        drawBitmap(images.cromossomaX_idle, 650, 300, ALIGN_LEFT);
+    }
+    drawBitmap(images.pad, 462, 450, ALIGN_LEFT);
+    double_buffer_to_video_mem();
+
+    uint32_t irq_set_timer = BIT(bit_no_timer);
+    uint32_t irq_set_keyboard = BIT(bit_no_kb);
+    uint32_t irq_set_mouse = BIT(bit_no_mouse);
+    uint32_t irq_set_serialPort = BIT(bit_no_uart);
+    
+    uint8_t byte1[1], byte2[2];
+    int ipc_status, r, size = 1, s = 1;
+    bool esc = false, p_key = false, wait = false;
+    message msg;
+
+    while (!esc)
+    {
+        /* Get a request message. */
+        if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0)
+        {
+            printf("driver_receive failed with: %d", r);
+            continue;
+        }
+        if (is_ipc_notify(ipc_status))
+        { /* received notification */
+            switch (_ENDPOINT_P(msg.m_source))
+            {
+                case HARDWARE: /* hardware interrupt notification */
+                    if (msg.m_notify.interrupts & irq_set_timer)
+                    {
+                        if (!p_key)
+                        {
+                            timer_int_handler();
+                            arrowProcessing(1);
+                        }
+                        if((timer_counter % 5) == 0)
+                        {
+                            printf("SCORE %d", getScore());
+                            write_to_THR((uint32_t)getScore());
+                            
+                        }
+                    }
+
+                    if (msg.m_notify.interrupts & irq_set_keyboard)
+                    { /* subscribed interrupt */
+                    
+                        kbc_asm_ih();
+
+                        if (status == MSB)
+                        {
+                            wait = true;
+                            continue;
+                        }
+                        if (wait == true)
+                        {
+                            wait = false;
+                            size = 2;
+                        }
+
+                        if (status == ESC_BK)
+                        {
+                            esc = true;
+                        }
+
+                        if (status == P_KEY_BK)
+                        {
+                            if (!p_key)
+                            {
+                                p_key = true;
+                                drawBitmap(images.pause, 180, 116, ALIGN_LEFT);
+                                double_buffer_to_video_mem();
+                            }
+                            else
+                            {
+                                p_key = false;
+                            }
+                        }
+
+                        if (status == W_KEY || status == A_KEY || status == S_KEY ||status  == D_KEY)
+                        {
+                            keyboardArrows();
+                        }
+
+                        if (size == 1)
+                        {
+                            byte1[0] = status;
+                        }
+
+                        if (size == 2)
+                        {
+                            byte2[0] = MSB;
+                            byte2[1] = status;
+                        }
+                    }
+
+                    if (msg.m_notify.interrupts & irq_set_mouse)
+                    { /* subscribed interrupt */
+
+                        mouse_ih();
+
+                        if (s == 1)
+                        {
+                            if (status_mouse & BIT(3))
+                            {
+                                pp.bytes[0] = status_mouse;
+                                s++;
+                            }
+                            continue;
+                        } 
+
+                        if (s == 2)
+                        {
+                            pp.bytes[1] = status_mouse;
+                            s++;
+                            continue;
+                        }
+                        
+                        if (s == 3)
+                        {
+                            pp.bytes[2] = status_mouse;
+                            packet_create();
+                            currentMousePosition();
+                            get_powerup();
+                            s = 1;
+                        }
+                    }
+
+                    if (msg.m_notify.interrupts & irq_set_serialPort)
+                    { /* subscribed interrupt */
+                      serialPort_handler(&char_containery);
+                    }
+                    break;
+                default:
+                    break; /* no other notifications expected: do nothing */
+            }
+        }
+        else
+        {   /* received a standard message, not a notification */
+            /* no standard messages expected: do nothing */
+        }
+
+        /* game ends after 45 seconds */
+        if (timer_counter > 2700)
+        {   
+            end_game();
+            return 0;
+        }
+
+        size = 1;
+    }
+
+    /* to reset global variables for a new game */
+    if (esc)
+    {
+        end_game();
+    }
+    
+    return 0;
+}
+
+int gameMultiY(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, uint8_t bit_no_uart)
+{
+    init_arrows();
+    reset_score_counter();
+    drawBitmap(images.background, 0, 0, ALIGN_LEFT);
+    if (!cromossoma_choice)
+    {
+        drawBitmap(images.cromossomaY_idle, 650, 300, ALIGN_LEFT);
+    }
+    else
+    {
+        drawBitmap(images.cromossomaX_idle, 650, 300, ALIGN_LEFT);
+    }
+    drawBitmap(images.pad, 462, 450, ALIGN_LEFT);
+    double_buffer_to_video_mem();
+
+    uint32_t irq_set_timer = BIT(bit_no_timer);
+    uint32_t irq_set_keyboard = BIT(bit_no_kb);
+    uint32_t irq_set_mouse = BIT(bit_no_mouse);
+    uint32_t irq_set_serialPort = BIT(bit_no_uart);
+    
+    uint8_t byte1[1], byte2[2];
+    int ipc_status, r, size = 1, s = 1;
+    bool esc = false, p_key = false, wait = false;
+    message msg;
+
+    while (!esc)
+    {
+        /* Get a request message. */
+        if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0)
+        {
+            printf("driver_receive failed with: %d", r);
+            continue;
+        }
+        if (is_ipc_notify(ipc_status))
+        { /* received notification */
+            switch (_ENDPOINT_P(msg.m_source))
+            {
+                case HARDWARE: /* hardware interrupt notification */
+                    if (msg.m_notify.interrupts & irq_set_timer)
+                    {
+                        if (!p_key)
+                        {
+                            timer_int_handler();
+                            arrowProcessing(2);
+                        }
+                        if((timer_counter % 5) == 0)
+                        {
+                            printf("SCORE %d", getScore());
+                            write_to_THR((uint32_t)getScore());
+
+                        }
+                    }
+
+                    if (msg.m_notify.interrupts & irq_set_keyboard)
+                    { /* subscribed interrupt */
+                    
+                        kbc_asm_ih();
+
+                        if (status == MSB)
+                        {
+                            wait = true;
+                            continue;
+                        }
+                        if (wait == true)
+                        {
+                            wait = false;
+                            size = 2;
+                        }
+
+                        if (status == ESC_BK)
+                        {
+                            esc = true;
+                        }
+
+                        if (status == P_KEY_BK)
+                        {
+                            if (!p_key)
+                            {
+                                p_key = true;
+                                drawBitmap(images.pause, 180, 116, ALIGN_LEFT);
+                                double_buffer_to_video_mem();
+                            }
+                            else
+                            {
+                                p_key = false;
+                            }
+                        }
+
+                        if (status == W_KEY || status == A_KEY || status == S_KEY ||status  == D_KEY)
+                        {
+                            keyboardArrows();
+                        }
+
+                        if (size == 1)
+                        {
+                            byte1[0] = status;
+                        }
+
+                        if (size == 2)
+                        {
+                            byte2[0] = MSB;
+                            byte2[1] = status;
+                        }
+                    }
+
+                    if (msg.m_notify.interrupts & irq_set_mouse)
+                    { /* subscribed interrupt */
+
+                        mouse_ih();
+
+                        if (s == 1)
+                        {
+                            if (status_mouse & BIT(3))
+                            {
+                                pp.bytes[0] = status_mouse;
+                                s++;
+                            }
+                            continue;
+                        } 
+
+                        if (s == 2)
+                        {
+                            pp.bytes[1] = status_mouse;
+                            s++;
+                            continue;
+                        }
+                        
+                        if (s == 3)
+                        {
+                            pp.bytes[2] = status_mouse;
+                            packet_create();
+                            currentMousePosition();
+                            get_powerup();
+                            s = 1;
+                        }
+                    }
+
+                    if (msg.m_notify.interrupts & irq_set_serialPort)
+                    { /* subscribed interrupt */
+                      serialPort_handler(&char_containerx);
+                    }
+                    break;
+                default:
+                    break; /* no other notifications expected: do nothing */
+            }
+        }
+        else
+        {   /* received a standard message, not a notification */
+            /* no standard messages expected: do nothing */
+        }
+
+        /* game ends after 45 seconds */
+        if (timer_counter > 2700)
+        {   
+            end_game();
+            return 0;
+        }
+
+        size = 1;
+    }
+
+    /* to reset global variables for a new game */
+    if (esc)
+    {
+        end_game();
+    }
+    
+    return 0;
+}
+
+

@@ -34,6 +34,6 @@ int serialPort_unsubscribe_int();
 int get_RBR(uint32_t *byte);
 int write_to_THR(uint32_t byte);
 int clear_RBR();
-uint32_t serialPort_handler();
+int serialPort_handler(uint32_t *byte);
 int playery_sync(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, uint8_t bit_no_uart);
 int playerx_sync(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, uint8_t bit_no_uart);
