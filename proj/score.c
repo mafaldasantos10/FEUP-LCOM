@@ -19,6 +19,7 @@ int score_counter = 0;
 char player_name[25];
 bool click = false;
 
+
 //FUNCTIONS
 //////////////////////////////////////////////////////////////////
 
@@ -58,6 +59,8 @@ void score(int distance, int *cdance)
     *cdance = 4;
   }
 }
+
+//////////////////////////////////////////////////////////////////
 
 int getScore()
 {
@@ -117,7 +120,6 @@ void show_score(int score, int x, int y)
     score /= 10;
     gap += 60; // gap increases with each extra digit
   }
-  
 }
 
 //////////////////////////////////////////////////////////////////
@@ -477,13 +479,16 @@ int player_counter = 0;
 
 void save_score()
 {
+  /* it's only saved if it's a highscore */
   if (players[get_last_player_index()].score > score_counter && player_counter == MAX_PLAYER_SLOTS)
   {
     return;
   }
 
+  /* the high scores table might be full*/
   if (player_counter == MAX_PLAYER_SLOTS)
   {
+    /* if it is, it replaces the worst player still on the table */
     int index = get_last_player_index();
     strcpy(players[index].name, player_name);
     players[index].score = score_counter;
@@ -494,6 +499,7 @@ void save_score()
   }
   else
   {
+    /* if not, it only places him on the table */
     strcpy(players[player_counter].name, player_name);
     players[player_counter].score = score_counter;
     players[player_counter].rank = rank() + 1;
@@ -501,6 +507,7 @@ void save_score()
     players[player_counter].month = get_month();
     players[player_counter].year = get_year();
 
+    /* number of players on the table is updated */
     player_counter++;
   }
 }
@@ -513,6 +520,7 @@ void save_score_to_file()
 
   if (f == NULL)
   {
+    /* if highscores.txt is missing, it's a fatal error */
     print_sentence("Error opening file!", 300, 300);
     exit(1);
   }
@@ -546,12 +554,13 @@ void load_score_from_file()
 
   if (f == NULL)
   {
+    /* if highscores.txt is missing, it's a fatal error */
     print_sentence("highscores file missing!", 250, 300);
     double_buffer_to_video_mem();
     exit(1);
   }
 
-  /* read */
+  /* read while it's not EOF */
   while (fscanf(f, "%s", buff) == 1)
   {
     if (feof(f)) 

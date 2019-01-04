@@ -17,9 +17,9 @@
 
 //VARIABLE INITIALIZATION
 Arrow **arrows;
-size_t number_of_arrows = 2;
-int cromossoma_choice;
-int cromossomaDance = 4;
+size_t number_of_arrows = 2; // number or arrows at the same time on the screen
+int cromossoma_choice; // 0 - CrY | 1 - CrX
+int cromossomaDance = 4; // defaul dance = idle
 uint32_t char_containerx = 0;
 uint32_t char_containery = 0;
 int colision = 6;
@@ -29,6 +29,7 @@ int powery = 0;
 int xi = 0;
 int yi = 0;
 int yf = 300;
+
 
 //FUNCTIONS
 //////////////////////////////////////////////////////////////////
@@ -56,11 +57,10 @@ void init_arrows()
 void print_queue()
 {
     drawBitmap(images.background, 0, 0, ALIGN_LEFT);
-    changeDirect();
     drawBitmap(images.pad, 462, 450, ALIGN_LEFT);
+    changeDirect();
     drawBitmap(images.pointer, get_mouseX(), get_mouseY(), ALIGN_LEFT);
     show_score(1, get_horizontal_resolution(), 136);
-  
     print_time(984, 17);
 }
 
@@ -70,16 +70,16 @@ int pix_map_move_pos(int x)
 {
     if (timer_counter % (sys_hz() / FRAME_RATE) == 0)
     {
-          print_queue();
+        print_queue();
 
-          if(x == 1)
-          {
-            show_score((int)char_containery, 1000, 250); 
-          }
-          else if (x == 2)
-          {
-            show_score((int)char_containerx, 1000, 250); 
-          } 
+        if(x == 1)
+        {
+          show_score((int)char_containery, 1000, 250); 
+        }
+        else if (x == 2)
+        {
+          show_score((int)char_containerx, 1000, 250); 
+        }
 
         for (unsigned int i = 0; i < number_of_arrows; i++)
         {
@@ -117,13 +117,13 @@ int pix_map_move_pos(int x)
                     break;
                 }
             }
-        }  
+        }
     }
     
     printScore();
     printDance();
     double_buffer_to_video_mem();
-   
+
     return 0;
 }
 
@@ -132,7 +132,6 @@ int pix_map_move_pos(int x)
 int arrowRate(int i) 
 {
     arrows[i]->speed = 2 + rand() % 4;  
-
     arrows[i]->direction = rand() % 4;
 
     return 0;
@@ -315,7 +314,7 @@ void powerUps(int xi, int yi, int yf)
     int speedx = powerSpeed(xi, xf);
     int speedy = powerSpeed(yi, yf);
 
-    if(click)
+    if (click)
     {
         powerup = false;
         colision = 5;
@@ -379,7 +378,7 @@ void powerUps(int xi, int yi, int yf)
         }
     }
 
-    if(xi < xf)
+    if (xi < xf)
     {
          if ((powerx + speedx) >= xf)
         {
@@ -393,9 +392,9 @@ void powerUps(int xi, int yi, int yf)
         }
     }
 
-    if(yi >= yf)
+    if (yi >= yf)
     {
-        if(powery - speedy <= yf) 
+        if (powery - speedy <= yf) 
         {
             powery = yf;
         }
@@ -405,9 +404,9 @@ void powerUps(int xi, int yi, int yf)
         }
     }
 
-    if(yi < yf)
+    if (yi < yf)
     {
-        if(powery + speedy >= yf) 
+        if (powery + speedy >= yf) 
         {
             powery = yf;
         }
@@ -648,9 +647,18 @@ void set_current_player_cromossoma(int cr)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 ////////////////////////////// MULTI ///////////////////////////////////////
-
-
 
 int gameMultiX(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, uint8_t bit_no_uart)
 {
@@ -993,5 +1001,3 @@ int gameMultiY(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, ui
     
     return 0;
 }
-
-

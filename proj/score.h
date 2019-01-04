@@ -21,27 +21,34 @@ typedef struct {
  * @brief Increases the score acordingly to the distance of the circle to the pad
  *
  * @param distance Distance in pixels between the circle and the pad
- * @param cdance ?????????????????????????????????????????????????????????
+ * @param cdance Pointer to the variable that dictates the dance step the chromosome will do
  */
 void score(int distance, int  *cdance);
 
+/**
+ * @brief Returns the player's current score
+ *
+ * @return int of the player's current score
+ */
 int getScore();
 
 /**
- * @brief Acordingly to the distance it prints a different message in the screen
+ * @brief Prints one of the 5 possible prompts according to the player's performance on each move
  */
 void printScore();
 
 /**
- * @brief Sends the right integer to be printed by the print_digit function
- * @param score The score to print
+ * @brief Prints a given score in a given position, from right to left. 
+ * 
+ * @param score The score to print. If "1" is received, it uses the player's current score 
  * @param x Horizontal coordinate to print the score
  * @param y Vertical coordinate to print the score
  */
 void show_score(int score, int x, int y);
 
 /**
- * @brief Prints the recieved number on the screen
+ * @brief Prints the received number on the screen on the given coordinates
+ * 
  * @param number Number to print
  * @param x Horizontal coordinate to print the score
  * @param y Vertical coordinate to print the score
@@ -49,7 +56,8 @@ void show_score(int score, int x, int y);
 void print_digit(int number, int x, int y);
 
 /**
- * @brief Prints the recieved number on the screen with the smaller set of numbers 
+ * @brief Prints the received number on the screen with a smaller set of numbers on the given coordinates
+ * 
  * @param number Number to print
  * @param x Horizontal coordinate to print the score
  * @param y Vertical coordinate to print the score
@@ -57,65 +65,79 @@ void print_digit(int number, int x, int y);
 void print_small_digit(int number, int x, int y);
 
 /**
- * @brief Number of digits an integer has
- * @param number Number to print
- * @return Number of digits of the parameter number
+ * @brief Finds the number of digits of an integer
+ * 
+ * @param number Number to use
+ * @return Number of digits of the given number
  */
 int number_of_digits(int number);
 
 /**
- * @brief resets the score counter global variable
+ * @brief Resets the score counter global variable
  */
 void reset_score_counter();
 
 /**
- * @brief resets the score_to_print global variable
+ * @brief Resets the score_to_print global variable
  */
 void reset_score_to_print();
 
 /**
- * @brief Checks if the mouse clicked on the power up
+ * @brief Checks if the power up was clicked by the mouse
  */
 void get_powerup();
 
 /**
- * @brief Prints a sentence on the screen
- * @param string[] array of chars with the sentence
+ * @brief Prints a sentence on the screen on the given coordinates
+ * 
+ * @param string[] Array of chars (string) with the sentence
  * @param x Horizontal coordinate to print the score
  * @param y Vertical coordinate to print the score
  */
 void print_sentence(char string[], int x, int y);
 
 /**
- * @brief Prints a letter on the screen and adjustes the space between letters 
- * @param c char to be printed
+ * @brief Prints a letter (character) on the screen and adjusts the space between letters for a more natural looking writing
+ * 
+ * @param c Char to be printed
  * @param x Horizontal coordinate to print the score
  * @param y Vertical coordinate to print the score
- * @return Lengh of which letter bitmap
+ * 
+ * @return Lenght the last printed letter
  */
 int print_letter(char c, int x, int y);
 
 /**
- * @brief ??????????????????????////
+ * @brief If the players makes a highscore, it saves its information on the array of players, bearing in mind the array can be full.
  */
 void save_score();
 
 /**
- * @brief Saves the score in the highscore file
+ * @brief Saves the score in the highscores.txt file. Players are placed from the best to the worst
  */
 void save_score_to_file();
 
 /**
- * @brief Loads the information of the file
+ * @brief Loads the information of the highscores.txt file
  */
 void load_score_from_file();
 
+/**
+ * @brief Finds the index of the player with least points
+ * 
+ * @return Integer index of the last player
+ */
 int get_last_player_index();
 
+/**
+ * @brief Finds the correct rank of the player according to his score
+ * 
+ * @return Integer index of where he should be placed
+ */
 int rank();
 
 /**
- * @brief Prints the score rankings in the high score panel
+ * @brief Prints the score rankings in the high scores panel in order
  */
 void print_high_scores();
 
