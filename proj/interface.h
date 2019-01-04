@@ -134,6 +134,8 @@ typedef struct {
     Bitmap* colon;
     Bitmap* cromossomaY;
     Bitmap* cromossomaX;
+    Bitmap* scoreY;
+    Bitmap* scoreX;
 } Images;
 
 

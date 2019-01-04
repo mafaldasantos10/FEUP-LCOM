@@ -140,68 +140,68 @@ Images images;
 
 void loadImages()
 {
-    images.one_s = loadBitmap("/home/lcom/labs/proj/bitmap/1h.bmp");
-    images.two_s = loadBitmap("/home/lcom/labs/proj/bitmap/2h.bmp");
-    images.three_s = loadBitmap("/home/lcom/labs/proj/bitmap/3h.bmp");
-    images.four_s = loadBitmap("/home/lcom/labs/proj/bitmap/4h.bmp");
-    images.five_s = loadBitmap("/home/lcom/labs/proj/bitmap/5h.bmp");
-    images.six_s = loadBitmap("/home/lcom/labs/proj/bitmap/6h.bmp");
-    images.seven_s = loadBitmap("/home/lcom/labs/proj/bitmap/7h.bmp");
-    images.eight_s = loadBitmap("/home/lcom/labs/proj/bitmap/8h.bmp");
-    images.nine_s = loadBitmap("/home/lcom/labs/proj/bitmap/9h.bmp");
-    images.zero_s = loadBitmap("/home/lcom/labs/proj/bitmap/0h.bmp");
-    images.one = loadBitmap("/home/lcom/labs/proj/bitmap/1.bmp");
-    images.two = loadBitmap("/home/lcom/labs/proj/bitmap/2.bmp");
-    images.three = loadBitmap("/home/lcom/labs/proj/bitmap/3.bmp");
-    images.four = loadBitmap("/home/lcom/labs/proj/bitmap/4.bmp");
-    images.five = loadBitmap("/home/lcom/labs/proj/bitmap/5.bmp");
-    images.six = loadBitmap("/home/lcom/labs/proj/bitmap/6.bmp");
-    images.seven = loadBitmap("/home/lcom/labs/proj/bitmap/7.bmp");
-    images.eight = loadBitmap("/home/lcom/labs/proj/bitmap/8.bmp");
-    images.nine = loadBitmap("/home/lcom/labs/proj/bitmap/9.bmp");
-    images.zero = loadBitmap("/home/lcom/labs/proj/bitmap/0.bmp");
+    images.one_s = loadBitmap("/home/lcom/labs/proj/bitmap/numbers/1h.bmp");
+    images.two_s = loadBitmap("/home/lcom/labs/proj/bitmap/numbers/2h.bmp");
+    images.three_s = loadBitmap("/home/lcom/labs/proj/bitmap/numbers/3h.bmp");
+    images.four_s = loadBitmap("/home/lcom/labs/proj/bitmap/numbers/4h.bmp");
+    images.five_s = loadBitmap("/home/lcom/labs/proj/bitmap/numbers/5h.bmp");
+    images.six_s = loadBitmap("/home/lcom/labs/proj/bitmap/numbers/6h.bmp");
+    images.seven_s = loadBitmap("/home/lcom/labs/proj/bitmap/numbers/7h.bmp");
+    images.eight_s = loadBitmap("/home/lcom/labs/proj/bitmap/numbers/8h.bmp");
+    images.nine_s = loadBitmap("/home/lcom/labs/proj/bitmap/numbers/9h.bmp");
+    images.zero_s = loadBitmap("/home/lcom/labs/proj/bitmap/numbers/0h.bmp");
+    images.one = loadBitmap("/home/lcom/labs/proj/bitmap/numbers/1.bmp");
+    images.two = loadBitmap("/home/lcom/labs/proj/bitmap/numbers/2.bmp");
+    images.three = loadBitmap("/home/lcom/labs/proj/bitmap/numbers/3.bmp");
+    images.four = loadBitmap("/home/lcom/labs/proj/bitmap/numbers/4.bmp");
+    images.five = loadBitmap("/home/lcom/labs/proj/bitmap/numbers/5.bmp");
+    images.six = loadBitmap("/home/lcom/labs/proj/bitmap/numbers/6.bmp");
+    images.seven = loadBitmap("/home/lcom/labs/proj/bitmap/numbers/7.bmp");
+    images.eight = loadBitmap("/home/lcom/labs/proj/bitmap/numbers/8.bmp");
+    images.nine = loadBitmap("/home/lcom/labs/proj/bitmap/numbers/9.bmp");
+    images.zero = loadBitmap("/home/lcom/labs/proj/bitmap/numbers/0.bmp");
 
-    images.background = loadBitmap("/home/lcom/labs/proj/bitmap/discof.bmp");
-    images.pad = loadBitmap("/home/lcom/labs/proj/bitmap/pad.bmp");
-    images.arrow_up = loadBitmap("/home/lcom/labs/proj/bitmap/arrowup.bmp");
-    images.arrow_left = loadBitmap("/home/lcom/labs/proj/bitmap/arrowleft.bmp");
-    images.arrow_down = loadBitmap("/home/lcom/labs/proj/bitmap/arrowdown.bmp");
-    images.arrow_right = loadBitmap("/home/lcom/labs/proj/bitmap/arrowright.bmp");
-    images.cromossomaY_idle = loadBitmap("/home/lcom/labs/proj/bitmap/cromossoma1.bmp");
-    images.cromossomaY_up = loadBitmap("/home/lcom/labs/proj/bitmap/cromossomaup.bmp");
-    images.cromossomaY_left = loadBitmap("/home/lcom/labs/proj/bitmap/cromossomaleft.bmp");
-    images.cromossomaY_down = loadBitmap("/home/lcom/labs/proj/bitmap/cromossomadown.bmp");
-    images.cromossomaY_right = loadBitmap("/home/lcom/labs/proj/bitmap/cromossomaright.bmp");
-    images.cromossomaX_idle = loadBitmap("/home/lcom/labs/proj/bitmap/cromossomax1.bmp");
-    images.cromossomaX_up = loadBitmap("/home/lcom/labs/proj/bitmap/cromossomaxup.bmp");
-    images.cromossomaX_left = loadBitmap("/home/lcom/labs/proj/bitmap/cromossomaxleft.bmp");
-    images.cromossomaX_down = loadBitmap("/home/lcom/labs/proj/bitmap/cromossomaxdown.bmp");
-    images.cromossomaX_right = loadBitmap("/home/lcom/labs/proj/bitmap/cromossomaxright.bmp");
-    images.perfect = loadBitmap("/home/lcom/labs/proj/bitmap/perfect.bmp");
-    images.great = loadBitmap("/home/lcom/labs/proj/bitmap/great.bmp");
-    images.okay = loadBitmap("/home/lcom/labs/proj/bitmap/okay.bmp");
-    images.miss = loadBitmap("/home/lcom/labs/proj/bitmap/miss.bmp");
-    images.power = loadBitmap("/home/lcom/labs/proj/bitmap/power.bmp");
-    images.pointer = loadBitmap("/home/lcom/labs/proj/bitmap/pointer.bmp");
+    images.background = loadBitmap("/home/lcom/labs/proj/bitmap/sets/discof.bmp");
+    images.pad = loadBitmap("/home/lcom/labs/proj/bitmap/sprites/pad.bmp");
+    images.arrow_up = loadBitmap("/home/lcom/labs/proj/bitmap/sprites/arrowup.bmp");
+    images.arrow_left = loadBitmap("/home/lcom/labs/proj/bitmap/sprites/arrowleft.bmp");
+    images.arrow_down = loadBitmap("/home/lcom/labs/proj/bitmap/sprites/arrowdown.bmp");
+    images.arrow_right = loadBitmap("/home/lcom/labs/proj/bitmap/sprites/arrowright.bmp");
+    images.cromossomaY_idle = loadBitmap("/home/lcom/labs/proj/bitmap/sprites/cromossoma1.bmp");
+    images.cromossomaY_up = loadBitmap("/home/lcom/labs/proj/bitmap/sprites/cromossomaup.bmp");
+    images.cromossomaY_left = loadBitmap("/home/lcom/labs/proj/bitmap/sprites/cromossomaleft.bmp");
+    images.cromossomaY_down = loadBitmap("/home/lcom/labs/proj/bitmap/sprites/cromossomadown.bmp");
+    images.cromossomaY_right = loadBitmap("/home/lcom/labs/proj/bitmap/sprites/cromossomaright.bmp");
+    images.cromossomaX_idle = loadBitmap("/home/lcom/labs/proj/bitmap/sprites/cromossomax1.bmp");
+    images.cromossomaX_up = loadBitmap("/home/lcom/labs/proj/bitmap/sprites/cromossomaxup.bmp");
+    images.cromossomaX_left = loadBitmap("/home/lcom/labs/proj/bitmap/sprites/cromossomaxleft.bmp");
+    images.cromossomaX_down = loadBitmap("/home/lcom/labs/proj/bitmap/sprites/cromossomaxdown.bmp");
+    images.cromossomaX_right = loadBitmap("/home/lcom/labs/proj/bitmap/sprites/cromossomaxright.bmp");
+    images.perfect = loadBitmap("/home/lcom/labs/proj/bitmap/rating/perfect.bmp");
+    images.great = loadBitmap("/home/lcom/labs/proj/bitmap/rating/great.bmp");
+    images.okay = loadBitmap("/home/lcom/labs/proj/bitmap/rating/okay.bmp");
+    images.miss = loadBitmap("/home/lcom/labs/proj/bitmap/rating/miss.bmp");
+    images.power = loadBitmap("/home/lcom/labs/proj/bitmap/sprites/power.bmp");
+    images.pointer = loadBitmap("/home/lcom/labs/proj/bitmap/sprites/pointer.bmp");
 
-    images.singleplayer_selected = loadBitmap("/home/lcom/labs/proj/bitmap/start2.bmp");
-    images.multiplayer_selected = loadBitmap("/home/lcom/labs/proj/bitmap/multiplayer2.bmp");
-    images.instructions_selected = loadBitmap("/home/lcom/labs/proj/bitmap/instructions2.bmp");
-    images.highscores_selected = loadBitmap("/home/lcom/labs/proj/bitmap/highscores2.bmp");
-    images.exit_selected = loadBitmap("/home/lcom/labs/proj/bitmap/exit2.bmp");
-    images.singleplayer_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/start1.bmp");
-    images.multiplayer_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/multiplayer1.bmp");
-    images.instructions_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/instructions1.bmp");
-    images.highscores_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/highscores1.bmp");
-    images.exit_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/exit1.bmp");
-    images.menu = loadBitmap("/home/lcom/labs/proj/bitmap/menu.bmp");
-    images.instructions = loadBitmap("/home/lcom/labs/proj/bitmap/instructionmenu.bmp");
-    images.highscores = loadBitmap("/home/lcom/labs/proj/bitmap/highscorepanel.bmp");
-    images.pause = loadBitmap("/home/lcom/labs/proj/bitmap/pause.bmp");
-    images.end = loadBitmap("/home/lcom/labs/proj/bitmap/end.bmp");
-    images.extra = loadBitmap("/home/lcom/labs/proj/bitmap/extra.bmp");
-    images.name_menu = loadBitmap("/home/lcom/labs/proj/bitmap/namemenu.bmp");
-    images.waiting = loadBitmap("/home/lcom/labs/proj/bitmap/waiting.bmp");
+    images.singleplayer_selected = loadBitmap("/home/lcom/labs/proj/bitmap/buttons/start2.bmp");
+    images.multiplayer_selected = loadBitmap("/home/lcom/labs/proj/bitmap/buttons/multiplayer2.bmp");
+    images.instructions_selected = loadBitmap("/home/lcom/labs/proj/bitmap/buttons/instructions2.bmp");
+    images.highscores_selected = loadBitmap("/home/lcom/labs/proj/bitmap/buttons/highscores2.bmp");
+    images.exit_selected = loadBitmap("/home/lcom/labs/proj/bitmap/buttons/exit2.bmp");
+    images.singleplayer_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/buttons/start1.bmp");
+    images.multiplayer_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/buttons/multiplayer1.bmp");
+    images.instructions_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/buttons/instructions1.bmp");
+    images.highscores_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/buttons/highscores1.bmp");
+    images.exit_not_selected = loadBitmap("/home/lcom/labs/proj/bitmap/buttons/exit1.bmp");
+    images.menu = loadBitmap("/home/lcom/labs/proj/bitmap/sets/menu.bmp");
+    images.instructions = loadBitmap("/home/lcom/labs/proj/bitmap/sets/instructionmenu.bmp");
+    images.highscores = loadBitmap("/home/lcom/labs/proj/bitmap/sets/highscorepanel.bmp");
+    images.pause = loadBitmap("/home/lcom/labs/proj/bitmap/sets/pause.bmp");
+    images.end = loadBitmap("/home/lcom/labs/proj/bitmap/sets/end.bmp");
+    images.extra = loadBitmap("/home/lcom/labs/proj/bitmap/rating/extra.bmp");
+    images.name_menu = loadBitmap("/home/lcom/labs/proj/bitmap/sets/namemenu.bmp");
+    images.waiting = loadBitmap("/home/lcom/labs/proj/bitmap/sets/waiting.bmp");
 
     images.a = loadBitmap("/home/lcom/labs/proj/bitmap/alphabet/a.bmp");
     images.b = loadBitmap("/home/lcom/labs/proj/bitmap/alphabet/b.bmp");
@@ -234,8 +234,10 @@ void loadImages()
     images.slash = loadBitmap("/home/lcom/labs/proj/bitmap/alphabet/slash.bmp");
     images.colon = loadBitmap("/home/lcom/labs/proj/bitmap/alphabet/colon.bmp");
 
-    images.cromossomaY = loadBitmap("/home/lcom/labs/proj/bitmap/character1.bmp");
-    images.cromossomaX = loadBitmap("/home/lcom/labs/proj/bitmap/character2.bmp");
+    images.cromossomaY = loadBitmap("/home/lcom/labs/proj/bitmap/sets/character1.bmp");
+    images.cromossomaX = loadBitmap("/home/lcom/labs/proj/bitmap/sets/character2.bmp");
+    images.scoreY = loadBitmap("/home/lcom/labs/proj/bitmap/sprites/yscore.bmp");
+    images.scoreX = loadBitmap("/home/lcom/labs/proj/bitmap/sprites/xscore.bmp");
 }
 
 //////////////////////////////////////////////////////////////////
@@ -336,6 +338,8 @@ void deleteImages()
     deleteBitmap(images.colon);
     deleteBitmap(images.cromossomaY);
     deleteBitmap(images.cromossomaX);
+    deleteBitmap(images.scoreY);
+    deleteBitmap(images.scoreX);
 }
 
 //////////////////////////////////////////////////////////////////
