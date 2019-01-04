@@ -26,11 +26,6 @@ int arrowRate(int i);
 void keyboardArrows();
 
 int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse);
-
-int gameMultiX(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, uint8_t bit_no_uart);
-
-int gameMultiY(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, uint8_t bit_no_uart);
-
 void arrowProcessing(int x);
 
 void printDance();

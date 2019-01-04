@@ -27,19 +27,19 @@ void score(int distance, int *cdance)
 {
   if (abs(462 - distance) < 10)
   {
-    score_counter += 8;
+    score_counter += 6;
     score_to_print = 1;
     return;
   }
   else if (abs(462 - distance) < 35)
   {
-    score_counter += 5;
+    score_counter += 4;
     score_to_print = 2;
     return;
   }
   else if (abs(462 - distance) < 70)
   {
-    score_counter += 3;
+    score_counter += 2;
     score_to_print = 3;
     return;
   }
