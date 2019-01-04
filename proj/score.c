@@ -59,6 +59,11 @@ void score(int distance, int *cdance)
   }
 }
 
+int getScore()
+{
+  return score_counter;
+}
+
 //////////////////////////////////////////////////////////////////
 
 void printScore()
@@ -112,6 +117,7 @@ void show_score(int score, int x, int y)
     score /= 10;
     gap += 60; // gap increases with each extra digit
   }
+  
 }
 
 //////////////////////////////////////////////////////////////////

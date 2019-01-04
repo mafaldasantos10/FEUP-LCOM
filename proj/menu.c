@@ -35,7 +35,6 @@ int menu()
   loadImages();
 
   /* asks for a name */
-  printf("aqui!!\n");
   drawBitmap(images.name_menu, 0, 0, ALIGN_LEFT);
   double_buffer_to_video_mem();
 
@@ -66,7 +65,7 @@ int menu()
     return 1;
   }
 
-   if (serialPort_subscribe_int(&bit_no_uart) != OK)
+  if (serialPort_subscribe_int(&bit_no_uart) != OK)
   {
     return 1;
   }
@@ -124,16 +123,14 @@ int menu()
               if (strlen(name) == 20 && status != BACKSPACE_KEY)
                 continue;
 
-              //printf("entrei aqui:\n");
               convert_key();
               print_sentence(name, 180, 500);
               double_buffer_to_video_mem();
             }
-
             if (status == W_KEY || status == A_KEY || status == S_KEY || status  == D_KEY ||
                 status  == ENTER_KEY_BK || status  == ESC_KEY || st == START)
             {
-              change_menu_state(bit_no_timer, bit_no_kb, bit_no_mouse);
+              change_menu_state(bit_no_timer, bit_no_kb, bit_no_mouse, bit_no_uart);
               change_buttons();
             }
           }
@@ -199,6 +196,11 @@ int menu()
     return 1;
   }
 
+  if (serialPort_unsubscribe_int() != OK)
+  {
+    return 1;
+  }
+
   save_score_to_file();
 
   /* frees memory occupied by the loaded images when exiting */
@@ -218,7 +220,7 @@ int menu()
 
 //////////////////////////////////////////////////////////////////
 
-void change_menu_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
+void change_menu_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, uint8_t bit_no_uart)
 {
   if (do_not_change && st == MENU && status != ESC_KEY)
   {
@@ -229,14 +231,12 @@ void change_menu_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_m
   {
     case ESC_KEY:
       if (st == MENU)
-      {
-        //printf("do: %d\n", do_not_change);
+      {      
         if (!do_not_change)
         {
           st = START;
           state = SINGLE;
           state2 = C_Y;
-          //printf("aqui2!!\n");
           drawBitmap(images.name_menu, 0, 0, ALIGN_LEFT);
           double_buffer_to_video_mem();
         }
@@ -278,9 +278,7 @@ void change_menu_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_m
     case A_KEY:
       if (st == CHARACTER)
       {
-        //printf("tens razao!!\n");
-        state2 = (state2 - 1) % 2;
-        
+        state2 = (state2 - 1) % 2;       
       }
       break;
 
@@ -295,11 +293,8 @@ void change_menu_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_m
     /* any state */
     case ENTER_KEY_BK:
 
-      //printf("st: %d\n", st);
-
       if (st == START)
       {
-        printf("tens razao!! %d\n", strlen(name));
         if (strlen(name) == 0)
         {
           print_sentence("empty name!", 360, 600);
@@ -324,7 +319,13 @@ void change_menu_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_m
 
         else if (state == SINGLE)
         {
-          //printf("é aqui: %d\n", st);
+          st = CHARACTER;
+          drawBitmap(images.cromossomaY, 0, 0, ALIGN_LEFT);
+          double_buffer_to_video_mem();
+        }
+
+        else if (state == MULTI)
+        {
           st = CHARACTER;
           drawBitmap(images.cromossomaY, 0, 0, ALIGN_LEFT);
           double_buffer_to_video_mem();
@@ -349,20 +350,59 @@ void change_menu_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_m
       else if (st == CHARACTER)
       {
         if (state2 == C_Y)
-        {
-          //printf("hey\n");
-          //printf("GAME? %d\n", st);
-          
-          set_current_player_cromossoma(0);
+        {          
+         if(state == MULTI)
+          {
+            if(playery_sync(bit_no_timer, bit_no_kb, bit_no_mouse, bit_no_uart) != 0)
+            {
+              st = MENU;
+              state = SINGLE;
+              state2 = C_Y;
+              drawBitmap(images.menu, 0, 0, ALIGN_LEFT);
+              double_buffer_to_video_mem();
+            }
+            else
+            {
+              set_current_player_cromossoma(0);
+              st = GAME;
+              gameMultiY(bit_no_timer, bit_no_kb, bit_no_mouse, bit_no_uart);
+            }
+          }
+          else if(state == SINGLE)
+          {
+            set_current_player_cromossoma(0);
+            st = GAME;
+            game(bit_no_timer, bit_no_kb, bit_no_mouse);
+          } 
+
         } 
         else if (state2 == C_X)
         {
-          set_current_player_cromossoma(1);
-          // por o boneco X
+          if(state == MULTI)
+          {
+            if(playerx_sync(bit_no_timer, bit_no_kb, bit_no_mouse, bit_no_uart) != 0)
+            {
+              st = MENU;
+              state = SINGLE;
+              state2 = C_Y;
+              drawBitmap(images.menu, 0, 0, ALIGN_LEFT);
+              double_buffer_to_video_mem();
+            }
+            else
+            {
+              set_current_player_cromossoma(1);
+              st = GAME;
+              gameMultiX(bit_no_timer, bit_no_kb, bit_no_mouse, bit_no_uart);
+            }
+          }
+          else if(state == SINGLE)
+          {
+            set_current_player_cromossoma(1);
+            st = GAME;
+            game(bit_no_timer, bit_no_kb, bit_no_mouse);
+          }        
         }
 
-        st = GAME;
-        game(bit_no_timer, bit_no_kb, bit_no_mouse);
       }
 
       break;
@@ -378,8 +418,6 @@ void change_buttons()
     return;
   }
   
-  //printf("st_d: %d\n", st);
-
   if (st == MENU)
   {
     drawBitmap(images.menu, 0, 0, ALIGN_LEFT); 
@@ -426,7 +464,6 @@ void change_buttons()
 
   else if (st == CHARACTER)
   {
-    //printf("state fora: %d\n", state2);
     switch(state2 % 2)
     {
       case 0:

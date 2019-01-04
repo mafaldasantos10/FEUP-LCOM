@@ -19,7 +19,7 @@ void init_arrows();
 
 void print_queue();
 
-int pix_map_move_pos();
+int pix_map_move_pos(int x);
 
 int arrowRate(int i);
 
@@ -27,7 +27,11 @@ void keyboardArrows();
 
 int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse);
 
-void arrowProcessing();
+int gameMultiX(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, uint8_t bit_no_uart);
+
+int gameMultiY(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, uint8_t bit_no_uart);
+
+void arrowProcessing(int x);
 
 void printDance();
 
