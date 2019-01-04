@@ -15,7 +15,6 @@
 #include "rtc.h"
 #include "serialPort.h"
 
-
 //VARIABLE INITIALIZATION
 static st_t st = START;
 static state_t state = SINGLE;
@@ -335,7 +334,7 @@ void change_menu_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_m
         {
           drawBitmap(images.instructions, 0, 0, ALIGN_LEFT);
           double_buffer_to_video_mem();
-          do_not_change = true; //so that it doesn't print the menu over the instructions
+          do_not_change = true; // so that it doesn't print the menu over the instructions
         }
 
         else if (state == HIGHSCORES)
@@ -343,7 +342,7 @@ void change_menu_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_m
           drawBitmap(images.highscores, 0, 0, ALIGN_LEFT);
           print_high_scores();
           double_buffer_to_video_mem();
-          do_not_change = true; //so that it doesn't print the menu over the panel
+          do_not_change = true; // so that it doesn't print the menu over the panel
         }
       }
 
@@ -351,9 +350,9 @@ void change_menu_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_m
       {
         if (state2 == C_Y)
         {          
-         if(state == MULTI)
+          if (state == MULTI)
           {
-            if(playery_sync(bit_no_timer, bit_no_kb, bit_no_mouse, bit_no_uart) != 0)
+            if (playerY_sync(bit_no_timer, bit_no_kb, bit_no_mouse, bit_no_uart) != 0)
             {
               st = MENU;
               state = SINGLE;
@@ -368,19 +367,18 @@ void change_menu_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_m
               gameMultiY(bit_no_timer, bit_no_kb, bit_no_mouse, bit_no_uart);
             }
           }
-          else if(state == SINGLE)
+          else if (state == SINGLE)
           {
             set_current_player_cromossoma(0);
             st = GAME;
             game(bit_no_timer, bit_no_kb, bit_no_mouse);
-          } 
-
+          }
         } 
         else if (state2 == C_X)
         {
-          if(state == MULTI)
+          if (state == MULTI)
           {
-            if(playerx_sync(bit_no_timer, bit_no_kb, bit_no_mouse, bit_no_uart) != 0)
+            if (playerX_sync(bit_no_timer, bit_no_kb, bit_no_mouse, bit_no_uart) != 0)
             {
               st = MENU;
               state = SINGLE;
@@ -395,16 +393,14 @@ void change_menu_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_m
               gameMultiX(bit_no_timer, bit_no_kb, bit_no_mouse, bit_no_uart);
             }
           }
-          else if(state == SINGLE)
+          else if (state == SINGLE)
           {
             set_current_player_cromossoma(1);
             st = GAME;
             game(bit_no_timer, bit_no_kb, bit_no_mouse);
           }        
         }
-
       }
-
       break;
   }
 }
