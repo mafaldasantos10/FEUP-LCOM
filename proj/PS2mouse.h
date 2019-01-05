@@ -11,7 +11,7 @@ extern bool error_mouse;
 /**
  * @brief Subscribes mouse interrupts
  *
- * @param bit_no mouse identifier
+ * @param bit_no Mouse identifier
  * @return Negative if failure
  */
 int mouse_subscribe_int(uint8_t *bit_no);
@@ -34,7 +34,6 @@ void packet_create();
 
 /**
  * @brief Writes in the out buff any register
- *
  * @param write Write register to write
  * @return Negative if failure
  */
@@ -42,14 +41,12 @@ int set_mouse(uint8_t write);
 
 /**
  * @brief Enables the mouse and stream mode
- * 
  * @return Negative if failure
  */
 int mouse_write_int();
 
 /**
  * @brief Disables mouse
- *
  * @return Negative if failure
  */
 int disable_int();
@@ -61,14 +58,12 @@ void currentMousePosition();
 
 /**
  * @brief Gets mouse horizontal coordinate
- *
  * @return Horizontal mouse coordinate
  */
 int get_mouseX();
 
 /**
  * @brief Gets mouse vertical coordinate
- *
  * @return Vertical mouse coordinate
  */
 int get_mouseY();

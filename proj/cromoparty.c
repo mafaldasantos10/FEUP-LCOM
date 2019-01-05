@@ -131,7 +131,7 @@ int pix_map_move_pos(int x)
 
 int arrowRate(int i) 
 {
-    arrows[i]->speed = 2 + rand() % 4;  
+    arrows[i]->speed = 3 + rand() % 8;  
     arrows[i]->direction = rand() % 4;
 
     return 0;
@@ -419,6 +419,8 @@ void powerUps(int xi, int yi, int yf)
     drawBitmap(images.power, powerx, powery, ALIGN_LEFT);
 }
 
+//////////////////////////////////////////////////////////////////
+
 void reset_powerup()
 {
     xi = 0;
@@ -475,6 +477,12 @@ void arrowProcessing(int x)
     {
         pix_map_move_pos(x);
     }
+}
+///////////////////////////////////////////////////////////////////
+
+void set_current_player_cromossoma(int cr)
+{
+  cromossoma_choice = cr;
 }
 
 //////////////////////////////////////////////////////////////////
@@ -628,13 +636,14 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
 
         size = 1;
     }
-        uint32_t stat;
-        sys_inb(STAT_REG, &stat); 
-                
-        if( stat & OBF ) 
-        {
-                sys_inb(OUT_BUF, &status);
-        }
+
+    uint32_t stat;
+    sys_inb(STAT_REG, &stat); 
+            
+    if( stat & OBF ) 
+    {
+        sys_inb(OUT_BUF, &status);
+    }
 
     /* to reset global variables for a new game */
     if (esc)
@@ -644,11 +653,3 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
     
     return 0;
 }
-
-///////////////////////////////////////////////////////////////////
-
-void set_current_player_cromossoma(int cr)
-{
-  cromossoma_choice = cr;
-}
-

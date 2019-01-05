@@ -33,14 +33,14 @@ typedef struct {
     unsigned int importantColors; // number of colors that are important
 } BitmapInfoHeader;
 
-// Represents a Bitmap
+/** @brief Bitmap Struct */
 typedef struct {
     BitmapInfoHeader bitmapInfoHeader;
     unsigned char* bitmapData;
     bool colided;
 } Bitmap;
 
-// Struct that has all images to be loaded
+/** @brief Struct that has all images to be loaded */
 typedef struct {
     Bitmap* one_s;
     Bitmap* two_s;
@@ -147,10 +147,17 @@ extern Images images;
 //PROTOTYPES
 //////////////////////////////////////////////////////////////////
 
+/**
+ * @brief Returns information on the input VBE mode, including screen dimensions, color depth and VRAM physical address.
+ * 
+ * @param mode Mode whose information should be returned 
+ * @param vmi_p Address of vbe_mode_info_t structure to be initialized 
+ * @return 0 on success, non-zero otherwise
+ */
 int get_mode_info(uint16_t mode, vbe_mode_info_t * vmi_p);
 
 /**
- * @brief Double buffer function
+ * @brief Double buffer function. Copies contents of the second buffer to video-mem
  */
 void double_buffer_to_video_mem();
 
@@ -187,16 +194,16 @@ Bitmap* loadBitmap(const char* filename);
 /**
  * @brief Draws an unscaled, unrotated bitmap at the given position
  *
- * @param bitmap bitmap to be drawn
+ * @param bitmap Bitmap to be drawn
  * @param x destiny x coord
  * @param y destiny y coord
- * @param alignment image alignment
+ * @param alignment Image alignment
  */
 void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment);
 
 /**
  * @brief Destroys the given bitmap, freeing all resources used by it.
  *
- * @param bitmap bitmap to be destroyed
+ * @param bitmap Bitmap to be destroyed
  */
 void deleteBitmap(Bitmap* bmp);

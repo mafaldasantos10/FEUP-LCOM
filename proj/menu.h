@@ -1,7 +1,10 @@
 #pragma once
 
+/** @brief State of the Game */
 typedef enum {START, MENU, CHARACTER, GAME} st_t;
+/** @brief State of the Menu */
 typedef enum {SINGLE, MULTI, HIGHSCORES, INSTRUCTIONS, EXIT} state_t;
+/** @brief State of the Character Menu */
 typedef enum {C_Y, C_X} state2_t;
 
 
@@ -28,10 +31,25 @@ void change_menu_state(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_m
  */
 void change_buttons();
 
+/**
+ * @brief Draws the default menu, with the curret button being the Single Player
+ */
 void default_menu();
 
+/**
+ * @brief Appends a char to a string
+ * 
+ * @param s String to whom the char will be appended
+ * @param c Char to be appended to the string
+ */
 void append(char* s, char c);
 
+/**
+ * @brief Converts the keyboard scanned code to the repective ASCII character
+ */
 void convert_key();
 
+/**
+ * @brief State machine goes to the default state. State goes to MENU, SinglePlayer is selected and Y Chromosome is selected
+ */
 void default_state();

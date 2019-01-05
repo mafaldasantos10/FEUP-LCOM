@@ -15,6 +15,7 @@ static int hook_id_uart = 3;
 uint32_t char_containerx = 2;
 uint32_t char_containery = 2;
 
+
 //FUNCTIONS
 //////////////////////////////////////////////////////////////////
 
@@ -73,7 +74,7 @@ int get_RBR(uint32_t *byte)
       if (lsrByte & RECEIVER_DATA)
       {
         sys_inb(RBR, byte);
-				printf("Received char: %c \n", (char) *byte); //for debuging
+		//printf("Received char: %c \n", (char) *byte); //for debuging
         tickdelay(micros_to_ticks(SP_DELAY));
         return 0;
       }
@@ -98,7 +99,7 @@ int write_to_THR(uint32_t byte)
       if (lsrByte & THR_EMPTY)
       {
         sys_outb(THR, byte);
-				printf("TRANSMITED char: %c \n", (char) byte); //for debuging
+		//printf("TRANSMITED char: %c \n", (char) byte); //for debuging
         return 0;
       }
     }
@@ -322,7 +323,7 @@ int playerX_sync(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, 
   return 0;
 }
 
-////////////////////////////// MULTI ///////////////////////////////////////
+/////////////////////////// MULTI ////////////////////////////////
 
 int gameMultiX(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, uint8_t bit_no_uart)
 {
@@ -367,9 +368,8 @@ int gameMultiX(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, ui
                         }
                         if((timer_counter % 60) == 0)
                         {
-                            printf("SCORE %d", getScore());
+                            //printf("SCORE %d", getScore());
                             write_to_THR((uint32_t)getScore());
-                            
                         }
                     }
 
@@ -490,6 +490,8 @@ int gameMultiX(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, ui
     return 0;
 }
 
+//////////////////////////////////////////////////////////////////
+
 int gameMultiY(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, uint8_t bit_no_uart)
 {
     init_arrows();
@@ -533,9 +535,8 @@ int gameMultiY(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, ui
                         }
                         if((timer_counter % 60) == 0)
                         {
-                            printf("SCORE %d", getScore());
+                            //printf("SCORE %d", getScore());
                             write_to_THR((uint32_t)getScore());
-
                         }
                     }
 
@@ -655,5 +656,3 @@ int gameMultiY(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, ui
     
     return 0;
 }
-
-
