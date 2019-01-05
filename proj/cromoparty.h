@@ -55,10 +55,27 @@ void keyboardArrows();
  */
 void printDance();
 
+/**
+ * @brief It estimates the number of pixels the powerup has to move in each frame
+ * @param xi Initial position it can be either horizontal or vertical
+ * @param xf Final position
+ * @return
+ */
 int powerSpeed(int xi, int xf);
 
+/**
+ * @brief When the power up collides or reaches the end of the screen it changes its movements.
+ * if it reaches the end of the screen the next movement will be in the opposite direction with a random y
+ * if it collided the movement will start in x=0 and random y
+ */
 void changeDirect();
 
+/**
+ * @brief Changes the position where the power up will be drawn
+ * @param xi Initial horizontal position
+ * @param yi Initial vertical position
+ * @param yf Final vertical position
+ */
 void powerUps(int xi, int yi, int yf);
 
 /**
@@ -88,4 +105,11 @@ void arrowProcessing(int x);
  */
 void set_current_player_cromossoma(int cr);
 
+/**
+ * @brief Interrupt mouse, timer and keyboard cycle of the game
+ * @param bit_no_timer Timer identifier
+ * @param bit_no_kb Keyboard identifier
+ * @param bit_no_mouse Mouse identifier
+ * @return
+ */
 int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse);

@@ -168,7 +168,7 @@ int playerY_sync(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, 
   uint32_t irq_set_keyboard = BIT(bit_no_kb);
   uint32_t irq_set_mouse = BIT(bit_no_mouse);
   uint32_t irq_set_serialPort = BIT(bit_no_uart);
-  
+  //reset_score_counter();
   drawBitmap(images.waiting, 0, 0, ALIGN_LEFT);
   double_buffer_to_video_mem();
 
@@ -249,7 +249,7 @@ int playerX_sync(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, 
   uint32_t irq_set_keyboard = BIT(bit_no_kb);
   uint32_t irq_set_mouse = BIT(bit_no_mouse);
   uint32_t irq_set_serialPort = BIT(bit_no_uart);
-  
+  //reset_score_counter();
   drawBitmap(images.waiting, 0, 0, ALIGN_LEFT);
   double_buffer_to_video_mem();
 
