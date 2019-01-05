@@ -6,11 +6,17 @@ extern bool click;
 //////////////////////////////////////////////////////////////////
 
 typedef struct {
+  /** @brief Name of the player */
   char name[25];
+  /** @brief Score of the player */
   int score;
+  /** @brief Rank of the player */
   int rank;
+  /** @brief Day the score was obtained */
   int day;
+  /** @brief Month the score was obtained */
   int month;
+  /** @brief Year the score was obtained */
   int year;
 } Player;
 

@@ -39,7 +39,7 @@
 /////////////// Prototypes ///////////////////////
 
 /**
- * @brief waits for a valid RTC and reads the register of the RTC
+ * @brief Waits for a valid RTC and reads the register of the RTC
  * @param reg Register
  * @return Negative if failure
  */
@@ -90,7 +90,7 @@ int get_year();
 void print_digit_rtc(int number, int x, int y);
 
 /**
- * @brief Prints the date in the right format
+ * @brief Prints the date in the format dd/mm/yy
  * @param day Day to be printed
  * @param month Month to be printed
  * @param year Year to be printed
@@ -100,7 +100,7 @@ void print_digit_rtc(int number, int x, int y);
 void print_date(int day, int month, int year, int x, int y);
 
 /**
- * @brief Prints the Time in the right format
+ * @brief Prints the Time in the format hh:mm:ss
  * @param x Coordinate x of the screen where it will be printed
  * @param y Coordinate y of the screen where it will be printed
  */
