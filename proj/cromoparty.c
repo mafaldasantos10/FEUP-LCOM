@@ -628,6 +628,13 @@ int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse)
 
         size = 1;
     }
+        uint32_t stat;
+        sys_inb(STAT_REG, &stat); 
+                
+        if( stat & OBF ) 
+        {
+                sys_inb(OUT_BUF, &status);
+        }
 
     /* to reset global variables for a new game */
     if (esc)
