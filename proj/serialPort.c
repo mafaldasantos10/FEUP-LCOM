@@ -12,8 +12,8 @@
 #include "serialPort.h"
 
 static int hook_id_uart = 3;
-uint32_t char_containerx = 0;
-uint32_t char_containery = 0;
+uint32_t char_containerx = 2;
+uint32_t char_containery = 2;
 
 //FUNCTIONS
 //////////////////////////////////////////////////////////////////
@@ -171,14 +171,13 @@ int playerY_sync(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, 
   drawBitmap(images.waiting, 0, 0, ALIGN_LEFT);
   double_buffer_to_video_mem();
 
-  uint32_t char_container = 2;
   int ipc_status, r;
   bool esc = false;
   message msg;
 
   clear_RBR();
 
-  while (!esc && char_container != 'x')
+  while (!esc && char_containerx != 'x')
   {
     /* Get a request message. */
     if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0)
@@ -220,7 +219,7 @@ int playerY_sync(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, 
 
           if (msg.m_notify.interrupts & irq_set_serialPort)
           { /* subscribed interrupt */
-            serialPort_handler(&char_container);
+            serialPort_handler(&char_containerx);
           }
           break;
         default:
@@ -253,14 +252,13 @@ int playerX_sync(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, 
   drawBitmap(images.waiting, 0, 0, ALIGN_LEFT);
   double_buffer_to_video_mem();
 
-  uint32_t char_container = 2;
   int ipc_status, r;
   bool esc = false;
   message msg;
 
   clear_RBR();
 
-  while (!esc && char_container != 'y')
+  while (!esc && char_containery != 'y')
   {
     /* Get a request message. */
     if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0)
@@ -302,7 +300,7 @@ int playerX_sync(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, 
 
           if (msg.m_notify.interrupts & irq_set_serialPort)
           { /* subscribed interrupt */
-            serialPort_handler(&char_container);
+            serialPort_handler(&char_containery);
           }
           break;
         default:
@@ -367,7 +365,7 @@ int gameMultiX(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, ui
                             timer_int_handler();
                             arrowProcessing(1);
                         }
-                        if((timer_counter % 5) == 0)
+                        if((timer_counter % 60) == 0)
                         {
                             printf("SCORE %d", getScore());
                             write_to_THR((uint32_t)getScore());
@@ -533,7 +531,7 @@ int gameMultiY(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, ui
                             timer_int_handler();
                             arrowProcessing(2);
                         }
-                        if((timer_counter % 5) == 0)
+                        if((timer_counter % 60) == 0)
                         {
                             printf("SCORE %d", getScore());
                             write_to_THR((uint32_t)getScore());
