@@ -131,7 +131,7 @@ int pix_map_move_pos(int x)
 
 int arrowRate(int i) 
 {
-    arrows[i]->speed = 3 + rand() % 8;  
+    arrows[i]->speed = 2 + rand() % 7;
     arrows[i]->direction = rand() % 4;
 
     return 0;
