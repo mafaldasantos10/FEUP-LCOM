@@ -1,5 +1,11 @@
 #pragma once
 
+/** @defgroup SerialPort SerialPort
+ * @{
+ *
+ * Functions to handle the SerialPort
+ */
+
 /** @brief irq */
 #define COM1_IRQ 4
 
@@ -66,6 +72,7 @@ int serialPort_unsubscribe_int();
 
 /**
  * @brief Reads the Reciever Buffer Register
+ * 
  * @param byte Uint32_t that will have the read information
  * @return Negative if failure
  */
@@ -73,6 +80,7 @@ int get_RBR(uint32_t *byte);
 
 /**
  * @brief Writes to Transmitter Holding Register
+ * 
  * @param byte Uint32_t that is written
  * @return Negative if failure
  */
@@ -86,6 +94,7 @@ int clear_RBR();
 
 /**
  * @brief Uart handler
+ * 
  * @param byte Uint32_t that will contain the information
  * @return Negative if failure
  */
@@ -93,6 +102,7 @@ int serialPort_handler(uint32_t *byte);
 
 /**
  * @brief Waits for the x cromossome to join multiplayer
+ * 
  * @param bit_no_timer Timer identifier
  * @param bit_no_kb Keyboard identifier
  * @param bit_no_mouse Mouse identifier
@@ -103,6 +113,7 @@ int playerY_sync(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, 
 
 /**
  * @brief Waits for the y cromossome to join multiplayer
+ * 
  * @param bit_no_timer Timer identifier
  * @param bit_no_kb Keyboard identifier
  * @param bit_no_mouse Mouse identifier
@@ -113,6 +124,7 @@ int playerX_sync(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, 
 
 /**
  * @brief Multiplayer game for x cromossome
+ * 
  * @param bit_no_timer Timer identifier
  * @param bit_no_kb Keyboard identifier
  * @param bit_no_mouse Mouse identifier
@@ -123,6 +135,7 @@ int gameMultiX(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, ui
 
 /**
  * @brief Multiplayer game for y cromossome
+ * 
  * @param bit_no_timer Timer identifier
  * @param bit_no_kb Keyboard identifier
  * @param bit_no_mouse Mouse identifier
@@ -130,3 +143,5 @@ int gameMultiX(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, ui
  * @return negative if failure
  */
 int gameMultiY(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse, uint8_t bit_no_uart);
+
+/**@}*/

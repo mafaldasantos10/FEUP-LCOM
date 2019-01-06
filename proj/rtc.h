@@ -1,5 +1,11 @@
 #pragma once
 
+/** @defgroup RTC RTC
+ * @{
+ *
+ * Functions to handle the RTC
+ */
+
 /** @brief RTC's address register */
 #define RTC_ADDR_REG 0x70
 
@@ -105,3 +111,5 @@ void print_date(int day, int month, int year, int x, int y);
  * @param y Coordinate y of the screen where it will be printed
  */
 void print_time(int x, int y);
+
+/**@}*/

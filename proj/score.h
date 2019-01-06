@@ -1,6 +1,12 @@
 #pragma once
 
-extern bool click;
+/** @defgroup Score Score
+ * @{
+ *
+ * Functions to handle the Score of the player
+ */
+
+  extern bool click;
 
 //STRUCTS
 //////////////////////////////////////////////////////////////////
@@ -149,6 +155,8 @@ void print_high_scores();
 
 /**
  * @brief Changes the player name
- * @param name[25] New player name
+ * @param name New player name
  */
 void set_current_player_name(char name[25]);
+
+/**@}*/

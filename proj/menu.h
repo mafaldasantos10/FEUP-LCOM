@@ -1,12 +1,17 @@
 #pragma once
 
+/** @defgroup Menu Menu
+ * @{
+ *
+ * Functions to manipulate the Menu of the game
+ */
+
 /** @brief State of the Game */
 typedef enum {START, MENU, CHARACTER, GAME} st_t;
 /** @brief State of the Menu */
 typedef enum {SINGLE, MULTI, HIGHSCORES, INSTRUCTIONS, EXIT} state_t;
 /** @brief State of the Character Menu */
 typedef enum {C_Y, C_X} state2_t;
-
 
 //PROTOTYPES
 //////////////////////////////////////////////////////////////////
@@ -53,3 +58,5 @@ void convert_key();
  * @brief State machine goes to the default state. State goes to MENU, SinglePlayer is selected and Y Chromosome is selected
  */
 void default_state();
+
+/**@}*/

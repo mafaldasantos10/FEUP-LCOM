@@ -201,6 +201,7 @@ void loadImages()
     images.end = loadBitmap("/home/lcom/labs/proj/bitmap/sets/end.bmp");
     images.extra = loadBitmap("/home/lcom/labs/proj/bitmap/rating/extra.bmp");
     images.name_menu = loadBitmap("/home/lcom/labs/proj/bitmap/sets/namemenu.bmp");
+    //images.name_menu = loadBitmap(appendString("/bitmap/sets/namemenu.bmp")); example
     images.waiting = loadBitmap("/home/lcom/labs/proj/bitmap/sets/waiting.bmp");
 
     images.a = loadBitmap("/home/lcom/labs/proj/bitmap/alphabet/a.bmp");
@@ -499,4 +500,16 @@ void deleteBitmap(Bitmap* bmp)
 
     free(bmp->bitmapData);
     free(bmp);
+}
+
+//////////////////////////////////////////////////////////////////
+
+char temp[50];
+
+char* appendString(char* s)
+{
+    strcpy(temp, path);
+    strcat(temp, s);
+
+    return temp;
 }

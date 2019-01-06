@@ -1,5 +1,11 @@
 #pragma once
 
+/** @defgroup Cromoparty Cromoparty
+ * @{
+ *
+ * Functions of the main game
+ */
+
 //STRUCTS
 //////////////////////////////////////////////////////////////////
 
@@ -65,8 +71,8 @@ int powerSpeed(int xi, int xf);
 
 /**
  * @brief When the power up collides or reaches the end of the screen it changes its movements.
- * if it reaches the end of the screen the next movement will be in the opposite direction with a random y
- * if it collided the movement will start in x=0 and random y
+ * If it reaches the end of the screen the next movement will be in the opposite direction with a random y
+ * If it collided the movement will start in x=0 and random y
  */
 void changeDirect();
 
@@ -110,6 +116,8 @@ void set_current_player_cromossoma(int cr);
  * @param bit_no_timer Timer identifier
  * @param bit_no_kb Keyboard identifier
  * @param bit_no_mouse Mouse identifier
- * @return
+ * @return 0 on success, non-zero otherwise
  */
 int game(uint8_t bit_no_timer, uint8_t bit_no_kb, uint8_t bit_no_mouse);
+
+/**@}*/

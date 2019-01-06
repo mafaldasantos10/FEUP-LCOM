@@ -1,5 +1,11 @@
 #pragma once
 
+/** @defgroup PS2mouse PS2mouse
+ * @{
+ *
+ * Functions to handle the PS2mouse
+ */
+
 //GLOBAL VARIABLES
 extern uint32_t status_mouse; //global variable that with the contents of the buffer
 extern struct packet pp;
@@ -67,3 +73,5 @@ int get_mouseX();
  * @return Vertical mouse coordinate
  */
 int get_mouseY();
+
+/**@}*/
