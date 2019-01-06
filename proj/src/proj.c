@@ -10,7 +10,7 @@
 #include "menu.h"
 
 /* holds the path to the files */
-char path[125];
+char path[75];
 
 
 //FUNCTIONS
@@ -59,7 +59,7 @@ int (proj_main_loop)(int UNUSED(argc), char *argv[])
   	return 1;
   }
   
-  if(menu() != OK)
+  if (menu() != OK)
   {
     return 1;
   }
