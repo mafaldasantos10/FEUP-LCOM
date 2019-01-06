@@ -1,13 +1,14 @@
 #pragma once
 
+/** @defgroup Interface Interface
+ * @{
+ *
+ * Functions to manipulate the Interface of the game (Video Card)
+ */
 
 //STRUCTS
 //////////////////////////////////////////////////////////////////
 
-/** @defgroup Bitmap Bitmap
- * @{
- * Functions for manipulating bitmaps
- */
 typedef enum {
     ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT
 } Alignment;
@@ -142,6 +143,7 @@ typedef struct {
 //GLOBAL VARIABLES
 //////////////////////////////////////////////////////////////////
 extern Images images;
+extern char path[50];
 
 
 //PROTOTYPES
@@ -194,7 +196,7 @@ Bitmap* loadBitmap(const char* filename);
 /**
  * @brief Draws an unscaled, unrotated bitmap at the given position
  *
- * @param bitmap Bitmap to be drawn
+ * @param bmp Bitmap to be drawn
  * @param x destiny x coord
  * @param y destiny y coord
  * @param alignment Image alignment
@@ -204,6 +206,10 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment);
 /**
  * @brief Destroys the given bitmap, freeing all resources used by it.
  *
- * @param bitmap Bitmap to be destroyed
+ * @param bmp Bitmap to be destroyed
  */
 void deleteBitmap(Bitmap* bmp);
+
+char* appendString(char* s);
+
+/**@}*/

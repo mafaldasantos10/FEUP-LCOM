@@ -517,6 +517,7 @@ void save_score()
 void save_score_to_file()
 {
   FILE *f = fopen("/home/lcom/labs/proj/highscores.txt", "w");
+  //FILE *f = fopen(appendString("/highscores.txt"), "w");
 
   if (f == NULL)
   {
@@ -549,6 +550,8 @@ void save_score_to_file()
 void load_score_from_file()
 {
   FILE *f = fopen("/home/lcom/labs/proj/highscores.txt", "r");
+  //FILE *f = fopen(appendString("/highscores.txt"), "r");
+
   char buff[30];
   int buff2;
 

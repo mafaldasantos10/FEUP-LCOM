@@ -1,6 +1,12 @@
 #ifndef _LCOM_I8042_H_
 #define _LCOM_I8042_H_
 
+/** @defgroup i8042 i8042
+ * @{
+ *
+ * Constants for programming mainly the Keyboard and the Mouse.
+ */
+
 /** @brief IRQ lines */
 #define IRQ_KEYBOARD 1    
 #define IRQ_MOUSE 12
@@ -87,5 +93,7 @@
 
 /* Score */
 #define MAX_PLAYER_SLOTS 6
+
+/**@}*/
 
 #endif /* _LCOM_I8042_H */
