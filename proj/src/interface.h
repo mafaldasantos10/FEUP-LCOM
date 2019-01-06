@@ -143,7 +143,7 @@ typedef struct {
 //GLOBAL VARIABLES
 //////////////////////////////////////////////////////////////////
 extern Images images;
-extern char path[125];
+extern char path[75];
 
 
 //PROTOTYPES
@@ -210,6 +210,11 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment);
  */
 void deleteBitmap(Bitmap* bmp);
 
+/**
+ * @brief Appends a subpath to the path specified in the command line
+ *
+ * @param s Subpath to be appended
+ */
 char* appendString(char* s);
 
 /**@}*/
