@@ -10,7 +10,7 @@
 #include "menu.h"
 
 /* holds the path to the files */
-char path[50];
+char path[125];
 
 
 //FUNCTIONS

@@ -143,7 +143,7 @@ typedef struct {
 //GLOBAL VARIABLES
 //////////////////////////////////////////////////////////////////
 extern Images images;
-extern char path[50];
+extern char path[125];
 
 
 //PROTOTYPES
