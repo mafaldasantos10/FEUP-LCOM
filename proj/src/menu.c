@@ -94,6 +94,9 @@ int menu()
 
             kbc_asm_ih();
 
+            if (error_kbd)
+              continue;
+              
             if (status == MSB)
             {
               wait = true;
@@ -138,6 +141,9 @@ int menu()
           { /* subscribed interrupt */
 
             mouse_ih();
+
+            if (error_mouse)
+              continue;
 
             if (s == 1)
             {
