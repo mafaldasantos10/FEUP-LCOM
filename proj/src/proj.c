@@ -59,7 +59,10 @@ int (proj_main_loop)(int UNUSED(argc), char *argv[])
   	return 1;
   }
   
-  menu();
+  if(menu() != OK)
+  {
+    return 1;
+  }
 
   if (vg_exit())
   {
