@@ -448,7 +448,7 @@ void end_game()
 {
     save_score();
     drawBitmap(images.end, 0, 0, ALIGN_LEFT);
-    show_score(1, 630, 615); /* 1 - current score */
+    show_score(1, 600, 615); /* 1 - current score */
     double_buffer_to_video_mem();
     sleep(3);
     default_state();
